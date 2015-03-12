@@ -15,6 +15,7 @@
 
     <modules>
         <module>mule-agent-monitoring-publishers</module>
+        <module>mule-agent-db-event-tracker</module>
     </modules>
 
     <properties>
