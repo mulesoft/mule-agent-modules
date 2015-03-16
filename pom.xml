@@ -14,7 +14,7 @@
     <url>http://maven.apache.org</url>
 
     <modules>
-        <module>mule-agent-monitoring-publishers</module>
+        <!--<module>mule-agent-monitoring-publishers</module>-->
         <module>mule-agent-db-event-tracker</module>
     </modules>
 
