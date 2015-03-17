@@ -49,7 +49,13 @@ public class DatabaseEventTrackingAgentTest{
                         "test",
                         "mule"
                 },
-
+                // Oracle
+                {   "oracle.jdbc.driver.OracleDriver",
+                        "jdbc:oracle:thin:@192.168.61.128:1521:xe",
+                        "mule",
+                        "test",
+                        "mule"
+                },
         });
     }
 
@@ -89,7 +95,7 @@ public class DatabaseEventTrackingAgentTest{
 
     private long countRecords(Connection connection, DatabaseEventTrackingAgent agent) throws SQLException {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM " + agent.table + ";");
+        ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM " + agent.table);
         rs.next();
         long count = rs.getLong(1);
         rs.close();
@@ -99,7 +105,7 @@ public class DatabaseEventTrackingAgentTest{
 
     private void clearTable(Connection connection, DatabaseEventTrackingAgent agent) throws SQLException {
         Statement st = connection.createStatement();
-        st.execute("DELETE FROM " + agent.table + ";");
+        st.execute("DELETE FROM " + agent.table);
         st.close();
     }
 
