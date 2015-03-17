@@ -1,5 +1,5 @@
 <assembly>
-    <id>database</id>
+    <id>db-eventtracking</id>
     <formats>
         <format>zip</format>
     </formats>
