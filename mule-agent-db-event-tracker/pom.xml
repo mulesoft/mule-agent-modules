@@ -51,7 +51,12 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.6</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>c3p0</groupId>
             <artifactId>c3p0</artifactId>

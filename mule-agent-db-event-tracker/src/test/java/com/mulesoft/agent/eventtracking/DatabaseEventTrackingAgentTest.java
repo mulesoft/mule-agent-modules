@@ -19,6 +19,7 @@ public class DatabaseEventTrackingAgentTest{
     @Parameterized.Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
+                // SQL Server - jTDS Driver
                 {   "net.sourceforge.jtds.jdbc.Driver",
                     "jdbc:jtds:sqlserver://EVA:1433/Mule;instance=SQLExpress14;" +
                         "databaseName=Mule;integratedSecurity=true;",
@@ -26,6 +27,7 @@ public class DatabaseEventTrackingAgentTest{
                         "test",
                         "mule"
                 },
+                // SQL Server - MS SQL Server
                 {   "com.microsoft.sqlserver.jdbc.SQLServerDriver",
                         "jdbc:sqlserver://localhost;" +
                             "instanceName=SQLExpress14;databaseName=Mule;user=sa;password=test;",
@@ -33,6 +35,14 @@ public class DatabaseEventTrackingAgentTest{
                         "test",
                         "mule"
                 },
+                // MySQL
+                {   "com.mysql.jdbc.Driver",
+                        "jdbc:mysql://192.168.61.128/mule",
+                        "root",
+                        "test",
+                        "mule"
+                },
+
         });
     }
 
@@ -72,7 +82,7 @@ public class DatabaseEventTrackingAgentTest{
 
     private long countRecords(Connection connection, DatabaseEventTrackingAgent agent) throws SQLException {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM " + agent.table);
+        ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM " + agent.table + ";");
         rs.next();
         long count = rs.getLong(1);
         rs.close();
@@ -82,7 +92,7 @@ public class DatabaseEventTrackingAgentTest{
 
     private void clearTable(Connection connection, DatabaseEventTrackingAgent agent) throws SQLException {
         Statement st = connection.createStatement();
-        st.execute("DELETE " + agent.table);
+        st.execute("DELETE FROM " + agent.table + ";");
         st.close();
     }
 
