@@ -3,68 +3,87 @@ package com.mulesoft.agent.eventtracking;
 import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.lang.annotation.Annotation;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
+@RunWith(Parameterized.class)
 public class DatabaseEventTrackingAgentTest{
 
-    @Test
-    public void CanUseSQLServerMSJdbc() throws ClassNotFoundException, SQLException {
-        DatabaseEventTrackingAgent agent = new DatabaseEventTrackingAgent();
-        agent.driver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-        agent.jdbcUrl = "jdbc:sqlserver://localhost;" +
-                "instanceName=SQLExpress14;databaseName=Mule;user=sa;password=test;";
-        agent.user = "sa";
-        agent.pass = "test";
-        agent.table = "mule";
-        agent.postConfigurable();
+    @Parameterized.Parameters
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][]{
+                {   "net.sourceforge.jtds.jdbc.Driver",
+                    "jdbc:jtds:sqlserver://EVA:1433/Mule;instance=SQLExpress14;" +
+                        "databaseName=Mule;integratedSecurity=true;",
+                        "sa",
+                        "test",
+                        "mule"
+                },
+                {   "com.microsoft.sqlserver.jdbc.SQLServerDriver",
+                        "jdbc:sqlserver://localhost;" +
+                            "instanceName=SQLExpress14;databaseName=Mule;user=sa;password=test;",
+                        "sa",
+                        "test",
+                        "mule"
+                },
+        });
+    }
 
-        Connection conn = getConnection(agent);
-        Statement st = conn.createStatement();
-        ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM " + agent.table);
-        rs.next();
-        long records = rs.getLong(1);
-        agent.flush(createNotifications());
+    public String driver;
+    public String jdbcUrl;
+    public String user;
+    public String pass;
+    public String table;
 
-        ResultSet rs2 = st.executeQuery("SELECT COUNT(*) FROM " + agent.table);
-        rs2.next();
-        long records2 = rs2.getLong(1);
-
-        Assert.assertEquals(records + 10, records2);
-        rs.close();
-        st.close();
-        conn.close();
+    public DatabaseEventTrackingAgentTest(String driver, String jdbcUrl, String user, String pass, String table){
+        this.driver = driver;
+        this.jdbcUrl = jdbcUrl;
+        this.user = user;
+        this.pass = pass;
+        this.table = table;
     }
 
     @Test
-    public void CanUseSQLServerMSJtds()throws ClassNotFoundException, SQLException {
+    public void test() throws SQLException, ClassNotFoundException {
         DatabaseEventTrackingAgent agent = new DatabaseEventTrackingAgent();
-        agent.driver = "net.sourceforge.jtds.jdbc.Driver";
-        agent.jdbcUrl = "jdbc:jtds:sqlserver://EVA:1433/Mule;instance=SQLExpress14;" +
-                "databaseName=Mule;integratedSecurity=true;";
-        agent.user = "sa";
-        agent.pass = "test";
-        agent.table = "mule";
+        agent.driver = this.driver;
+        agent.jdbcUrl = this.jdbcUrl;
+        agent.user = this.user;
+        agent.pass = this.pass;
+        agent.table = this.table;
         agent.postConfigurable();
 
         Connection conn = getConnection(agent);
-        Statement st = conn.createStatement();
+        clearTable(conn, agent);
+        List<AgentTrackingNotification> notifications = createNotifications();
+        agent.flush(notifications);
+        long insertedRecords = countRecords(conn, agent);
+
+        Assert.assertEquals(notifications.size(), insertedRecords);
+        conn.close();
+    }
+
+    private long countRecords(Connection connection, DatabaseEventTrackingAgent agent) throws SQLException {
+        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM " + agent.table);
         rs.next();
-        long records = rs.getLong(1);
-        agent.flush(createNotifications());
-
-        ResultSet rs2 = st.executeQuery("SELECT COUNT(*) FROM " + agent.table);
-        rs2.next();
-        long records2 = rs2.getLong(1);
-
-        Assert.assertEquals(records + 10, records2);
+        long count = rs.getLong(1);
         rs.close();
         st.close();
-        conn.close();
+        return count;
+    }
+
+    private void clearTable(Connection connection, DatabaseEventTrackingAgent agent) throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("DELETE " + agent.table);
+        st.close();
     }
 
     private Connection getConnection(DatabaseEventTrackingAgent agent) throws ClassNotFoundException, SQLException {
