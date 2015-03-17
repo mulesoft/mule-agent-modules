@@ -17,10 +17,10 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Date;
 
-@Named("database.agent.eventtracking")
+@Named("mule.agent.tracking.handler.database")
 @Singleton
-public class DatabaseEventTrackingAgent extends BufferedHandler<AgentTrackingNotification> {
-    private final static Logger LOGGER = LoggerFactory.getLogger(DatabaseEventTrackingAgent.class);
+public class EventTrackingDBInternalHandler extends BufferedHandler<AgentTrackingNotification> {
+    private final static Logger LOGGER = LoggerFactory.getLogger(EventTrackingDBInternalHandler.class);
 
     @Configurable
     String driver;

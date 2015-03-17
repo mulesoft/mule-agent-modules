@@ -2,6 +2,7 @@ package com.mulesoft.agent.eventtracking;
 
 import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -14,7 +15,8 @@ import java.util.Collection;
 import java.util.List;
 
 @RunWith(Parameterized.class)
-public class DatabaseEventTrackingAgentTest{
+@Ignore
+public class EventTrackingDBInternalHandlerTest {
 
     @Parameterized.Parameters
     public static Collection<Object[]> data() {
@@ -65,7 +67,7 @@ public class DatabaseEventTrackingAgentTest{
     public String pass;
     public String table;
 
-    public DatabaseEventTrackingAgentTest(String driver, String jdbcUrl, String user, String pass, String table){
+    public EventTrackingDBInternalHandlerTest(String driver, String jdbcUrl, String user, String pass, String table){
         this.driver = driver;
         this.jdbcUrl = jdbcUrl;
         this.user = user;
@@ -75,7 +77,7 @@ public class DatabaseEventTrackingAgentTest{
 
     @Test
     public void test() throws SQLException, ClassNotFoundException {
-        DatabaseEventTrackingAgent agent = new DatabaseEventTrackingAgent();
+        EventTrackingDBInternalHandler agent = new EventTrackingDBInternalHandler();
         agent.driver = this.driver;
         agent.jdbcUrl = this.jdbcUrl;
         agent.user = this.user;
@@ -93,7 +95,7 @@ public class DatabaseEventTrackingAgentTest{
         conn.close();
     }
 
-    private long countRecords(Connection connection, DatabaseEventTrackingAgent agent) throws SQLException {
+    private long countRecords(Connection connection, EventTrackingDBInternalHandler agent) throws SQLException {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM " + agent.table);
         rs.next();
@@ -103,13 +105,13 @@ public class DatabaseEventTrackingAgentTest{
         return count;
     }
 
-    private void clearTable(Connection connection, DatabaseEventTrackingAgent agent) throws SQLException {
+    private void clearTable(Connection connection, EventTrackingDBInternalHandler agent) throws SQLException {
         Statement st = connection.createStatement();
         st.execute("DELETE FROM " + agent.table);
         st.close();
     }
 
-    private Connection getConnection(DatabaseEventTrackingAgent agent) throws ClassNotFoundException, SQLException {
+    private Connection getConnection(EventTrackingDBInternalHandler agent) throws ClassNotFoundException, SQLException {
         Class.forName(agent.driver);
         return DriverManager.getConnection(agent.jdbcUrl, agent.user, agent.pass);
     }
