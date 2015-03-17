@@ -67,9 +67,8 @@ public class DatabaseEventTrackingAgent extends BufferedHandler<AgentTrackingNot
         }
 
         try {
-            //DataSource unpooled = DataSources.unpooledDataSource(jdbcUrl,user,pass);
-            //pooledDataSource = DataSources.pooledDataSource( unpooled );
-            pooledDataSource  = DataSources.unpooledDataSource(jdbcUrl,user,pass);
+            DataSource unpooled = DataSources.unpooledDataSource(jdbcUrl,user,pass);
+            pooledDataSource = DataSources.pooledDataSource( unpooled );
         } catch (SQLException e) {
             LOGGER.error(String.format("There was an error on the connection to the DataBase. Please review your agent configuration."), e);
             isConfigured = false;

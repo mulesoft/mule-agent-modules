@@ -43,6 +43,7 @@
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>sqljdbc41</artifactId>
+            <version>4.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
