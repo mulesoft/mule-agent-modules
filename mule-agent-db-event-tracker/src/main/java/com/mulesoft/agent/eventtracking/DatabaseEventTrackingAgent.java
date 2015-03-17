@@ -39,21 +39,21 @@ public class DatabaseEventTrackingAgent extends BufferedHandler<AgentTrackingNot
 
     private DataSource pooledDataSource;
     private String insertStatement;
+    private boolean isConfigured;
 
     @Override
     public void postConfigurable(){
         super.postConfigurable();
-        LOGGER.trace("Starting the DatabaseEventTrackingAgent");
+        LOGGER.trace("Configuring the DatabaseEventTrackingAgent");
+        isConfigured = false;
 
         if(isNullOrWhiteSpace(driver)
                 ||isNullOrWhiteSpace(jdbcUrl)
                 ||isNullOrWhiteSpace(user)
                 ||isNullOrWhiteSpace(pass)){
-
             LOGGER.error("Please review the DatabaseEventTrackingAgent (database.agent.eventtracking) configuration; " +
                     "You must configure the following properties: driver, jdbcUrl, user and pass.");
-
-            setEnabled(false);
+            isConfigured = false;
             return;
         }
 
@@ -62,73 +62,72 @@ public class DatabaseEventTrackingAgent extends BufferedHandler<AgentTrackingNot
         } catch (ClassNotFoundException e) {
             LOGGER.error(String.format("The DatabaseEventTrackingAgent (database.agent.eventtracking) couldn't load the database driver '%s'. " +
                     "Did you copy the JAR driver to the {MULE_HOME}/plugins/mule-agent-plugin/lib?", driver), e);
-            setEnabled(false);
+            isConfigured = false;
             return;
         }
 
         try {
-            DataSource unpooled = DataSources.unpooledDataSource(jdbcUrl,user,pass);
-            pooledDataSource = DataSources.pooledDataSource( unpooled );
+            //DataSource unpooled = DataSources.unpooledDataSource(jdbcUrl,user,pass);
+            //pooledDataSource = DataSources.pooledDataSource( unpooled );
+            pooledDataSource  = DataSources.unpooledDataSource(jdbcUrl,user,pass);
         } catch (SQLException e) {
             LOGGER.error(String.format("There was an error on the connection to the DataBase. Please review your agent configuration."), e);
-            setEnabled(false);
+            isConfigured = false;
             return;
         }
 
         insertStatement = String.format("INSERT INTO %s (Action, Application, MuleMessage, MuleMessageId, NotificationType, Path, ResourceIdentifier, Timestamp, Source) " +
                 "VALUES (?,?,?,?,?,?,?,?,?)", table);
         LOGGER.trace("Insert SQL Statement: " + insertStatement);
+        isConfigured = true;
     }
 
     @Override
     protected boolean canHandle(AgentTrackingNotification message) {
-        return true;
+        return isConfigured;
     }
 
     @Override
     protected boolean flush(Collection<AgentTrackingNotification> messages) {
-        if(isEnabled()){
-            LOGGER.trace(String.format("Flushing %s notifications.", messages.size()));
+        LOGGER.trace(String.format("Flushing %s notifications.", messages.size()));
 
-            dump(messages);
-            Connection connection = null;
+        dump(messages);
+
+        Connection connection = null;
+        try{
+            connection = pooledDataSource.getConnection();
+            PreparedStatement statement = null;
             try{
-                connection = pooledDataSource.getConnection();
-                PreparedStatement statement = null;
-                try{
-                    statement = connection.prepareStatement(insertStatement);
-                    for(AgentTrackingNotification notification : messages){
-                        statement.setString(1, notification.getAction());
-                        statement.setString(2, notification.getApplication());
-                        statement.setString(3, notification.getMuleMessage());
-                        statement.setString(4, notification.getMuleMessageId());
-                        statement.setString(5, notification.getNotificationType());
-                        statement.setString(6, notification.getPath());
-                        statement.setString(7, notification.getResourceIdentifier());
-                        statement.setLong(8, notification.getTimestamp());
-                        statement.setString(9, notification.getSource());
-                        statement.addBatch();
-                    }
-
-                    statement.executeBatch();
-                } finally {
-                    if(statement != null) statement.close();
+                statement = connection.prepareStatement(insertStatement);
+                for(AgentTrackingNotification notification : messages){
+                    statement.setString(1, notification.getAction());
+                    statement.setString(2, notification.getApplication());
+                    statement.setString(3, notification.getMuleMessage());
+                    statement.setString(4, notification.getMuleMessageId());
+                    statement.setString(5, notification.getNotificationType());
+                    statement.setString(6, notification.getPath());
+                    statement.setString(7, notification.getResourceIdentifier());
+                    statement.setLong(8, notification.getTimestamp());
+                    statement.setString(9, notification.getSource());
+                    statement.addBatch();
                 }
 
-                return true;
-            } catch (SQLException e) {
-                LOGGER.warn("Couldn't insert the tracking notifications.",e);
-                return false;
+                statement.executeBatch();
             } finally {
-                if(connection != null) try {
-                    connection.close();
-                } catch (SQLException e) {
-                    LOGGER.error("Error closing the database.", e);
-                }
+                if(statement != null) statement.close();
+            }
+
+            return true;
+        } catch (SQLException e) {
+            LOGGER.warn("Couldn't insert the tracking notifications.",e);
+            return false;
+        } finally {
+            if(connection != null) try {
+                connection.close();
+            } catch (SQLException e) {
+                LOGGER.error("Error closing the database.", e);
             }
         }
-
-        return false;
     }
 
     public static boolean isNullOrWhiteSpace(String a) {
