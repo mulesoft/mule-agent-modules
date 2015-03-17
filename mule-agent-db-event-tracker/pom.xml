@@ -58,6 +58,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>9.1-901-1.jdbc4</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>c3p0</groupId>
             <artifactId>c3p0</artifactId>
             <version>0.9.1.2</version>

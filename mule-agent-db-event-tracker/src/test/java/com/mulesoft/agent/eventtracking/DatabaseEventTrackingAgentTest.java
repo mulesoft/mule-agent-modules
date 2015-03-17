@@ -42,6 +42,13 @@ public class DatabaseEventTrackingAgentTest{
                         "test",
                         "mule"
                 },
+                // PostgreSQL
+                {   "com.mysql.jdbc.Driver",
+                        "jdbc:postgresql://192.168.61.128:5432/Mule",
+                        "postgres",
+                        "test",
+                        "mule"
+                },
 
         });
     }
