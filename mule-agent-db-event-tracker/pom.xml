@@ -20,7 +20,7 @@
     </properties>
 
     <repositories>
-        <!-- Test Oracle Repository -->
+        <!-- Oracle Repository, used by integration tests -->
         <repository>
             <id>codelds</id>
             <url>https://code.lds.org/nexus/content/groups/main-repo</url>
@@ -86,40 +86,21 @@
     <profiles>
         <profile>
             <id>mysql</id>
-            <properties>
-                <driver>com.mysql.jdbc.Driver</driver>
-                <jdbcUrl>jdbc:mysql://192.168.61.128/mule</jdbcUrl>
-                <user>root</user>
-                <pass>test</pass>
-                <table>mule</table>
-            </properties>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <version>2.10</version>
-                        <executions>
-                            <execution>
-                                <id>mysql</id>
-                                <goals>
-                                    <goal>test</goal>
-                                </goals>
-                                <configuration>
-                                    <includes>
-                                        <include>**/EventTrackingDBInternalHandlerTest.java</include>
-                                    </includes>
-                                    <systemPropertyVariables>
-                                        <driver>com.mysql.jdbc.Driver</driver>
-                                        <jdbcUrl>jdbc:mysql://192.168.61.128/mule</jdbcUrl>
-                                        <user>root</user>
-                                        <pass>test</pass>
-                                        <table>mule</table>
-                                        <automation-connection-properties>mysql.properties</automation-connection-properties>
-                                    </systemPropertyVariables>
-                                </configuration>
-                            </execution>
-                        </executions>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <driver>com.mysql.jdbc.Driver</driver>
+                                <jdbcUrl>jdbc:mysql://192.168.61.128/mule</jdbcUrl>
+                                <user>root</user>
+                                <pass>test</pass>
+                                <table>mule</table>
+                            </systemPropertyVariables>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
@@ -132,22 +113,15 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <version>2.10</version>
-                        <executions>
-                            <execution>
-                                <id>postgresql</id>
-                                <goals>
-                                    <goal>test</goal>
-                                </goals>
-                                <configuration>
-                                    <includes>
-                                        <include>**/EventTrackingDBInternalHandlerTest.java</include>
-                                    </includes>
-                                    <systemPropertyVariables>
-                                        <automation-connection-properties>postgresql.properties</automation-connection-properties>
-                                    </systemPropertyVariables>
-                                </configuration>
-                            </execution>
-                        </executions>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <driver>org.postgresql.Driver</driver>
+                                <jdbcUrl>jdbc:postgresql://192.168.61.128:5432/Mule</jdbcUrl>
+                                <user>postgres</user>
+                                <pass>test</pass>
+                                <table>mule</table>
+                            </systemPropertyVariables>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
@@ -160,22 +134,15 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <version>2.10</version>
-                        <executions>
-                            <execution>
-                                <id>sql-server</id>
-                                <goals>
-                                    <goal>test</goal>
-                                </goals>
-                                <configuration>
-                                    <includes>
-                                        <include>**/EventTrackingDBInternalHandlerTest.java</include>
-                                    </includes>
-                                    <systemPropertyVariables>
-                                        <automation-connection-properties>sql-server.properties</automation-connection-properties>
-                                    </systemPropertyVariables>
-                                </configuration>
-                            </execution>
-                        </executions>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <driver>net.sourceforge.jtds.jdbc.Driver</driver>
+                                <jdbcUrl>jdbc:jtds:sqlserver://EVA:1433/Mule;instance=SQLExpress14;databaseName=Mule;integratedSecurity=true;</jdbcUrl>
+                                <user>sa</user>
+                                <pass>test</pass>
+                                <table>mule</table>
+                            </systemPropertyVariables>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
@@ -188,22 +155,15 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <version>2.10</version>
-                        <executions>
-                            <execution>
-                                <id>oracle</id>
-                                <goals>
-                                    <goal>test</goal>
-                                </goals>
-                                <configuration>
-                                    <includes>
-                                        <include>**/EventTrackingDBInternalHandlerTest.java</include>
-                                    </includes>
-                                    <systemPropertyVariables>
-                                        <automation-connection-properties>oracle.properties</automation-connection-properties>
-                                    </systemPropertyVariables>
-                                </configuration>
-                            </execution>
-                        </executions>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <driver>oracle.jdbc.driver.OracleDriver</driver>
+                                <jdbcUrl>jdbc:oracle:thin:@192.168.61.128:1521:xe</jdbcUrl>
+                                <user>mule</user>
+                                <pass>test</pass>
+                                <table>mule</table>
+                            </systemPropertyVariables>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
