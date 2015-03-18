@@ -1,21 +1,18 @@
 package com.mulesoft.agent.eventtracking;
 
-import com.mchange.v2.c3p0.DataSources;
 import com.mulesoft.agent.buffer.BufferedHandler;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
+import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
-import javax.sql.DataSource;
-import java.lang.annotation.Annotation;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Date;
 
 @Named("mule.agent.tracking.handler.database")
 @Singleton
@@ -37,7 +34,7 @@ public class EventTrackingDBInternalHandler extends BufferedHandler<AgentTrackin
     @Configurable("MULE_EVENTS")
     String table;
 
-    private DataSource pooledDataSource;
+    private HikariDataSource pooledDataSource;
     private String insertStatement;
     private boolean isConfigured;
 
@@ -67,8 +64,15 @@ public class EventTrackingDBInternalHandler extends BufferedHandler<AgentTrackin
         }
 
         try {
-            DataSource unpooled = DataSources.unpooledDataSource(jdbcUrl,user,pass);
-            pooledDataSource = DataSources.pooledDataSource( unpooled );
+            pooledDataSource = new HikariDataSource();
+            pooledDataSource.setJdbcUrl(this.jdbcUrl);
+            pooledDataSource.setUsername(this.user);
+            pooledDataSource.setPassword(this.pass);
+            // A SQL statement which a false WHERE clause to run fast.
+            pooledDataSource.setConnectionTestQuery("SELECT * FROM " + this.table + " WHERE 1=0");
+            LOGGER.info("Testing database connection...");
+            pooledDataSource.getConnection().close();
+            LOGGER.info("Database connection OK!.");
         } catch (SQLException e) {
             LOGGER.error(String.format("There was an error on the connection to the DataBase. Please review your agent configuration."), e);
             isConfigured = false;
@@ -90,8 +94,6 @@ public class EventTrackingDBInternalHandler extends BufferedHandler<AgentTrackin
     protected boolean flush(Collection<AgentTrackingNotification> messages) {
         LOGGER.trace(String.format("Flushing %s notifications.", messages.size()));
 
-        dump(messages);
-
         Connection connection = null;
         try{
             connection = pooledDataSource.getConnection();
@@ -99,6 +101,8 @@ public class EventTrackingDBInternalHandler extends BufferedHandler<AgentTrackin
             try{
                 statement = connection.prepareStatement(insertStatement);
                 for(AgentTrackingNotification notification : messages){
+                    LOGGER.trace("Flushing Notification: " + notification);
+
                     statement.setString(1, notification.getAction());
                     statement.setString(2, notification.getApplication());
                     statement.setString(3, notification.getMuleMessage());
@@ -118,7 +122,7 @@ public class EventTrackingDBInternalHandler extends BufferedHandler<AgentTrackin
 
             return true;
         } catch (SQLException e) {
-            LOGGER.warn("Couldn't insert the tracking notifications.",e);
+            LOGGER.error("Couldn't insert the tracking notifications.",e);
             return false;
         } finally {
             if(connection != null) try {
@@ -131,26 +135,5 @@ public class EventTrackingDBInternalHandler extends BufferedHandler<AgentTrackin
 
     public static boolean isNullOrWhiteSpace(String a) {
         return a == null || (a.length() > 0 && a.trim().length() <= 0);
-    }
-
-    private void dump(Collection<AgentTrackingNotification> notifications){
-            for (AgentTrackingNotification notification : notifications){
-                LOGGER.info("Action: " + notification.getAction());
-                LOGGER.info("Date: " + new Date());
-                LOGGER.info("Action: " + notification.getAction());
-                LOGGER.info("Application: " + notification.getApplication());
-                LOGGER.info("MuleMessage: " + notification.getMuleMessage());
-                LOGGER.info("MuleMessageId: " + notification.getMuleMessageId());
-                LOGGER.info("NotificationType: " + notification.getNotificationType());
-                LOGGER.info("Path: " + notification.getPath());
-                LOGGER.info("ResourceIdentifier: " + notification.getResourceIdentifier());
-                LOGGER.info("Timestamp: " + notification.getTimestamp());
-                LOGGER.info("Source: " + notification.getSource());
-                for(Annotation annotation : notification.getAnnotations()){
-                    LOGGER.info("\tAnnotationType: " + annotation.annotationType());
-                    LOGGER.info("\tClass: " + annotation.getClass());
-                }
-                LOGGER.info("--------------------------------------------------------");
-            }
     }
 }

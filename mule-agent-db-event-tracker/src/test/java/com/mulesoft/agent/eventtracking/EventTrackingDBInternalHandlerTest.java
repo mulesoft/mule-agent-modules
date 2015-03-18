@@ -15,7 +15,7 @@ import java.util.Collection;
 import java.util.List;
 
 @RunWith(Parameterized.class)
-@Ignore
+//@Ignore
 public class EventTrackingDBInternalHandlerTest {
 
     @Parameterized.Parameters
