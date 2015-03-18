@@ -14,67 +14,16 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-@RunWith(Parameterized.class)
-//@Ignore
 public class EventTrackingDBInternalHandlerTest {
-
-    @Parameterized.Parameters
-    public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][]{
-                // SQL Server - jTDS Driver
-                {   "net.sourceforge.jtds.jdbc.Driver",
-                    "jdbc:jtds:sqlserver://EVA:1433/Mule;instance=SQLExpress14;" +
-                        "databaseName=Mule;integratedSecurity=true;",
-                        "sa",
-                        "test",
-                        "mule"
-                },
-                // MySQL
-                {   "com.mysql.jdbc.Driver",
-                        "jdbc:mysql://192.168.61.128/mule",
-                        "root",
-                        "test",
-                        "mule"
-                },
-                // PostgreSQL
-                {   "com.mysql.jdbc.Driver",
-                        "jdbc:postgresql://192.168.61.128:5432/Mule",
-                        "postgres",
-                        "test",
-                        "mule"
-                },
-                // Oracle
-                {   "oracle.jdbc.driver.OracleDriver",
-                        "jdbc:oracle:thin:@192.168.61.128:1521:xe",
-                        "mule",
-                        "test",
-                        "mule"
-                },
-        });
-    }
-
-    public String driver;
-    public String jdbcUrl;
-    public String user;
-    public String pass;
-    public String table;
-
-    public EventTrackingDBInternalHandlerTest(String driver, String jdbcUrl, String user, String pass, String table){
-        this.driver = driver;
-        this.jdbcUrl = jdbcUrl;
-        this.user = user;
-        this.pass = pass;
-        this.table = table;
-    }
 
     @Test
     public void test() throws SQLException, ClassNotFoundException {
         EventTrackingDBInternalHandler agent = new EventTrackingDBInternalHandler();
-        agent.driver = this.driver;
-        agent.jdbcUrl = this.jdbcUrl;
-        agent.user = this.user;
-        agent.pass = this.pass;
-        agent.table = this.table;
+        agent.driver = System.getProperty("driver");
+        agent.jdbcUrl = System.getProperty("jdbcUrl");
+        agent.user = System.getProperty("user");
+        agent.pass = System.getProperty("pass");
+        agent.table = System.getProperty("table");
         agent.postConfigurable();
 
         Connection conn = getConnection(agent);
