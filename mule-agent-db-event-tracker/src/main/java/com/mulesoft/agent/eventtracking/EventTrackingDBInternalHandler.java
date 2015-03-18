@@ -3,13 +3,13 @@ package com.mulesoft.agent.eventtracking;
 import com.mulesoft.agent.buffer.BufferedHandler;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
-import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -34,7 +34,6 @@ public class EventTrackingDBInternalHandler extends BufferedHandler<AgentTrackin
     @Configurable("MULE_EVENTS")
     String table;
 
-    private HikariDataSource pooledDataSource;
     private String insertStatement;
     private boolean isConfigured;
 
@@ -64,14 +63,8 @@ public class EventTrackingDBInternalHandler extends BufferedHandler<AgentTrackin
         }
 
         try {
-            pooledDataSource = new HikariDataSource();
-            pooledDataSource.setJdbcUrl(this.jdbcUrl);
-            pooledDataSource.setUsername(this.user);
-            pooledDataSource.setPassword(this.pass);
-            // A SQL statement which a false WHERE clause to run fast.
-            pooledDataSource.setConnectionTestQuery("SELECT * FROM " + this.table + " WHERE 1=0");
             LOGGER.info("Testing database connection...");
-            pooledDataSource.getConnection().close();
+            DriverManager.getConnection(this.jdbcUrl, this.user, this.pass).close();
             LOGGER.info("Database connection OK!.");
         } catch (SQLException e) {
             LOGGER.error(String.format("There was an error on the connection to the DataBase. Please review your agent configuration."), e);
@@ -96,7 +89,7 @@ public class EventTrackingDBInternalHandler extends BufferedHandler<AgentTrackin
 
         Connection connection = null;
         try{
-            connection = pooledDataSource.getConnection();
+            connection = DriverManager.getConnection(this.jdbcUrl, this.user, this.pass);
             PreparedStatement statement = null;
             try{
                 statement = connection.prepareStatement(insertStatement);

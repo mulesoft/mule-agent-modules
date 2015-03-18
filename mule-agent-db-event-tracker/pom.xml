@@ -39,12 +39,6 @@
             <version>${slfj4.version}</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP-java6</artifactId>
-            <version>2.3.2</version>
-            <scope>compile</scope>
-        </dependency>
 
         <!-- Test Dependencies -->
         <dependency>
@@ -91,25 +85,6 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>2.3</version>
-                <configuration>
-                    <!-- custom shade configuration -->
-                    <artifactSet>
-                        <includes>
-                            <include>com.zaxxer:HikariCP-java6</include>
-                        </includes>
-                    </artifactSet>
-                    <relocations>
-                        <relocation>
-                            <pattern>org.some.library</pattern>
-                            <shadedPattern>org.some.library.new.pakage.name.shade</shadedPattern>
-                        </relocation>
-                    </relocations>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
