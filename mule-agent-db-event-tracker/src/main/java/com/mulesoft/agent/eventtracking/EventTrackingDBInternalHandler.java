@@ -14,23 +14,55 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collection;
 
+/**
+ * <p>
+ * The DB Internal handler will store all
+ * the Event Notifications produced from the Mule ESB flows in a configurable database.
+ * </p>
+ */
+
 @Named("mule.agent.tracking.handler.database")
 @Singleton
 public class EventTrackingDBInternalHandler extends BufferedHandler<AgentTrackingNotification> {
     private final static Logger LOGGER = LoggerFactory.getLogger(EventTrackingDBInternalHandler.class);
 
+    /**
+     * <p>
+     * JDBC driver to use to communicate with the database server.
+     * </p>
+     */
     @Configurable
     String driver;
 
+    /**
+     * <p>
+     * JDBC URL to connect to the database server.
+     * </p>
+     */
     @Configurable
     String jdbcUrl;
 
+    /**
+     * <p>
+     * Username in the database server.
+     * </p>
+     */
     @Configurable("")
     String user;
 
+    /**
+     * <p>
+     * Password for the database user.
+     * </p>
+     */
     @Configurable("")
     String pass;
 
+    /**
+     * <p>
+     * Table name in which the Mule agent will store the events.
+     * </p>
+     */
     @Configurable("MULE_EVENTS")
     String table;
 
