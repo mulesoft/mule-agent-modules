@@ -3,13 +3,13 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>mule-agent-modules</artifactId>
+        <artifactId>mule-agent-eventtracking-internalhandlers</artifactId>
         <groupId>com.mulesoft.agent</groupId>
         <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>mule-agent-db-eventtracking</artifactId>
+    <artifactId>mule-agent-db-event-tracker</artifactId>
     <packaging>jar</packaging>
 
     <name>Mule Agent :: Modules :: Event Tracking :: DB</name>
@@ -84,6 +84,15 @@
     </dependencies>
 
     <profiles>
+        <profile>
+            <id>no-test</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <maven.test.skip>true</maven.test.skip>
+            </properties>
+        </profile>
         <profile>
             <id>mysql</id>
             <build>
