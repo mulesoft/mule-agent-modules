@@ -25,10 +25,10 @@ public class EventTrackingDBInternalHandler extends BufferedHandler<AgentTrackin
     @Configurable
     String jdbcUrl;
 
-    @Configurable
+    @Configurable("")
     String user;
 
-    @Configurable
+    @Configurable("")
     String pass;
 
     @Configurable("MULE_EVENTS")
@@ -44,11 +44,9 @@ public class EventTrackingDBInternalHandler extends BufferedHandler<AgentTrackin
         isConfigured = false;
 
         if(isNullOrWhiteSpace(driver)
-                ||isNullOrWhiteSpace(jdbcUrl)
-                ||isNullOrWhiteSpace(user)
-                ||isNullOrWhiteSpace(pass)){
+                ||isNullOrWhiteSpace(jdbcUrl)){
             LOGGER.error("Please review the DatabaseEventTrackingAgent (database.agent.eventtracking) configuration; " +
-                    "You must configure the following properties: driver, jdbcUrl, user and pass.");
+                    "You must configure the following properties: driver and jdbcUrl.");
             isConfigured = false;
             return;
         }
