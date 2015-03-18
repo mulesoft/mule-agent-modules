@@ -29,14 +29,6 @@ public class EventTrackingDBInternalHandlerTest {
                         "test",
                         "mule"
                 },
-                // SQL Server - MS SQL Server
-                {   "com.microsoft.sqlserver.jdbc.SQLServerDriver",
-                        "jdbc:sqlserver://localhost;" +
-                            "instanceName=SQLExpress14;databaseName=Mule;user=sa;password=test;",
-                        "sa",
-                        "test",
-                        "mule"
-                },
                 // MySQL
                 {   "com.mysql.jdbc.Driver",
                         "jdbc:mysql://192.168.61.128/mule",
