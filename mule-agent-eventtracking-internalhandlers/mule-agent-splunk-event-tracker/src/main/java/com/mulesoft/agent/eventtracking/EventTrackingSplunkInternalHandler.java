@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Collection;
 
 @Named("mule.agent.tracking.handler.splunk")
@@ -53,21 +55,43 @@ public class EventTrackingSplunkInternalHandler extends BufferedHandler<AgentTra
         if(index == null){
             index = service.getIndexes().create(this.indexName);
         }
+
+        // DEBUG
+        IndexCollectionArgs indexcollArgs = new IndexCollectionArgs();
+        indexcollArgs.setSortKey("totalEventCount");
+        indexcollArgs.setSortDirection(IndexCollectionArgs.SortDirection.DESC);
+        IndexCollection myIndexes = service.getIndexes(indexcollArgs);
+
+        // List the indexes and their event counts
+        System.out.println("There are " + myIndexes.size() + " indexes:\n");
+        for (Index entity: myIndexes.values()) {
+            System.out.println("  " + entity.getName() + " (events: "
+                    + entity.getTotalEventCount() + ")");
+        }
     }
 
     @Override
     protected boolean canHandle(AgentTrackingNotification message) {
-        return false;
+        return true;
     }
 
     @Override
-    protected boolean flush(Collection<AgentTrackingNotification> messages) {
-        for (AgentTrackingNotification notification : messages){
-            Args args = new Args();
-            args.put("sourcetype", "mule-events");
-            args.put("host", "laptop");
-            index.submit(args, notification.toString());
+    protected boolean flush(final Collection<AgentTrackingNotification> messages) {
+        LOGGER.trace(String.format("Flushing %s notifications.", messages.size()));
+        try {
+            index.attachWith(new ReceiverBehavior() {
+                @Override
+                public void run(OutputStream stream) throws IOException {
+                    for (AgentTrackingNotification notification : messages){
+                        LOGGER.trace("Flushing Notification: " + notification);
+                        stream.write((notification.toString()+"\r\n").getBytes("UTF8"));
+                    }
+                }
+            });
+            return true;
+        } catch (IOException e) {
+            LOGGER.error("There was an error sending the notifications to the Splunk instance.", e);
+            return false;
         }
-        return false;
     }
 }
