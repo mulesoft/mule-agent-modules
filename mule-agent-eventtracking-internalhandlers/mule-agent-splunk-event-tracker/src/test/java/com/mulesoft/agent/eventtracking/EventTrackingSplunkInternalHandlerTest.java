@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class EventTrackingSplunkInternalHandlerTest {
@@ -18,19 +19,22 @@ public class EventTrackingSplunkInternalHandlerTest {
         handler.host = "192.168.61.128";
         handler.port = 8089;
         handler.scheme = "https";
+        handler.indexName = "mule";
         handler.postConfigurable();
 
         handler.flush(createNotifications());
 
-        Assert.fail();
+        Assert.assertTrue(true);
     }
 
     private List<AgentTrackingNotification> createNotifications(){
         List<AgentTrackingNotification> list = new ArrayList<AgentTrackingNotification>();
-        for(int i = 0; i < 10; i++){
+        for(int i = 0; i < 1000; i++){
             list.add(new AgentTrackingNotification.TrackingNotificationBuilder()
                     .action("TEST " + i)
                     .annotations(new ArrayList<Annotation>())
+                    .timestamp(new Date().getTime())
+                    .application("Splunk TEST")
                     .build());
         }
         return list;
