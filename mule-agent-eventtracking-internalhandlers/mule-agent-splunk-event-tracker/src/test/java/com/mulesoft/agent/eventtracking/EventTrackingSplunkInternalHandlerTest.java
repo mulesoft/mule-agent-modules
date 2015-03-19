@@ -20,7 +20,9 @@ public class EventTrackingSplunkInternalHandlerTest {
         handler.host = "192.168.61.128";
         handler.port = 8089;
         handler.scheme = "https";
-        handler.indexName = "main";
+        handler.splunkIndexName = "main";
+        handler.splunkSource = "test";
+        handler.splunkSourceType = "mule-test";
         handler.postConfigurable();
 
         boolean success = handler.flush(createNotifications());

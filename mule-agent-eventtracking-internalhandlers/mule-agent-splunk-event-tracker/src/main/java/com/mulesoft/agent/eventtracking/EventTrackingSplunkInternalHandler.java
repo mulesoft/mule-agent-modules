@@ -3,6 +3,7 @@ package com.mulesoft.agent.eventtracking;
 import com.mulesoft.agent.buffer.BufferedHandler;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.PostConfigure;
+import com.mulesoft.agent.configuration.Type;
 import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
 import com.splunk.*;
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.Socket;
 import java.util.Collection;
 
 @Named("mule.agent.tracking.handler.splunk")
@@ -19,23 +21,30 @@ import java.util.Collection;
 public class EventTrackingSplunkInternalHandler extends BufferedHandler<AgentTrackingNotification> {
     private final static Logger LOGGER = LoggerFactory.getLogger(EventTrackingSplunkInternalHandler.class);
 
-    @Configurable
+    @Configurable(type = Type.DYNAMIC)
     String user;
 
-    @Configurable
+    @Configurable(type = Type.DYNAMIC)
     String pass;
 
-    @Configurable
+    @Configurable(type = Type.DYNAMIC)
     String host;
 
-    @Configurable("8089")
+    @Configurable(value = "8089", type = Type.DYNAMIC)
     int port;
 
-    @Configurable("https")
+    @Configurable(value="https",type = Type.DYNAMIC)
     String scheme;
 
-    @Configurable("mule")
-    String indexName;
+    @Configurable(value="main",type = Type.DYNAMIC)
+    String splunkIndexName;
+
+    @Configurable(value="mule",type = Type.DYNAMIC)
+    String splunkSource;
+
+    @Configurable(value="mule-eventtracking",type = Type.DYNAMIC)
+    String splunkSourceType;
+
 
     private Service service;
     private Index index;
@@ -51,22 +60,9 @@ public class EventTrackingSplunkInternalHandler extends BufferedHandler<AgentTra
         loginArgs.setScheme(this.scheme);
 
         service = Service.connect(loginArgs);
-        index = service.getIndexes().get(this.indexName);
+        index = service.getIndexes().get(this.splunkIndexName);
         if(index == null){
-            index = service.getIndexes().create(this.indexName);
-        }
-
-        // DEBUG
-        IndexCollectionArgs indexcollArgs = new IndexCollectionArgs();
-        indexcollArgs.setSortKey("totalEventCount");
-        indexcollArgs.setSortDirection(IndexCollectionArgs.SortDirection.DESC);
-        IndexCollection myIndexes = service.getIndexes(indexcollArgs);
-
-        // List the indexes and their event counts
-        System.out.println("There are " + myIndexes.size() + " indexes:\n");
-        for (Index entity: myIndexes.values()) {
-            System.out.println("  " + entity.getName() + " (events: "
-                    + entity.getTotalEventCount() + ")");
+            index = service.getIndexes().create(this.splunkIndexName);
         }
     }
 
@@ -78,17 +74,34 @@ public class EventTrackingSplunkInternalHandler extends BufferedHandler<AgentTra
     @Override
     protected boolean flush(final Collection<AgentTrackingNotification> messages) {
         LOGGER.trace(String.format("Flushing %s notifications.", messages.size()));
+
         try {
-            index.attachWith(new ReceiverBehavior() {
-                @Override
-                public void run(OutputStream stream) throws IOException {
-                    for (AgentTrackingNotification notification : messages){
-                        LOGGER.trace("Flushing Notification: " + notification);
-                        stream.write((notification.toString()+"\r\n").getBytes("UTF8"));
-                    }
+
+            /**
+             * http://dev.splunk.com/view/java-sdk/SP-CAAAEJ2#add2index
+             * Says to use the attachWith() method, but it didn't accept parameters
+             * in order to specify the sourcetype, host, etc...
+             * That's why we use the common attach() method.
+             */
+            Socket socket = null;
+            OutputStream output = null;
+            try {
+                Args args = new Args();
+                //args.put("host","test");
+                args.put("source",this.splunkSource);
+                args.put("sourcetype",this.splunkSourceType);
+                socket = index.attach(args);
+                output = socket.getOutputStream();
+                for (AgentTrackingNotification notification : messages) {
+                    LOGGER.trace("Flushing Notification: " + notification);
+                    output.write((notification.toString()+"\r\n").getBytes("UTF8"));
                 }
-            });
-            return true;
+                output.flush();
+                return true;
+            } finally {
+                if (output != null) { output.close(); }
+                if (socket != null) { socket.close(); }
+            }
         } catch (IOException e) {
             LOGGER.error("There was an error sending the notifications to the Splunk instance.", e);
             return false;
