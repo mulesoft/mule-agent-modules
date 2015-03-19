@@ -14,6 +14,7 @@
     <url>http://maven.apache.org</url>
     <modules>
         <module>mule-agent-db-event-tracker</module>
+        <module>mule-agent-splunk-event-tracker</module>
     </modules>
 
     <properties>
