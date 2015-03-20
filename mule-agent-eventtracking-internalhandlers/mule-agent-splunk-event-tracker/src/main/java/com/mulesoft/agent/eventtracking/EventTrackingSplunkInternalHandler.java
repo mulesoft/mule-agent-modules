@@ -52,6 +52,8 @@ public class EventTrackingSplunkInternalHandler extends BufferedHandler<AgentTra
 
     @PostConfigure
     public void postConfigurable(){
+        super.postConfigurable();
+
         ServiceArgs loginArgs = new ServiceArgs();
         loginArgs.setUsername(this.user);
         loginArgs.setPassword(this.pass);
