@@ -17,12 +17,12 @@ public class EventTrackingSplunkInternalHandlerTest {
         EventTrackingSplunkInternalHandler handler = new EventTrackingSplunkInternalHandler();
         handler.user = "admin";
         handler.pass = "test";
-        handler.host = "192.168.61.128";
+        handler.host = "192.168.61.130";
         handler.port = 8089;
         handler.scheme = "https";
         handler.splunkIndexName = "main";
-        handler.splunkSource = "test";
-        handler.splunkSourceType = "mule-test";
+        handler.splunkSource = "mule-test";
+        handler.splunkSourceType = "_json";
         handler.postConfigurable();
 
         boolean success = handler.flush(createNotifications());
@@ -36,7 +36,7 @@ public class EventTrackingSplunkInternalHandlerTest {
                     .action("TEST " + i)
                     .annotations(new ArrayList<Annotation>())
                     .timestamp(new Date().getTime())
-                    .application("Splunk TEST")
+                    .application("SplunkTEST")
                     .build());
         }
         return list;

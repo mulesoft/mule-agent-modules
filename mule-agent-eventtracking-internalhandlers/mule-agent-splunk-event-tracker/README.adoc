@@ -1,0 +1,18 @@
+= Splunk Internal Handler
+
+The Splunk Internal handler will store all the Event Notifications produced from the
+Mule ESB flows in a Splunk instance.
+
+= Configuration
+
+== Splunk
+
+You should create a custom eventSourceType on yout Splunk instance. You could do this
+in a global way, or per application.
+You should add to your props.conf file:
+
+[source]
+....
+[mule-evt-json]
+KV_MODE = json
+....

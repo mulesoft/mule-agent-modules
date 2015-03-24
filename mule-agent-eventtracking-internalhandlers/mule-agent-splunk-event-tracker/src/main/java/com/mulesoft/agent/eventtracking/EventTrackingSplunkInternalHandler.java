@@ -14,7 +14,9 @@ import javax.inject.Singleton;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 
 @Named("mule.agent.tracking.handler.splunk")
 @Singleton
@@ -42,7 +44,7 @@ public class EventTrackingSplunkInternalHandler extends BufferedHandler<AgentTra
     @Configurable(value="mule",type = Type.DYNAMIC)
     String splunkSource;
 
-    @Configurable(value="mule-eventtracking",type = Type.DYNAMIC)
+    @Configurable(value="_json",type = Type.DYNAMIC)
     String splunkSourceType;
 
 
@@ -96,7 +98,7 @@ public class EventTrackingSplunkInternalHandler extends BufferedHandler<AgentTra
                 output = socket.getOutputStream();
                 for (AgentTrackingNotification notification : messages) {
                     LOGGER.trace("Flushing Notification: " + notification);
-                    output.write((notification.toString()+"\r\n").getBytes("UTF8"));
+                    output.write((toString(notification)).getBytes("UTF8"));
                 }
                 output.flush();
                 return true;
@@ -108,5 +110,22 @@ public class EventTrackingSplunkInternalHandler extends BufferedHandler<AgentTra
             LOGGER.error("There was an error sending the notifications to the Splunk instance.", e);
             return false;
         }
+    }
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+
+    private String toString(AgentTrackingNotification notification){
+            return "{ " +
+                    "\"timestamp\": \"" + dateFormat.format(new Date(notification.getTimestamp())) + "\", " +
+                    "\"application\": \"" + notification.getApplication()+ "\", " +
+                    "\"notificationType\": \"" + notification.getNotificationType() + "\", " +
+                    "\"action\": \"" + notification.getAction() + "\", " +
+                    "\"resourceIdentifier\": \"" + notification.getResourceIdentifier() + "\", " +
+                    "\"source\": \"" + notification.getSource() + "\", " +
+                    "\"muleMessage\": \"" + notification.getMuleMessage() + "\", " +
+                    "\"path\": \"" + notification.getPath() + "\", " +
+                    "\"annotations\": \"" + notification.getAnnotations().size() + "\", " +
+                    "\"muleMessageId\": \"" + notification.getMuleMessageId() + "\"" +
+                    " }\r\n";
+
     }
 }
