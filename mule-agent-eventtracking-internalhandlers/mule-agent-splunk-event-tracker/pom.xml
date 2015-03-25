@@ -89,4 +89,39 @@
         </plugins>
     </build>
 
+    <profiles>
+        <profile>
+            <id>no-test</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <maven.test.skip>true</maven.test.skip>
+            </properties>
+        </profile>
+        <profile>
+            <id>splunk-vm</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>2.10</version>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <user>admin</user>
+                                <pass>test</pass>
+                                <host>192.168.61.130</host>
+                                <port>8089</port>
+                                <scheme>https</scheme>
+                                <splunkIndexName>main</splunkIndexName>
+                                <splunkSource>mule-test</splunkSource>
+                                <splunkSourceType>_json</splunkSourceType>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

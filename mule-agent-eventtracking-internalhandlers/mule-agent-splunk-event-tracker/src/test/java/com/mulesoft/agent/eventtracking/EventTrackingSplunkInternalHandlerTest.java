@@ -15,14 +15,14 @@ public class EventTrackingSplunkInternalHandlerTest {
     @Test
     public void test() throws IOException {
         EventTrackingSplunkInternalHandler handler = new EventTrackingSplunkInternalHandler();
-        handler.user = "admin";
-        handler.pass = "test";
-        handler.host = "192.168.61.130";
-        handler.port = 8089;
-        handler.scheme = "https";
-        handler.splunkIndexName = "main";
-        handler.splunkSource = "mule-test";
-        handler.splunkSourceType = "_json";
+        handler.user = System.getProperty("user");
+        handler.pass = System.getProperty("pass");
+        handler.host = System.getProperty("host");
+        handler.port = Integer.parseInt(System.getProperty("port"));
+        handler.scheme = System.getProperty("scheme");
+        handler.splunkIndexName = System.getProperty("splunkIndexName");
+        handler.splunkSource = System.getProperty("splunkSource");
+        handler.splunkSourceType = System.getProperty("splunkSourceType");
         handler.postConfigurable();
 
         boolean success = handler.flush(createNotifications());

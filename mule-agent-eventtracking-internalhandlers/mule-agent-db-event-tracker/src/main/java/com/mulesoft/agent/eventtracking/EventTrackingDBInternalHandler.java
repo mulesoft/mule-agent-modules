@@ -77,7 +77,7 @@ public class EventTrackingDBInternalHandler extends BufferedHandler<AgentTrackin
 
         if(isNullOrWhiteSpace(driver)
                 ||isNullOrWhiteSpace(jdbcUrl)){
-            LOGGER.error("Please review the DatabaseEventTrackingAgent (database.agent.eventtracking) configuration; " +
+            LOGGER.error("Please review the DatabaseEventTrackingAgent (mule.agent.tracking.handler.database) configuration; " +
                     "You must configure the following properties: driver and jdbcUrl.");
             isConfigured = false;
             return;
