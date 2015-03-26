@@ -3,23 +3,25 @@
     <parent>
         <artifactId>mule-agent-common</artifactId>
         <groupId>com.mulesoft.agent</groupId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>mule-agent-modules</artifactId>
     <packaging>pom</packaging>
+    <version>1.0.0-SNAPSHOT</version>
 
     <name>Mule Agent :: Modules</name>
     <url>http://maven.apache.org</url>
 
     <modules>
         <module>mule-agent-monitoring-publishers</module>
+        <module>mule-agent-eventtracking-internalhandlers</module>
     </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <mule.agent.api.version>1.0.0-SNAPSHOT</mule.agent.api.version>
+        <mule.agent.api.version>1.0.0</mule.agent.api.version>
         <aws.sdk.version>1.6.0</aws.sdk.version>
         <joda.time.version>1.6</joda.time.version>
         <log4j.version>1.2.16</log4j.version>
@@ -52,6 +54,15 @@
         </plugins>
     </build>
 
+	<repositories>
+	   <repository>
+		 <id>private</id>
+		 <name>Private</name>
+		 <url>https://repository-master.mulesoft.org/nexus/content/groups/private</url>
+		 <layout>default</layout>
+	   </repository>
+	</repositories>
+	
     <dependencyManagement>
         <dependencies>
             <dependency>
