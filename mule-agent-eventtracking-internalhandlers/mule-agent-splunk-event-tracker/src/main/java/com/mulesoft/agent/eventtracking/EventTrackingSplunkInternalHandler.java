@@ -1,5 +1,9 @@
 package com.mulesoft.agent.eventtracking;
 
+import com.github.mustachejava.DefaultMustacheFactory;
+import com.github.mustachejava.Mustache;
+import com.github.mustachejava.MustacheFactory;
+import com.github.mustachejava.TemplateFunction;
 import com.mulesoft.agent.buffer.BufferedHandler;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.PostConfigure;
@@ -12,20 +16,26 @@ import com.splunk.ServiceArgs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.StringReader;
 import java.net.Socket;
+import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 
 @Named("mule.agent.tracking.handler.splunk")
 @Singleton
 public class EventTrackingSplunkInternalHandler extends BufferedHandler<AgentTrackingNotification>
 {
     private final static Logger LOGGER = LoggerFactory.getLogger(EventTrackingSplunkInternalHandler.class);
+    private final static MustacheFactory mustacheFactory = new DefaultMustacheFactory();
+    private final static TemplateFunction dateFormatter = new DateFormatterTemplateFunction();
 
     @Configurable(type = Type.DYNAMIC)
     String user;
@@ -51,9 +61,20 @@ public class EventTrackingSplunkInternalHandler extends BufferedHandler<AgentTra
     @Configurable(value = "_json", type = Type.DYNAMIC)
     String splunkSourceType;
 
-    @Inject
-    InternalHandlerSerializer<String> serializer;
+    @Configurable(value = "{" +
+            "\"timestamp\": \"{{#dateFormatter}}{{notification.timestamp}}{{/dateFormatter}}\"," +
+            "\"application\": \"{{notification.application}}\"," +
+            "\"notificationType\": \"{{notification.notificationType}}\"," +
+            "\"muleMessage\": \"{{notification.muleMessage}}\"," +
+            "\"action\": \"{{notification.action}}\"," +
+            "\"resourceIdentifier\": \"{{notification.resourceIdentifier}}\"," +
+            "\"source\": \"{{notification.source}}\",\n" +
+            "\"path\": \"{{notification.path}}\",\n" +
+            "\"muleMessageId\": \"{{notification.muleMessageId}}\"\n" +
+            "}", type = Type.DYNAMIC)
+    String eventTemplate;
 
+    private Mustache template;
     private Service service;
     private Index index;
     private boolean isConfigured;
@@ -65,7 +86,6 @@ public class EventTrackingSplunkInternalHandler extends BufferedHandler<AgentTra
     private final int TOKEN_EXPIRATION_MINUTES = 60;
     private Date lastConnection;
 
-
     @PostConfigure
     public void postConfigurable ()
     {
@@ -74,23 +94,18 @@ public class EventTrackingSplunkInternalHandler extends BufferedHandler<AgentTra
         isConfigured = false;
 
         if (isNullOrWhiteSpace(this.host)
-                || this.port > 0
                 || isNullOrWhiteSpace(this.user)
                 || isNullOrWhiteSpace(this.pass)
                 || isNullOrWhiteSpace(this.scheme)
                 || isNullOrWhiteSpace(this.splunkIndexName)
                 || isNullOrWhiteSpace(this.splunkSource)
-                || isNullOrWhiteSpace(this.splunkSourceType))
+                || isNullOrWhiteSpace(this.splunkSourceType)
+                || isNullOrWhiteSpace(this.eventTemplate))
         {
             LOGGER.error("Please review the EventTrackingSplunkInternalHandler (mule.agent.tracking.handler.splunk) configuration; " +
-                    "You must configure the following properties: user, pass and host.");
+                    "You must configure at least the following properties: user, pass and host.");
             isConfigured = false;
             return;
-        }
-
-        if (serializer == null)
-        {
-            serializer = new JsonInternalHandlerSerializer();
         }
 
         try
@@ -136,6 +151,19 @@ public class EventTrackingSplunkInternalHandler extends BufferedHandler<AgentTra
             return;
         }
 
+        try
+        {
+            template = mustacheFactory.compile(new StringReader(this.eventTemplate), "eventTemplate");
+            // Append the Splunk event delimiter.
+            template.append("\r\n");
+        }
+        catch (Exception e)
+        {
+            LOGGER.error(String.format("There was an error compiling the event template: %s.", this.eventTemplate), e);
+            isConfigured = false;
+            return;
+        }
+
         isConfigured = true;
         LOGGER.info("Successfully configured the mule.agent.tracking.handler.splunk internal handler ");
     }
@@ -167,6 +195,7 @@ public class EventTrackingSplunkInternalHandler extends BufferedHandler<AgentTra
              */
             Socket socket = null;
             OutputStream output = null;
+            OutputStreamWriter writer = null;
             try
             {
                 Args args = new Args();
@@ -174,11 +203,15 @@ public class EventTrackingSplunkInternalHandler extends BufferedHandler<AgentTra
                 args.put("sourcetype", this.splunkSourceType);
                 socket = index.attach(args);
                 output = socket.getOutputStream();
+                writer = new OutputStreamWriter(output, Charset.forName("UTF8"));
                 for (AgentTrackingNotification notification : messages)
                 {
-                    String serialized = serializer.serialize(notification);
-                    output.write(serialized.getBytes("UTF8"));
+                    HashMap<String, Object> templateParams = new HashMap<>(2);
+                    templateParams.put("notification", notification);
+                    templateParams.put("dateFormatter", dateFormatter);
+                    template.execute(writer, templateParams).flush();
                 }
+                writer.flush();
                 output.flush();
                 lastConnection = new Date();
                 LOGGER.trace(String.format("Flushed %s notifications.", messages.size()));
@@ -191,6 +224,10 @@ public class EventTrackingSplunkInternalHandler extends BufferedHandler<AgentTra
             }
             finally
             {
+                if (writer != null)
+                {
+                    writer.close();
+                }
                 if (output != null)
                 {
                     output.close();

@@ -25,6 +25,7 @@ public class EventTrackingSplunkInternalHandlerTest
         handler.splunkIndexName = System.getProperty("splunkIndexName");
         handler.splunkSource = System.getProperty("splunkSource");
         handler.splunkSourceType = System.getProperty("splunkSourceType");
+        handler.eventTemplate = System.getProperty("eventTemplate");
         handler.postConfigurable();
 
         boolean success = handler.flush(createNotifications());
