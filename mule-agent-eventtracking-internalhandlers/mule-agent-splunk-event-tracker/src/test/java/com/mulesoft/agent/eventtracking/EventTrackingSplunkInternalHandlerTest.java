@@ -25,6 +25,7 @@ public class EventTrackingSplunkInternalHandlerTest
         handler.splunkIndexName = System.getProperty("splunkIndexName");
         handler.splunkSource = System.getProperty("splunkSource");
         handler.splunkSourceType = System.getProperty("splunkSourceType");
+        handler.dateFormatPattern = System.getProperty("dateFormatPattern");
         handler.eventTemplate = System.getProperty("eventTemplate");
         handler.postConfigurable();
 

@@ -3,7 +3,6 @@ package com.mulesoft.agent.eventtracking;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
-import com.github.mustachejava.TemplateFunction;
 import com.mulesoft.agent.buffer.BufferedHandler;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.PostConfigure;
@@ -35,7 +34,6 @@ public class EventTrackingSplunkInternalHandler extends BufferedHandler<AgentTra
 {
     private final static Logger LOGGER = LoggerFactory.getLogger(EventTrackingSplunkInternalHandler.class);
     private final static MustacheFactory mustacheFactory = new DefaultMustacheFactory();
-    private final static TemplateFunction dateFormatter = new DateFormatterTemplateFunction();
 
     @Configurable(type = Type.DYNAMIC)
     String user;
@@ -61,8 +59,11 @@ public class EventTrackingSplunkInternalHandler extends BufferedHandler<AgentTra
     @Configurable(value = "_json", type = Type.DYNAMIC)
     String splunkSourceType;
 
+    @Configurable(value = "yyyy-MM-dd'T'HH:mm:ssZ", type = Type.DYNAMIC)
+    String dateFormatPattern;
+
     @Configurable(value = "{" +
-            "\"timestamp\": \"{{#dateFormatter}}{{notification.timestamp}}{{/dateFormatter}}\"," +
+            "\"timestamp\": \"{{formattedDate}}\"," +
             "\"application\": \"{{notification.application}}\"," +
             "\"notificationType\": \"{{notification.notificationType}}\"," +
             "\"muleMessage\": \"{{notification.muleMessage}}\"," +
@@ -74,6 +75,7 @@ public class EventTrackingSplunkInternalHandler extends BufferedHandler<AgentTra
             "}", type = Type.DYNAMIC)
     String eventTemplate;
 
+    private SimpleDateFormat dateFormat;
     private Mustache template;
     private Service service;
     private Index index;
@@ -100,10 +102,24 @@ public class EventTrackingSplunkInternalHandler extends BufferedHandler<AgentTra
                 || isNullOrWhiteSpace(this.splunkIndexName)
                 || isNullOrWhiteSpace(this.splunkSource)
                 || isNullOrWhiteSpace(this.splunkSourceType)
-                || isNullOrWhiteSpace(this.eventTemplate))
+                || isNullOrWhiteSpace(this.eventTemplate)
+                || isNullOrWhiteSpace(this.dateFormatPattern))
         {
             LOGGER.error("Please review the EventTrackingSplunkInternalHandler (mule.agent.tracking.handler.splunk) configuration; " +
                     "You must configure at least the following properties: user, pass and host.");
+            isConfigured = false;
+            return;
+        }
+
+        try
+        {
+            dateFormat = new SimpleDateFormat(this.dateFormatPattern);
+            dateFormat.format(new Date());
+        }
+        catch (Exception e)
+        {
+            LOGGER.error("There was an error using the dateFormatPattern you provided. " +
+                    "Please review the configuration.", e);
             isConfigured = false;
             return;
         }
@@ -208,7 +224,9 @@ public class EventTrackingSplunkInternalHandler extends BufferedHandler<AgentTra
                 {
                     HashMap<String, Object> templateParams = new HashMap<>(2);
                     templateParams.put("notification", notification);
-                    templateParams.put("dateFormatter", dateFormatter);
+                    // Since we don't use Java 8, we don't have Function object to post-process the template.
+                    // so we add a formatted date variable available to the template.
+                    templateParams.put("formattedDate", dateFormat.format(notification.getTimestamp()));
                     template.execute(writer, templateParams).flush();
                 }
                 writer.flush();

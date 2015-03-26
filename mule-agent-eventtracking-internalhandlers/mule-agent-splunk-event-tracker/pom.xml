@@ -122,8 +122,9 @@
                                 <splunkIndexName>main</splunkIndexName>
                                 <splunkSource>mule-test</splunkSource>
                                 <splunkSourceType>_json</splunkSourceType>
+                                <dateFormatPattern>yyyy-MM-dd'T'HH:mm:ssZ</dateFormatPattern>
                                 <eventTemplate>{
-                                    "timestamp": "{{#dateFormatter}}{{notification.timestamp}}{{/dateFormatter}}",
+                                    "timestamp": "{{formattedDate}}",
                                     "application": "{{notification.application}}",
                                     "notificationType": "{{notification.notificationType}}",
                                     "action": "{{notification.action}}",
