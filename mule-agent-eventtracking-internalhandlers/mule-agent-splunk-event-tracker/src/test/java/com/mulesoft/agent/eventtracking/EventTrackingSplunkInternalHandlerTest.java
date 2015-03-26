@@ -10,10 +10,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class EventTrackingSplunkInternalHandlerTest {
+public class EventTrackingSplunkInternalHandlerTest
+{
 
     @Test
-    public void test() throws IOException {
+    public void test () throws IOException
+    {
         EventTrackingSplunkInternalHandler handler = new EventTrackingSplunkInternalHandler();
         handler.user = System.getProperty("user");
         handler.pass = System.getProperty("pass");
@@ -29,9 +31,11 @@ public class EventTrackingSplunkInternalHandlerTest {
         Assert.assertTrue(success);
     }
 
-    private List<AgentTrackingNotification> createNotifications(){
+    private List<AgentTrackingNotification> createNotifications ()
+    {
         List<AgentTrackingNotification> list = new ArrayList<AgentTrackingNotification>();
-        for(int i = 0; i < 20000; i++){
+        for (int i = 0; i < 20000; i++)
+        {
             list.add(new AgentTrackingNotification.TrackingNotificationBuilder()
                     .action("TEST " + i)
                     .annotations(new ArrayList<Annotation>())

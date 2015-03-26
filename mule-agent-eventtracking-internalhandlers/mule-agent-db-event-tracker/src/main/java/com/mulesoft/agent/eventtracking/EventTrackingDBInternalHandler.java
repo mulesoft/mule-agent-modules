@@ -23,7 +23,8 @@ import java.util.Collection;
 
 @Named("mule.agent.tracking.handler.database")
 @Singleton
-public class EventTrackingDBInternalHandler extends BufferedHandler<AgentTrackingNotification> {
+public class EventTrackingDBInternalHandler extends BufferedHandler<AgentTrackingNotification>
+{
     private final static Logger LOGGER = LoggerFactory.getLogger(EventTrackingDBInternalHandler.class);
 
     /**
@@ -70,33 +71,41 @@ public class EventTrackingDBInternalHandler extends BufferedHandler<AgentTrackin
     private boolean isConfigured;
 
     @Override
-    public void postConfigurable(){
+    public void postConfigurable ()
+    {
         super.postConfigurable();
         LOGGER.trace("Configuring the DatabaseEventTrackingAgent");
         isConfigured = false;
 
-        if(isNullOrWhiteSpace(driver)
-                ||isNullOrWhiteSpace(jdbcUrl)){
+        if (isNullOrWhiteSpace(driver)
+                || isNullOrWhiteSpace(jdbcUrl))
+        {
             LOGGER.error("Please review the DatabaseEventTrackingAgent (mule.agent.tracking.handler.database) configuration; " +
                     "You must configure the following properties: driver and jdbcUrl.");
             isConfigured = false;
             return;
         }
 
-        try {
+        try
+        {
             Class.forName(driver);
-        } catch (ClassNotFoundException e) {
+        }
+        catch (ClassNotFoundException e)
+        {
             LOGGER.error(String.format("The DatabaseEventTrackingAgent (database.agent.eventtracking) couldn't load the database driver '%s'. " +
                     "Did you copy the JAR driver to the {MULE_HOME}/plugins/mule-agent-plugin/lib?", driver), e);
             isConfigured = false;
             return;
         }
 
-        try {
+        try
+        {
             LOGGER.info("Testing database connection...");
             DriverManager.getConnection(this.jdbcUrl, this.user, this.pass).close();
             LOGGER.info("Database connection OK!.");
-        } catch (SQLException e) {
+        }
+        catch (SQLException e)
+        {
             LOGGER.error(String.format("There was an error on the connection to the DataBase. Please review your agent configuration."), e);
             isConfigured = false;
             return;
@@ -109,21 +118,26 @@ public class EventTrackingDBInternalHandler extends BufferedHandler<AgentTrackin
     }
 
     @Override
-    protected boolean canHandle(AgentTrackingNotification message) {
+    protected boolean canHandle (AgentTrackingNotification message)
+    {
         return isConfigured;
     }
 
     @Override
-    protected boolean flush(Collection<AgentTrackingNotification> messages) {
+    protected boolean flush (Collection<AgentTrackingNotification> messages)
+    {
         LOGGER.trace(String.format("Flushing %s notifications.", messages.size()));
 
         Connection connection = null;
-        try{
+        try
+        {
             connection = DriverManager.getConnection(this.jdbcUrl, this.user, this.pass);
             PreparedStatement statement = null;
-            try{
+            try
+            {
                 statement = connection.prepareStatement(insertStatement);
-                for(AgentTrackingNotification notification : messages){
+                for (AgentTrackingNotification notification : messages)
+                {
                     LOGGER.trace("Flushing Notification: " + notification);
 
                     statement.setString(1, notification.getAction());
@@ -139,24 +153,40 @@ public class EventTrackingDBInternalHandler extends BufferedHandler<AgentTrackin
                 }
 
                 statement.executeBatch();
-            } finally {
-                if(statement != null) statement.close();
+            }
+            finally
+            {
+                if (statement != null)
+                {
+                    statement.close();
+                }
             }
 
             return true;
-        } catch (SQLException e) {
-            LOGGER.error("Couldn't insert the tracking notifications.",e);
+        }
+        catch (SQLException e)
+        {
+            LOGGER.error("Couldn't insert the tracking notifications.", e);
             return false;
-        } finally {
-            if(connection != null) try {
-                connection.close();
-            } catch (SQLException e) {
-                LOGGER.error("Error closing the database.", e);
+        }
+        finally
+        {
+            if (connection != null)
+            {
+                try
+                {
+                    connection.close();
+                }
+                catch (SQLException e)
+                {
+                    LOGGER.error("Error closing the database.", e);
+                }
             }
         }
     }
 
-    public static boolean isNullOrWhiteSpace(String a) {
+    public static boolean isNullOrWhiteSpace (String a)
+    {
         return a == null || (a.length() > 0 && a.trim().length() <= 0);
     }
 }

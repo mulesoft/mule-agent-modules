@@ -2,22 +2,19 @@ package com.mulesoft.agent.eventtracking;
 
 import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 
 import java.lang.annotation.Annotation;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
-public class EventTrackingDBInternalHandlerTest {
+public class EventTrackingDBInternalHandlerTest
+{
 
     @Test
-    public void test() throws SQLException, ClassNotFoundException {
+    public void test () throws SQLException, ClassNotFoundException
+    {
         EventTrackingDBInternalHandler agent = new EventTrackingDBInternalHandler();
         agent.driver = System.getProperty("driver");
         agent.jdbcUrl = System.getProperty("jdbcUrl");
@@ -36,7 +33,8 @@ public class EventTrackingDBInternalHandlerTest {
         conn.close();
     }
 
-    private long countRecords(Connection connection, EventTrackingDBInternalHandler agent) throws SQLException {
+    private long countRecords (Connection connection, EventTrackingDBInternalHandler agent) throws SQLException
+    {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM " + agent.table);
         rs.next();
@@ -46,20 +44,24 @@ public class EventTrackingDBInternalHandlerTest {
         return count;
     }
 
-    private void clearTable(Connection connection, EventTrackingDBInternalHandler agent) throws SQLException {
+    private void clearTable (Connection connection, EventTrackingDBInternalHandler agent) throws SQLException
+    {
         Statement st = connection.createStatement();
         st.execute("DELETE FROM " + agent.table);
         st.close();
     }
 
-    private Connection getConnection(EventTrackingDBInternalHandler agent) throws ClassNotFoundException, SQLException {
+    private Connection getConnection (EventTrackingDBInternalHandler agent) throws ClassNotFoundException, SQLException
+    {
         Class.forName(agent.driver);
         return DriverManager.getConnection(agent.jdbcUrl, agent.user, agent.pass);
     }
 
-    private List<AgentTrackingNotification> createNotifications(){
+    private List<AgentTrackingNotification> createNotifications ()
+    {
         List<AgentTrackingNotification> list = new ArrayList<AgentTrackingNotification>();
-        for(int i = 0; i < 10; i++){
+        for (int i = 0; i < 10; i++)
+        {
             list.add(new AgentTrackingNotification.TrackingNotificationBuilder()
                     .action("TEST " + i)
                     .annotations(new ArrayList<Annotation>())
