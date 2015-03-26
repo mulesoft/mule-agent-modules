@@ -7,9 +7,6 @@ import org.slf4j.LoggerFactory;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-/**
- * Created by Walter on 3/25/2015.
- */
 public class JsonInternalHandlerSerializer implements InternalHandlerSerializer<String>
 {
     private final static Logger LOGGER = LoggerFactory.getLogger(JsonInternalHandlerSerializer.class);
