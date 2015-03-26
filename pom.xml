@@ -9,6 +9,7 @@
 
     <artifactId>mule-agent-modules</artifactId>
     <packaging>pom</packaging>
+    <version>1.0.0-SNAPSHOT</version>
 
     <name>Mule Agent :: Modules</name>
     <url>http://maven.apache.org</url>
@@ -52,7 +53,7 @@
             </plugin>
         </plugins>
     </build>
- 
+
 	<repositories>
 	   <repository>
 		 <id>private</id>
@@ -60,16 +61,10 @@
 		 <url>https://repository-master.mulesoft.org/nexus/content/groups/private</url>
 		 <layout>default</layout>
 	   </repository>
-	</repositories>	
+	</repositories>
 	
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>commons-logging</groupId>
-                <artifactId>commons-logging</artifactId>
-                <version>1.1.1</version>
-            </dependency>
-
             <dependency>
               <groupId>com.mulesoft.agent</groupId>
               <artifactId>mule-agent-api</artifactId>
