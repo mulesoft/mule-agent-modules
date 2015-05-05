@@ -11,16 +11,16 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 
-public class MapMessageBuilder<T> implements MessageBuilder<T, MapMessage>
+public class MapMessageBuilder implements MessageBuilder<MapMessage>
 {
     private final static Logger LOGGER = LoggerFactory.getLogger(MapMessageBuilder.class);
 
-    private final Class<T> inputType;
+    private final Class inputType;
     private String timestampGetterName;
     private SimpleDateFormat dateFormat;
     private Method timestampGetter;
 
-    public MapMessageBuilder (String timestampGetterName, String dateFormatPattern, Class<T> inputType)
+    public MapMessageBuilder (String timestampGetterName, String dateFormatPattern, Class inputType)
     {
         this.timestampGetterName = timestampGetterName;
         this.inputType = inputType;
@@ -52,7 +52,7 @@ public class MapMessageBuilder<T> implements MessageBuilder<T, MapMessage>
     }
 
     @Override
-    public MapMessage build (T message)
+    public MapMessage build (Object message)
     {
         // First check if the getter is initialized
         if (this.timestampGetterName != null && this.timestampGetter == null)

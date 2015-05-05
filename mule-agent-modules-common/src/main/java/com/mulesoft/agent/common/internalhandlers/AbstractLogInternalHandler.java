@@ -1,7 +1,6 @@
 package com.mulesoft.agent.common.internalhandlers;
 
 import com.mulesoft.agent.AgentEnableOperationException;
-import com.mulesoft.agent.common.builders.MapMessageBuilder;
 import com.mulesoft.agent.common.builders.MessageBuilder;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.PostConfigure;
@@ -29,7 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.Deflater;
@@ -42,7 +40,7 @@ public abstract class AbstractLogInternalHandler<T> implements InternalMessageHa
     private String loggerName = className + "." + "logger";
     private String appenderName = className + "." + "appender";
     private String contextName = className + "." + "context";
-    private MessageBuilder<T, MapMessage> messageBuilder;
+    private MessageBuilder<MapMessage> messageBuilder;
     private Configuration logConfiguration;
     private LoggerConfig loggerConfig;
     private Appender appender;
@@ -134,11 +132,11 @@ public abstract class AbstractLogInternalHandler<T> implements InternalMessageHa
      * Default: yyyy-MM-dd'T'HH:mm:ssZ
      * </p>
      */
-    @Configurable(value = "yyyy-MM-dd'T'HH:mm:ssZ", type = Type.DYNAMIC)
+    @Configurable(value = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", type = Type.DYNAMIC)
     public String dateFormatPattern;
 
 
-    private MapMessage createMapMessage (T message)
+    protected MapMessage createMapMessage (Object message)
     {
         MapMessage mapMessage = this.messageBuilder.build(message);
         // Append additional properties
@@ -155,7 +153,7 @@ public abstract class AbstractLogInternalHandler<T> implements InternalMessageHa
         return null;
     }
 
-    protected Map<String, String> augmentMapMessage (T message)
+    protected Map<String, String> augmentMapMessage (Object message)
     {
         return null;
     }
@@ -170,6 +168,10 @@ public abstract class AbstractLogInternalHandler<T> implements InternalMessageHa
         return this.enabledSwitch.isEnabled();
     }
 
+    protected abstract void buildLogMessage(org.apache.logging.log4j.core.Logger internalLogger, T message);
+
+    protected abstract MessageBuilder<MapMessage> getMessageBuilder();
+
     @Override
     public boolean handle (T message)
     {
@@ -177,8 +179,7 @@ public abstract class AbstractLogInternalHandler<T> implements InternalMessageHa
         {
             try
             {
-                MapMessage mapMessage = createMapMessage(message);
-                this.internalLogger.info(mapMessage);
+                buildLogMessage(this.internalLogger, message);
                 return true;
             }
             catch (Exception e)
@@ -193,7 +194,7 @@ public abstract class AbstractLogInternalHandler<T> implements InternalMessageHa
     @PostConfigure
     public void postConfigurable () throws AgentEnableOperationException
     {
-        LOGGER.trace("Configuring the AbstractLogInternalHandler internal handler...");
+        LOGGER.trace("Configuring Log internal handler");
         this.isConfigured = false;
 
         if (this.enabledSwitch == null)
@@ -229,7 +230,7 @@ public abstract class AbstractLogInternalHandler<T> implements InternalMessageHa
         if (StringUtils.isEmpty(this.fileName)
                 || StringUtils.isEmpty(this.filePattern))
         {
-            LOGGER.error("Please review the AbstractLogInternalHandler configuration; " +
+            LOGGER.error("Please review the Log Internal Handler configuration; " +
                     "You must configure at least the following properties: fileName and filePattern.");
             return;
         }
@@ -239,15 +240,11 @@ public abstract class AbstractLogInternalHandler<T> implements InternalMessageHa
             this.logContext = new LoggerContext(contextName);
             this.logConfiguration = logContext.getConfiguration();
 
-            Class<T> classType = ((Class<T>) ((ParameterizedType) getClass()
-                    .getGenericSuperclass()).getActualTypeArguments()[0]);
-
-            this.messageBuilder = new MapMessageBuilder<>(this.getTimestampGetterName(), this.dateFormatPattern,
-                    classType);
+            this.messageBuilder = getMessageBuilder();
 
             Layout<? extends Serializable> layout = PatternLayout.createLayout(this.pattern, null, null, null, true, true, null, null);
-            String dayTrigger = TimeUnit.DAYS.toMillis(this.daysTrigger) + "";
-            String sizeTrigger = (this.mbTrigger * 1024 * 1024) + "";
+            String dayTrigger = String.valueOf(TimeUnit.DAYS.toMillis(this.daysTrigger));
+            String sizeTrigger = String.valueOf(this.mbTrigger * 1024 * 1024);
             TimeBasedTriggeringPolicy timeBasedTriggeringPolicy = TimeBasedTriggeringPolicy.createPolicy(dayTrigger, "true");
             SizeBasedTriggeringPolicy sizeBasedTriggeringPolicy = SizeBasedTriggeringPolicy.createPolicy(sizeTrigger);
             CompositeTriggeringPolicy policy = CompositeTriggeringPolicy.createPolicy(timeBasedTriggeringPolicy, sizeBasedTriggeringPolicy);
@@ -255,7 +252,7 @@ public abstract class AbstractLogInternalHandler<T> implements InternalMessageHa
                     Deflater.DEFAULT_COMPRESSION + "", this.logConfiguration);
 
             this.appender = RollingRandomAccessFileAppender.createAppender(this.fileName, this.filePattern, "true",
-                    this.appenderName, this.inmediateFlush + "", this.bufferSize + "",
+                    this.appenderName, String.valueOf(this.inmediateFlush), String.valueOf(this.bufferSize),
                     policy, strategy, layout, null, "false", null, null, this.logConfiguration);
 
             this.appender.start();
@@ -269,11 +266,11 @@ public abstract class AbstractLogInternalHandler<T> implements InternalMessageHa
         }
         catch (Exception e)
         {
-            LOGGER.error("There was an error configuring the AbstractLogInternalHandler internal handler.", e);
+            LOGGER.error(String.format("There was an error configuring the Log internal handler for file %s", this.fileName), e);
             return;
         }
 
         this.isConfigured = true;
-        LOGGER.trace("Successfully configured the AbstractLogInternalHandler internal handler.");
+        LOGGER.trace(String.format("Successfully configured the log internal handler for file %s", this.fileName));
     }
 }

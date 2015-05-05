@@ -1,9 +1,18 @@
 package com.mulesoft.agent.eventtracking.splunk;
 
+import com.mulesoft.agent.common.builders.MapMessageBuilder;
+import com.mulesoft.agent.common.builders.MessageBuilder;
 import com.mulesoft.agent.common.internalhandlers.AbstractSplunkInternalHandler;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.Type;
 import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
+
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.message.MapMessage;
+
+import java.io.IOException;
+import java.io.OutputStream;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -29,6 +38,24 @@ public class EventTrackingSplunkInternalHandler extends AbstractSplunkInternalHa
     public String pattern;
 
     @Override
+    protected void buildSplunkMessage(OutputStream output, AgentTrackingNotification metrics)
+        throws IOException {
+
+        MapMessage mapMessage = createMapMessage(metrics);
+
+        // Defer the creation of the layout until the MapMessage is created
+        if (getLayout() == null)
+        {
+            initializeLayout(mapMessage);
+        }
+
+        LogEvent event = getLogEventFactory().createEvent(this.getClass().getName(), null,
+                                                          this.getClass().getName(), Level.INFO,
+                                                          mapMessage, null, null);
+        output.write(getLayout().toByteArray(event));
+    }
+
+    @Override
     protected String getPattern ()
     {
         return this.pattern;
@@ -39,4 +66,11 @@ public class EventTrackingSplunkInternalHandler extends AbstractSplunkInternalHa
     {
         return "getTimestamp";
     }
+
+    @Override
+    protected MessageBuilder<MapMessage> getMessageBuilder() {
+        return new MapMessageBuilder(this.getTimestampGetterName(), this.dateFormatPattern, AgentTrackingNotification.class);
+    }
+
+
 }
