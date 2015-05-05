@@ -1,7 +1,12 @@
 package com.mulesoft.agent.eventtracking.log;
 
+import com.mulesoft.agent.common.builders.MapMessageBuilder;
+import com.mulesoft.agent.common.builders.MessageBuilder;
 import com.mulesoft.agent.common.internalhandlers.AbstractLogInternalHandler;
 import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
+
+import org.apache.logging.log4j.core.Logger;
+import org.apache.logging.log4j.message.MapMessage;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -20,5 +25,15 @@ public class EventTrackingLogInternalHandler extends AbstractLogInternalHandler<
     public String getTimestampGetterName ()
     {
         return "getTimestamp";
+    }
+
+    @Override
+    protected void buildLogMessage(Logger internalLogger, AgentTrackingNotification message) {
+        internalLogger.info(createMapMessage(message));
+    }
+
+    @Override
+    protected MessageBuilder<MapMessage> getMessageBuilder() {
+        return new MapMessageBuilder(this.getTimestampGetterName(), this.dateFormatPattern, AgentTrackingNotification.class);
     }
 }

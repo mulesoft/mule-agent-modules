@@ -25,6 +25,12 @@
     <dependencies>
         <dependency>
             <groupId>com.mulesoft.agent</groupId>
+            <artifactId>mule-agent-modules-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.mulesoft.agent</groupId>
             <artifactId>mule-agent-api</artifactId>
             <scope>provided</scope>
         </dependency>

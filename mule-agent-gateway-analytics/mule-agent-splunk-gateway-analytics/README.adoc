@@ -1,0 +1,101 @@
+= Splunk Internal Handler for Gateway Analytics
+
+The Splunk Internal handler allows sending HTTP Metrics to Splunk
+
+=== Configurable Fields
+
+|===
+|Field|Data Type|Description|Type|Default Value
+
+|user
+|String
+|Username to connect to Splunk.
+|Required
+|
+
+|pass
+|String
+|The password of the user to connect to Splunk.
+|Required
+|
+
+|host
+|String
+|IP or hostname of the server where Splunk is running.
+|Required
+|
+
+|port
+|int
+|Splunk management port.
+|Required
+|
+
+|scheme
+|String
+|Scheme of connection to the Splunk management port. Possible values: http, https.
+|Optional
+|https
+
+|splunkIndexName
+|String
+|Splunk index name where all the events will be sent. If the user has the rights,
+and the index doesn't exists, then the internal handler will create it.
+|Optional
+|main
+
+|splunkSource
+|String
+|The source used on the events sent to Splunk.
+|Optional
+|mule
+
+|splunkSourceType
+|String
+|The sourcetype used on the events sent to Splunk.
+|Optional
+|_json
+
+|dateFormatPattern
+|String
+|Date format pattern used to calculate the formattedDate variable used on the eventTemplate.
+|Optional
+|yyyy-MM-dd'T'HH:mm:ssZ
+
+|eventTemplate
+|String
+|A Mustache template (https://mustache.github.io/) that's used to serialize the AgentTrackingNotification.
+The template system provides you with a 'notification' and 'formattedDate' variables.
+|Optional
+|{
+ 	"apiName": "{{notification.apiName}}",
+    "apiVersion": "{{notification.apiVersion}}",
+    "orgId": "{{notification.orgId}}",
+    "hostId": "{{notification.hostId}}",
+    "clientId": "{{notification.clientId}}",
+    "transactionId": "{{notification.transactionId}}",
+    "receivedTs": "{{notification.receivedTs}}",
+    "repliedTs": "{{notification.repliedTs}}",
+    "clientIp": "{{notification.clientIp}}",
+    "verb": "{{notification.verb}}",
+    "path": "{{notification.path}}",
+    "statusCode": "{{notification.statusCode}}",
+    "userAgent": "{{notification.userAgent}}",
+    "requestBytes": "{{notification.requestBytes}}",
+    "responseBytes": "{{notification.responseBytes}}",
+    "requestDisposition": "{{notification.requestDisposition}}",
+    "policyViolation": "{{notification.policyViolation}}"
+ }
+|===
+
+=== Configuration Example
+
+[source,yaml]
+.Splunk Internal Handler minimum Configuration
+....
+---
+  mule.agent.analytics.gateway.splunk:
+    host: 192.168.61.131
+    user: admin
+    pass: test
+....

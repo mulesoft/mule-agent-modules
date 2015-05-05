@@ -1,16 +1,13 @@
 package com.mulesoft.agent.common.internalhandlers;
 
 import com.mulesoft.agent.buffer.BufferedHandler;
-import com.mulesoft.agent.common.builders.MapMessageBuilder;
 import com.mulesoft.agent.common.builders.MessageBuilder;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.PostConfigure;
 import com.mulesoft.agent.configuration.Type;
 import com.splunk.*;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.Layout;
-import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.impl.DefaultLogEventFactory;
 import org.apache.logging.log4j.core.impl.LogEventFactory;
 import org.apache.logging.log4j.core.layout.PatternLayout;
@@ -21,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
 import java.net.Socket;
 import java.util.Collection;
 import java.util.Iterator;
@@ -33,16 +29,15 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
 
     private Service service;
     private Index index;
-    private MessageBuilder<T, MapMessage> messageBuilder;
+    private MessageBuilder<MapMessage> messageBuilder;
     private Layout<? extends Serializable> layout;
     private LogEventFactory factory = new DefaultLogEventFactory();
-    private String className = this.getClass().getName();
 
     /**
      * http://dev.splunk.com/view/java-sdk/SP-CAAAECX
      * By default, the token is valid for one hour, but is refreshed every time you make a call to Splunk.
      */
-    private final int TOKEN_EXPIRATION_MS = 55 * 60 * 1000; // I use 55 minutes, instead of 60 as a safe net.
+    private static final int TOKEN_EXPIRATION_MS = 55 * 60 * 1000; // I use 55 minutes, instead of 60 as a safe net.
     private long lastConnection;
     private boolean isConfigured;
 
@@ -131,11 +126,14 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
      * Default: yyyy-MM-dd'T'HH:mm:ssZ
      * </p>
      */
-    @Configurable(value = "yyyy-MM-dd'T'HH:mm:ssZ", type = Type.DYNAMIC)
+    @Configurable(value = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", type = Type.DYNAMIC)
     public String dateFormatPattern;
 
+    protected abstract void buildSplunkMessage(OutputStream output, T metrics) throws IOException;
 
-    private void initializeLayout (MapMessage message)
+    protected abstract MessageBuilder<MapMessage> getMessageBuilder();
+
+    protected void initializeLayout (MapMessage message)
     {
         try
         {
@@ -148,7 +146,7 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
         }
     }
 
-    private MapMessage createMapMessage (T message)
+    protected MapMessage createMapMessage (Object message)
     {
         MapMessage mapMessage = this.messageBuilder.build(message);
         // Append additional properties
@@ -160,7 +158,7 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
         return mapMessage;
     }
 
-    protected Map<String, String> augmentMapMessage (T message)
+    protected Map<String, String> augmentMapMessage (Object message)
     {
         return null;
     }
@@ -241,14 +239,7 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
                 output = socket.getOutputStream();
                 for (T message : messages)
                 {
-                    MapMessage mapMessage = createMapMessage(message);
-                    // Defer the creation of the layout until the MapMessage is created
-                    if (layout == null)
-                    {
-                        initializeLayout(mapMessage);
-                    }
-                    LogEvent event = factory.createEvent(className, null, className, Level.INFO, mapMessage, null, null);
-                    output.write(layout.toByteArray(event));
+                    buildSplunkMessage(output, message);
                 }
                 output.flush();
                 this.lastConnection = System.currentTimeMillis();
@@ -345,12 +336,19 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
             return;
         }
 
-        Class<T> classType = ((Class<T>) ((ParameterizedType) getClass()
-                .getGenericSuperclass()).getActualTypeArguments()[0]);
-
-        this.messageBuilder = new MapMessageBuilder<>(this.getTimestampGetterName(), this.dateFormatPattern, classType);
+        this.messageBuilder = getMessageBuilder();
 
         this.isConfigured = true;
         LOGGER.trace("Successfully configured the AbstractSplunkInternalHandler internal handler.");
+    }
+
+    protected Layout getLayout()
+    {
+        return this.layout;
+    }
+
+    protected LogEventFactory getLogEventFactory()
+    {
+        return this.factory;
     }
 }

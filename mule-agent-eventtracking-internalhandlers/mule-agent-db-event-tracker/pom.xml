@@ -20,13 +20,6 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>com.mulesoft.agent</groupId>
-            <artifactId>mule-agent-modules-common</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
         <!-- Test Dependencies -->
         <dependency>
             <groupId>javax.validation</groupId>

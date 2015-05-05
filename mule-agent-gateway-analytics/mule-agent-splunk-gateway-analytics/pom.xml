@@ -3,15 +3,15 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>mule-agent-eventtracking-internalhandlers</artifactId>
+        <artifactId>mule-agent-gateway-analytics-modules</artifactId>
         <groupId>com.mulesoft.agent</groupId>
         <version>1.0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>mule-agent-splunk-event-tracker</artifactId>
+    <artifactId>mule-agent-splunk-gateway-analytics</artifactId>
 
-    <name>Mule Agent :: Modules :: Event Tracking :: Splunk</name>
+    <name>Mule Agent :: Modules :: Gateway Analytics :: Splunk</name>
     <url>http://maven.apache.org</url>
 
     <properties>
@@ -26,14 +26,29 @@
     </repositories>
 
     <dependencies>
-
         <dependency>
             <groupId>com.splunk</groupId>
             <artifactId>splunk</artifactId>
             <version>1.4.0.0</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.mulesoft.agent</groupId>
+            <artifactId>mule-agent-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slfj4.version}</version>
+            <scope>provided</scope>
+        </dependency>
         <!-- Test Dependencies -->
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.1.1</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
@@ -45,15 +60,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-            <version>2.1</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>2.1</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${slfj4.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

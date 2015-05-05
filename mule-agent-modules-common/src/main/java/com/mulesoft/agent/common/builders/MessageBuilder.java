@@ -1,6 +1,6 @@
 package com.mulesoft.agent.common.builders;
 
-public interface MessageBuilder<TMessage, TFinal>
+public interface MessageBuilder<TFinal>
 {
-    TFinal build (TMessage message);
+    TFinal build (Object message);
 }
