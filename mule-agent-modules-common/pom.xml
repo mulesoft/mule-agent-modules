@@ -31,11 +31,13 @@
             <groupId>commons-beanutils</groupId>
             <artifactId>commons-beanutils</artifactId>
             <version>1.9.2</version>
+            <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>com.splunk</groupId>
             <artifactId>splunk</artifactId>
-            <version>1.4.0.0</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>

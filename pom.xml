@@ -26,6 +26,8 @@
         <joda.time.version>1.6</joda.time.version>
         <log4j.version>1.2.16</log4j.version>
         <junit.version>4.10</junit.version>
+        <log4j.version>2.1</log4j.version>
+        <splunk.version>1.4.0.0</splunk.version>
     </properties>
 
     <build>
@@ -56,6 +58,24 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-api</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.splunk</groupId>
+                <artifactId>splunk</artifactId>
+                <version>${splunk.version}</version>
+            </dependency>
+
             <dependency>
               <groupId>com.mulesoft.agent</groupId>
               <artifactId>mule-agent-api</artifactId>
