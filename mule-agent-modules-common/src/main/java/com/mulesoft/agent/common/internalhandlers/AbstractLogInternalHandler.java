@@ -34,7 +34,7 @@ import java.util.zip.Deflater;
 
 public abstract class AbstractLogInternalHandler<T> implements InternalMessageHandler<T>
 {
-    private final static Logger LOGGER = LoggerFactory.getLogger (AbstractLogInternalHandler.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(AbstractLogInternalHandler.class);
 
     private String className = this.getClass().getName();
     private String loggerName = className + "." + "logger";
@@ -208,7 +208,7 @@ public abstract class AbstractLogInternalHandler<T> implements InternalMessageHa
         {
             LOGGER.error("Please review the AbstractLogInternalHandler configuration; " +
                     "You must configure at least the following properties: fileName and filePattern.");
-            enable (false);
+            enable(false);
             return;
         }
 
@@ -244,7 +244,7 @@ public abstract class AbstractLogInternalHandler<T> implements InternalMessageHa
         catch (Exception e)
         {
             LOGGER.error("There was an error configuring the AbstractLogInternalHandler internal handler.", e);
-            enable (false);
+            enable(false);
             return;
         }
 

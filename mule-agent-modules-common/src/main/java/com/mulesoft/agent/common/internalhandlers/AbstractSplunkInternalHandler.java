@@ -309,7 +309,7 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
             LOGGER.error("There was an error creating the pattern.", e);
             enable(false);
         }
-        
+
         LOGGER.trace("Successfully configured the AbstractSplunkInternalHandler internal handler.");
     }
 }
