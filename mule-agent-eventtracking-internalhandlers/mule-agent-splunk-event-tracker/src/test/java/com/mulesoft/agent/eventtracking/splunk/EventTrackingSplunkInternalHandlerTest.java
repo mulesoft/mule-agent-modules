@@ -1,5 +1,6 @@
 package com.mulesoft.agent.eventtracking.splunk;
 
+import com.mulesoft.agent.AgentEnableOperationException;
 import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
 import junit.framework.Assert;
 import org.junit.Ignore;
@@ -17,7 +18,7 @@ public class EventTrackingSplunkInternalHandlerTest
 
     @Test
     public void test ()
-            throws IOException
+            throws IOException, AgentEnableOperationException
     {
         EventTrackingSplunkInternalHandler handler = new EventTrackingSplunkInternalHandler();
         handler.setEnabled(true);

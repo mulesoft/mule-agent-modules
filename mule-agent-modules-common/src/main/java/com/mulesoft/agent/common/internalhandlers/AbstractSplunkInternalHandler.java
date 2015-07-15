@@ -1,5 +1,6 @@
 package com.mulesoft.agent.common.internalhandlers;
 
+import com.mulesoft.agent.AgentEnableOperationException;
 import com.mulesoft.agent.buffer.BufferedHandler;
 import com.mulesoft.agent.common.builders.MapMessageBuilder;
 import com.mulesoft.agent.configuration.Configurable;
@@ -41,7 +42,6 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
      */
     private final int TOKEN_EXPIRATION_MS = 55 * 60 * 1000; // I use 55 minutes, instead of 60 as a safe net.
     private long lastConnection;
-    private boolean isConfigured;
 
     /**
      * <p>
@@ -172,11 +172,6 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
     {
         LOGGER.trace(String.format("Flushing %s notifications.", messages.size()));
 
-        if (!this.isConfigured)
-        {
-            return false;
-        }
-
         try
         {
             // Check if the authentication token, isn't expired
@@ -235,12 +230,11 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
         }
     }
 
-    @PostConfigure
-    public void postConfigurable ()
+    @Override
+    public void postConfigurable () throws AgentEnableOperationException
     {
         super.postConfigurable();
         LOGGER.trace("Configuring the AbstractSplunkInternalHandler internal handler...");
-        this.isConfigured = false;
         this.layout = null;
 
         if (StringUtils.isEmpty(this.host)
@@ -253,6 +247,7 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
         {
             LOGGER.error("Please review the EventTrackingSplunkInternalHandler (mule.agent.tracking.handler.splunk) configuration; " +
                     "You must configure at least the following properties: user, pass and host.");
+            enable(false);
             return;
         }
 
@@ -277,6 +272,7 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
         catch (Exception e)
         {
             LOGGER.error("There was an error connecting to the Splunk server. Please review your settings.", e);
+            enable(false);
             return;
         }
 
@@ -298,6 +294,7 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
         catch (Exception e)
         {
             LOGGER.error("There was an error obtaining the Splunk index.", e);
+            enable(false);
             return;
         }
 
@@ -310,10 +307,9 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
         catch (Exception e)
         {
             LOGGER.error("There was an error creating the pattern.", e);
-            this.isConfigured = false;
+            enable(false);
         }
-
-        this.isConfigured = true;
+        
         LOGGER.trace("Successfully configured the AbstractSplunkInternalHandler internal handler.");
     }
 }

@@ -1,7 +1,9 @@
 package com.mulesoft.agent.common.internalhandlers;
 
+import com.mulesoft.agent.AgentEnableOperationException;
 import com.mulesoft.agent.buffer.BufferedHandler;
 import com.mulesoft.agent.configuration.Configurable;
+import com.mulesoft.agent.configuration.PostConfigure;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,9 +15,7 @@ import java.util.Collection;
 
 public abstract class AbstractDBInternalHandler<T> extends BufferedHandler<T>
 {
-    private final static Logger LOGGER = LoggerFactory.getLogger(AbstractDBInternalHandler.class);
-
-    private boolean isConfigured;
+    private final static Logger LOGGER = LoggerFactory.getLogger (AbstractDBInternalHandler.class);
 
     /**
      * <p>
@@ -61,33 +61,28 @@ public abstract class AbstractDBInternalHandler<T> extends BufferedHandler<T>
     @Override
     protected boolean flush (Collection<T> messages)
     {
-        if (!this.isConfigured)
-        {
-            return false;
-        }
-
-        LOGGER.trace(String.format("Flushing %s messages.", messages.size()));
+        LOGGER.trace (String.format ("Flushing %s messages.", messages.size ()));
 
         Connection connection = null;
         try
         {
-            connection = DriverManager.getConnection(this.jdbcUrl, this.user, this.pass);
-            connection.setAutoCommit(false);
+            connection = DriverManager.getConnection (this.jdbcUrl, this.user, this.pass);
+            connection.setAutoCommit (false);
             try
             {
-                insert(connection, messages);
-                connection.commit();
+                insert (connection, messages);
+                connection.commit ();
             }
             catch (Exception ex)
             {
-                LOGGER.error("There was an error inserting the messages. Rolling back the transaction.", ex);
+                LOGGER.error ("There was an error inserting the messages. Rolling back the transaction.", ex);
                 try
                 {
-                    connection.rollback();
+                    connection.rollback ();
                 }
                 catch (SQLException sqlEx)
                 {
-                    LOGGER.error("There was an error while rolling back the transaction.", sqlEx);
+                    LOGGER.error ("There was an error while rolling back the transaction.", sqlEx);
                 }
             }
 
@@ -95,7 +90,7 @@ public abstract class AbstractDBInternalHandler<T> extends BufferedHandler<T>
         }
         catch (SQLException e)
         {
-            LOGGER.error("Couldn't insert the tracking notifications.", e);
+            LOGGER.error ("Couldn't insert the tracking notifications.", e);
             return false;
         }
         finally
@@ -104,55 +99,56 @@ public abstract class AbstractDBInternalHandler<T> extends BufferedHandler<T>
             {
                 try
                 {
-                    connection.close();
+                    connection.close ();
                 }
                 catch (SQLException e)
                 {
-                    LOGGER.error("Error closing the database.", e);
+                    LOGGER.error ("Error closing the database.", e);
                 }
             }
         }
     }
 
     @Override
-    public void postConfigurable ()
+    public void postConfigurable () throws AgentEnableOperationException
     {
-        super.postConfigurable();
-        LOGGER.trace("Configuring the AbstractDBInternalHandler...");
-        this.isConfigured = false;
+        super.postConfigurable ();
+        LOGGER.trace ("Configuring the AbstractDBInternalHandler...");
 
-        if (StringUtils.isEmpty(this.driver)
-                || StringUtils.isEmpty(this.jdbcUrl))
+        if (StringUtils.isEmpty (this.driver)
+                || StringUtils.isEmpty (this.jdbcUrl))
         {
-            LOGGER.error("Please review the DatabaseEventTrackingAgent (mule.agent.tracking.handler.database) configuration; " +
+            LOGGER.error ("Please review the DatabaseEventTrackingAgent (mule.agent.tracking.handler.database) configuration; " +
                     "You must configure the following properties: driver and jdbcUrl.");
+            enable (false);
             return;
         }
 
         try
         {
-            Class.forName(driver);
+            Class.forName (driver);
         }
         catch (ClassNotFoundException e)
         {
-            LOGGER.error(String.format("The DatabaseEventTrackingAgent (database.agent.eventtracking) couldn't load the database driver '%s'. " +
+            LOGGER.error (String.format ("The DatabaseEventTrackingAgent (database.agent.eventtracking) couldn't load the database driver '%s'. " +
                     "Did you copy the JAR driver to the {MULE_HOME}/plugins/mule-agent-plugin/lib?", driver), e);
+            enable (false);
             return;
         }
 
         try
         {
-            LOGGER.trace("Testing database connection...");
-            DriverManager.getConnection(this.jdbcUrl, this.user, this.pass).close();
-            LOGGER.trace("Database connection OK!.");
+            LOGGER.trace ("Testing database connection...");
+            DriverManager.getConnection (this.jdbcUrl, this.user, this.pass).close ();
+            LOGGER.trace ("Database connection OK!.");
         }
         catch (SQLException e)
         {
-            LOGGER.error("There was an error on the connection to the DataBase. Please review your agent configuration.", e);
+            LOGGER.error ("There was an error on the connection to the DataBase. Please review your agent configuration.", e);
+            enable (false);
             return;
         }
 
-        this.isConfigured = true;
-        LOGGER.trace("Successfully configured the AbstractDBInternalHandler internal handler.");
+        LOGGER.trace ("Successfully configured the AbstractDBInternalHandler internal handler.");
     }
 }
