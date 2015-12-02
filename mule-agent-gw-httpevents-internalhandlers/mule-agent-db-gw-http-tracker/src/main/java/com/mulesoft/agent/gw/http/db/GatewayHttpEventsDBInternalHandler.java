@@ -8,7 +8,7 @@
 package com.mulesoft.agent.gw.http.db;
 
 import com.fasterxml.uuid.Generators;
-import com.mulesoft.agent.common.internalhandlers.AbstractDBInternalHandler;
+import com.mulesoft.agent.common.internalhandler.AbstractDBInternalHandler;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.module.client.model.HttpEvent;
 import org.slf4j.Logger;
