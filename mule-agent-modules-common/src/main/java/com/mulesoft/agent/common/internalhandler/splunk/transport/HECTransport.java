@@ -22,7 +22,7 @@ import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 
 /**
- * <p/>
+ * <p>
  * Transport which connects to Splunk using HTTP Event Collector for sending the events.
  *
  * @author Walter Poch

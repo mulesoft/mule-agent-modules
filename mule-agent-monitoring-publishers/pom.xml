@@ -17,6 +17,7 @@
         <module>mule-agent-graphite-publisher</module>
         <module>mule-agent-zabbix-publisher</module>
         <module>mule-agent-nagios-publisher</module>
+        <module>mule-agent-ingest-publisher</module>
     </modules>
 
     <properties>
