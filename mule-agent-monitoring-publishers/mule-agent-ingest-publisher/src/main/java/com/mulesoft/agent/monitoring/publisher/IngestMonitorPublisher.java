@@ -73,16 +73,17 @@ public class IngestMonitorPublisher extends BufferedHandler<List<Metric>>
             for (Metric metric : metrics) {
                 Double value = metric.getValue().doubleValue();
                 Date date = new Date(metric.getTimestamp());
-                LOGGER.info(String.format("Processing metric: %s. Value: %s, Date: %s", metric.getName(),
-                        String.valueOf(value), date.toString()));
-                if (metric.getName().equals("cpu-usage")) {
+                if (metric.getName().contains("java.lang:type=OperatingSystem:CPU")) {
                     CpuUsage usage = new CpuUsage(date, value, value, value, value, 1d);
+                    LOGGER.info(String.format("Registered cpu usage: %s", usage.toString()));
                     cpuUsage.add(usage);
-                } else if (metric.getName().equals("Compressed Class Space:Used Memory")) {
+                } else if (metric.getName().contains("java.lang:type=Memory:heap used")) {
                     MemoryUsage usage = new MemoryUsage(date, value, value, value, value, 1d);
+                    LOGGER.info(String.format("Registered memory usage: %s", usage.toString()));
                     memoryUsage.add(usage);
-                } else if (metric.getName().equals("Compressed Class Space:Total Memory")) {
+                } else if (metric.getName().contains("java.lang:type=Memory:heap total")) {
                     MemoryTotal total = new MemoryTotal(date, value, value, value, value, 1d);
+                    LOGGER.info(String.format("Registered memory total: %s", total.toString()));
                     memoryTotal.add(total);
                 }
             }
