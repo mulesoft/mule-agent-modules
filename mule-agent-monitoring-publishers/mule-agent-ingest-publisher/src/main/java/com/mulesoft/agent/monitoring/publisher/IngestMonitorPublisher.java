@@ -9,14 +9,20 @@
 package com.mulesoft.agent.monitoring.publisher;
 
 import com.google.common.collect.Sets;
+import com.mulesoft.agent.AgentEnableOperationException;
+import com.mulesoft.agent.buffer.BufferConfiguration;
+import com.mulesoft.agent.buffer.BufferType;
 import com.mulesoft.agent.buffer.BufferedHandler;
 import com.mulesoft.agent.configuration.Configurable;
+import com.mulesoft.agent.configuration.PostConfigure;
 import com.mulesoft.agent.domain.monitoring.Metric;
 import com.mulesoft.agent.monitoring.publisher.api.AnypointMonitoringIngestAPIClient;
 import com.mulesoft.agent.monitoring.publisher.resource.targets.id.model.CpuUsage;
 import com.mulesoft.agent.monitoring.publisher.resource.targets.id.model.IdPOSTBody;
 import com.mulesoft.agent.monitoring.publisher.resource.targets.id.model.MemoryTotal;
 import com.mulesoft.agent.monitoring.publisher.resource.targets.id.model.MemoryUsage;
+import com.mulesoft.agent.services.OnOffSwitch;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,10 +64,29 @@ public class IngestMonitorPublisher extends BufferedHandler<List<Metric>>
     @Configurable("asdqwe")
     String applicationId;
 
+    @Configurable("true")
+    protected boolean enabled;
+
     @Override
     protected boolean canHandle(List<Metric> metrics)
     {
         return true;
+    }
+
+    @PostConfigure
+    public void postConfigurable() throws AgentEnableOperationException {
+        if(this.enabledSwitch == null) {
+            this.enabledSwitch = OnOffSwitch.newNullSwitch(this.enabled);
+            if (this.buffer == null) {
+                this.buffer = new BufferConfiguration();
+                this.buffer.setType(BufferType.MEMORY);
+                this.buffer.setRetryCount(1);
+                this.buffer.setFlushFrequency(10000L);
+                this.buffer.setMaximumCapacity(30);
+            }
+        }
+        LOGGER.info(ToStringBuilder.reflectionToString(this.buffer));
+        LOGGER.info(String.format("enabled: %s", String.valueOf(this.enabledSwitch.isEnabled())));
     }
 
     private IdPOSTBody processMetrics(Collection<List<Metric>> collection)
