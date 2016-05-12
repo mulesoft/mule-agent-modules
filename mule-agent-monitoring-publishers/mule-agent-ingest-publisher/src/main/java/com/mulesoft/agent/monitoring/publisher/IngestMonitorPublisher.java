@@ -78,8 +78,8 @@ public class IngestMonitorPublisher extends BufferedHandler<List<Metric>>
                 this.buffer = new BufferConfiguration();
                 this.buffer.setType(BufferType.MEMORY);
                 this.buffer.setRetryCount(1);
-                this.buffer.setFlushFrequency(10000L);
-                this.buffer.setMaximumCapacity(30);
+                this.buffer.setFlushFrequency(60000L);
+                this.buffer.setMaximumCapacity(100);
             }
         }
         LOGGER.info(ToStringBuilder.reflectionToString(this.buffer));
