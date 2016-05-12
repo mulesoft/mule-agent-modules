@@ -32,13 +32,6 @@ public class IdPOSTBody {
      * (Required)
      * 
      */
-    @JsonProperty("id")
-    private String id;
-    /**
-     * 
-     * (Required)
-     * 
-     */
     @JsonProperty("cpu-usage")
     @JsonDeserialize(as = java.util.LinkedHashSet.class)
     private Set<CpuUsage> cpuUsage = new LinkedHashSet<CpuUsage>();
@@ -75,40 +68,10 @@ public class IdPOSTBody {
      * @param memoryTotal
      * @param id
      */
-    public IdPOSTBody(String id, Set<CpuUsage> cpuUsage, Set<MemoryUsage> memoryUsage, Set<MemoryTotal> memoryTotal) {
-        this.id = id;
+    public IdPOSTBody(Set<CpuUsage> cpuUsage, Set<MemoryUsage> memoryUsage, Set<MemoryTotal> memoryTotal) {
         this.cpuUsage = cpuUsage;
         this.memoryUsage = memoryUsage;
         this.memoryTotal = memoryTotal;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     * @return
-     *     The id
-     */
-    @JsonProperty("id")
-    public String getId() {
-        return id;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     * @param id
-     *     The id
-     */
-    @JsonProperty("id")
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public IdPOSTBody withId(String id) {
-        this.id = id;
-        return this;
     }
 
     /**
@@ -220,7 +183,7 @@ public class IdPOSTBody {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(id).append(cpuUsage).append(memoryUsage).append(memoryTotal).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(cpuUsage).append(memoryUsage).append(memoryTotal).append(additionalProperties).toHashCode();
     }
 
     @Override
@@ -232,7 +195,7 @@ public class IdPOSTBody {
             return false;
         }
         IdPOSTBody rhs = ((IdPOSTBody) other);
-        return new EqualsBuilder().append(id, rhs.id).append(cpuUsage, rhs.cpuUsage).append(memoryUsage, rhs.memoryUsage).append(memoryTotal, rhs.memoryTotal).append(additionalProperties, rhs.additionalProperties).isEquals();
+        return new EqualsBuilder().append(cpuUsage, rhs.cpuUsage).append(memoryUsage, rhs.memoryUsage).append(memoryTotal, rhs.memoryTotal).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

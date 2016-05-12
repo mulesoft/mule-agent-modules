@@ -46,13 +46,10 @@ public class IngestMonitorPublisher extends BufferedHandler<List<Metric>>
 
     private final static Logger LOGGER = LoggerFactory.getLogger(IngestMonitorPublisher.class);
 
-    @Configurable("0.0.0.0")
-    String ingestServer;
+    @Configurable("http://0.0.0.0:8070")
+    String ingestEndpoint;
 
-    @Configurable("8070")
-    int ingestPort;
-
-    @Configurable("1.0")
+    @Configurable("1")
     String apiVersion;
 
     @Configurable("6c001e57-aa67-431e-b5cf-8ad1145c5f30")
@@ -62,7 +59,7 @@ public class IngestMonitorPublisher extends BufferedHandler<List<Metric>>
     String environmentId;
 
     @Configurable("asdqwe")
-    String applicationId;
+    String targetId;
 
     @Configurable("true")
     protected boolean enabled;
@@ -113,17 +110,16 @@ public class IngestMonitorPublisher extends BufferedHandler<List<Metric>>
                 }
             }
         }
-        return new IdPOSTBody(null, cpuUsage, memoryUsage, memoryTotal);
+        return new IdPOSTBody(cpuUsage, memoryUsage, memoryTotal);
     }
 
     private boolean send(IdPOSTBody body)
     {
         try {
-            String endpoint = String.format("http://%s:%s", ingestServer, String.valueOf(ingestPort));
-            LOGGER.info(String.format("Sending %s to Ingest Api at endpoint: %s", body.toString(), endpoint));
+            LOGGER.info(String.format("Sending %s to Ingest Api at endpoint: %s", body.toString(), ingestEndpoint));
             AnypointMonitoringIngestAPIClient
-                    .create(endpoint, apiVersion, organizationId, environmentId)
-                    .targets.id(applicationId).post(body);
+                    .create(ingestEndpoint, apiVersion, organizationId, environmentId)
+                    .targets.id(targetId).post(body);
             LOGGER.info("It all went fine :D");
             return true;
         } catch (Exception e) {
