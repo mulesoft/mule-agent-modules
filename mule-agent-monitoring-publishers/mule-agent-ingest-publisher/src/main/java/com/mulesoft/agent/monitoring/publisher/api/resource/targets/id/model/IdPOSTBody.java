@@ -1,5 +1,5 @@
 
-package com.mulesoft.agent.monitoring.publisher.resource.targets.id.model;
+package com.mulesoft.agent.monitoring.publisher.api.resource.targets.id.model;
 
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -25,7 +25,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
     "memory-usage",
     "memory-total"
 })
-public class IdPOSTBody {
+public class IdPOSTBody
+{
 
     /**
      * 
@@ -34,7 +35,7 @@ public class IdPOSTBody {
      */
     @JsonProperty("cpu-usage")
     @JsonDeserialize(as = java.util.LinkedHashSet.class)
-    private Set<CpuUsage> cpuUsage = new LinkedHashSet<CpuUsage>();
+    private Set<IngestMetric> cpuUsage = new LinkedHashSet<IngestMetric>();
     /**
      * 
      * (Required)
@@ -42,7 +43,7 @@ public class IdPOSTBody {
      */
     @JsonProperty("memory-usage")
     @JsonDeserialize(as = java.util.LinkedHashSet.class)
-    private Set<MemoryUsage> memoryUsage = new LinkedHashSet<MemoryUsage>();
+    private Set<IngestMetric> memoryUsage = new LinkedHashSet<IngestMetric>();
     /**
      * 
      * (Required)
@@ -50,7 +51,7 @@ public class IdPOSTBody {
      */
     @JsonProperty("memory-total")
     @JsonDeserialize(as = java.util.LinkedHashSet.class)
-    private Set<MemoryTotal> memoryTotal = new LinkedHashSet<MemoryTotal>();
+    private Set<IngestMetric> memoryTotal = new LinkedHashSet<IngestMetric>();
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -58,7 +59,8 @@ public class IdPOSTBody {
      * No args constructor for use in serialization
      * 
      */
-    public IdPOSTBody() {
+    public IdPOSTBody()
+    {
     }
 
     /**
@@ -68,7 +70,8 @@ public class IdPOSTBody {
      * @param memoryTotal
      * @param id
      */
-    public IdPOSTBody(Set<CpuUsage> cpuUsage, Set<MemoryUsage> memoryUsage, Set<MemoryTotal> memoryTotal) {
+    public IdPOSTBody(Set<IngestMetric> cpuUsage, Set<IngestMetric> memoryUsage, Set<IngestMetric> memoryTotal)
+    {
         this.cpuUsage = cpuUsage;
         this.memoryUsage = memoryUsage;
         this.memoryTotal = memoryTotal;
@@ -82,7 +85,8 @@ public class IdPOSTBody {
      *     The cpuUsage
      */
     @JsonProperty("cpu-usage")
-    public Set<CpuUsage> getCpuUsage() {
+    public Set<IngestMetric> getCpuUsage()
+    {
         return cpuUsage;
     }
 
@@ -94,11 +98,13 @@ public class IdPOSTBody {
      *     The cpu-usage
      */
     @JsonProperty("cpu-usage")
-    public void setCpuUsage(Set<CpuUsage> cpuUsage) {
+    public void setCpuUsage(Set<IngestMetric> cpuUsage)
+    {
         this.cpuUsage = cpuUsage;
     }
 
-    public IdPOSTBody withCpuUsage(Set<CpuUsage> cpuUsage) {
+    public IdPOSTBody withCpuUsage(Set<IngestMetric> cpuUsage)
+    {
         this.cpuUsage = cpuUsage;
         return this;
     }
@@ -111,7 +117,8 @@ public class IdPOSTBody {
      *     The memoryUsage
      */
     @JsonProperty("memory-usage")
-    public Set<MemoryUsage> getMemoryUsage() {
+    public Set<IngestMetric> getMemoryUsage()
+    {
         return memoryUsage;
     }
 
@@ -123,11 +130,13 @@ public class IdPOSTBody {
      *     The memory-usage
      */
     @JsonProperty("memory-usage")
-    public void setMemoryUsage(Set<MemoryUsage> memoryUsage) {
+    public void setMemoryUsage(Set<IngestMetric> memoryUsage)
+    {
         this.memoryUsage = memoryUsage;
     }
 
-    public IdPOSTBody withMemoryUsage(Set<MemoryUsage> memoryUsage) {
+    public IdPOSTBody withMemoryUsage(Set<IngestMetric> memoryUsage)
+    {
         this.memoryUsage = memoryUsage;
         return this;
     }
@@ -140,7 +149,8 @@ public class IdPOSTBody {
      *     The memoryTotal
      */
     @JsonProperty("memory-total")
-    public Set<MemoryTotal> getMemoryTotal() {
+    public Set<IngestMetric> getMemoryTotal()
+    {
         return memoryTotal;
     }
 
@@ -152,46 +162,56 @@ public class IdPOSTBody {
      *     The memory-total
      */
     @JsonProperty("memory-total")
-    public void setMemoryTotal(Set<MemoryTotal> memoryTotal) {
+    public void setMemoryTotal(Set<IngestMetric> memoryTotal)
+    {
         this.memoryTotal = memoryTotal;
     }
 
-    public IdPOSTBody withMemoryTotal(Set<MemoryTotal> memoryTotal) {
+    public IdPOSTBody withMemoryTotal(Set<IngestMetric> memoryTotal)
+    {
         this.memoryTotal = memoryTotal;
         return this;
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return ToStringBuilder.reflectionToString(this);
     }
 
     @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
+    public Map<String, Object> getAdditionalProperties()
+    {
         return this.additionalProperties;
     }
 
     @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
+    public void setAdditionalProperty(String name, Object value)
+    {
         this.additionalProperties.put(name, value);
     }
 
-    public IdPOSTBody withAdditionalProperty(String name, Object value) {
+    public IdPOSTBody withAdditionalProperty(String name, Object value)
+    {
         this.additionalProperties.put(name, value);
         return this;
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         return new HashCodeBuilder().append(cpuUsage).append(memoryUsage).append(memoryTotal).append(additionalProperties).toHashCode();
     }
 
     @Override
-    public boolean equals(Object other) {
-        if (other == this) {
+    public boolean equals(Object other)
+    {
+        if (other == this)
+        {
             return true;
         }
-        if ((other instanceof IdPOSTBody) == false) {
+        if ((other instanceof IdPOSTBody) == false)
+        {
             return false;
         }
         IdPOSTBody rhs = ((IdPOSTBody) other);

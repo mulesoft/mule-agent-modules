@@ -8,7 +8,6 @@
 
 package com.mulesoft.agent.monitoring.publisher;
 
-import com.google.common.collect.Sets;
 import com.mulesoft.agent.AgentEnableOperationException;
 import com.mulesoft.agent.buffer.BufferConfiguration;
 import com.mulesoft.agent.buffer.BufferType;
@@ -17,21 +16,15 @@ import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.PostConfigure;
 import com.mulesoft.agent.domain.monitoring.Metric;
 import com.mulesoft.agent.monitoring.publisher.api.AnypointMonitoringIngestAPIClient;
-import com.mulesoft.agent.monitoring.publisher.resource.targets.id.model.CpuUsage;
-import com.mulesoft.agent.monitoring.publisher.resource.targets.id.model.IdPOSTBody;
-import com.mulesoft.agent.monitoring.publisher.resource.targets.id.model.MemoryTotal;
-import com.mulesoft.agent.monitoring.publisher.resource.targets.id.model.MemoryUsage;
+import com.mulesoft.agent.monitoring.publisher.api.resource.targets.id.model.IdPOSTBody;
 import com.mulesoft.agent.services.OnOffSwitch;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 /**
  * <p>
@@ -71,10 +64,13 @@ public class IngestMonitorPublisher extends BufferedHandler<List<Metric>>
     }
 
     @PostConfigure
-    public void postConfigurable() throws AgentEnableOperationException {
-        if(this.enabledSwitch == null) {
+    public void postConfigurable() throws AgentEnableOperationException
+    {
+        if(this.enabledSwitch == null)
+        {
             this.enabledSwitch = OnOffSwitch.newNullSwitch(this.enabled);
-            if (this.buffer == null) {
+            if (this.buffer == null)
+            {
                 this.buffer = new BufferConfiguration();
                 this.buffer.setType(BufferType.MEMORY);
                 this.buffer.setRetryCount(1);
@@ -82,48 +78,28 @@ public class IngestMonitorPublisher extends BufferedHandler<List<Metric>>
                 this.buffer.setMaximumCapacity(100);
             }
         }
-        LOGGER.info(ToStringBuilder.reflectionToString(this.buffer));
-        LOGGER.info(String.format("enabled: %s", String.valueOf(this.enabledSwitch.isEnabled())));
     }
+
+
 
     private IdPOSTBody processMetrics(Collection<List<Metric>> collection)
     {
-        Set<CpuUsage> cpuUsage = Sets.newHashSet();
-        Set<MemoryUsage> memoryUsage = Sets.newHashSet();
-        Set< MemoryTotal> memoryTotal = Sets.newHashSet();
-        for (List<Metric> metrics : collection) {
-            for (Metric metric : metrics) {
-                Double value = metric.getValue().doubleValue();
-                Date date = new Date(metric.getTimestamp());
-                if (metric.getName().contains("java.lang:type=OperatingSystem:CPU")) {
-                    CpuUsage usage = new CpuUsage(date, value, value, value, value, 1d);
-                    LOGGER.info(String.format("Registered cpu usage: %s", usage.toString()));
-                    cpuUsage.add(usage);
-                } else if (metric.getName().contains("java.lang:type=Memory:heap used")) {
-                    MemoryUsage usage = new MemoryUsage(date, value, value, value, value, 1d);
-                    LOGGER.info(String.format("Registered memory usage: %s", usage.toString()));
-                    memoryUsage.add(usage);
-                } else if (metric.getName().contains("java.lang:type=Memory:heap total")) {
-                    MemoryTotal total = new MemoryTotal(date, value, value, value, value, 1d);
-                    LOGGER.info(String.format("Registered memory total: %s", total.toString()));
-                    memoryTotal.add(total);
-                }
-            }
-        }
-        return new IdPOSTBody(cpuUsage, memoryUsage, memoryTotal);
+        return new MetricTransformer().transform(collection);
     }
 
     private boolean send(IdPOSTBody body)
     {
-        try {
-            LOGGER.info(String.format("Sending %s to Ingest Api at endpoint: %s", body.toString(), ingestEndpoint));
+        try
+        {
             AnypointMonitoringIngestAPIClient
                     .create(ingestEndpoint, apiVersion, organizationId, environmentId)
                     .targets.id(targetId).post(body);
-            LOGGER.info("It all went fine :D");
+            LOGGER.info("Published metrics to Ingest successfully");
             return true;
-        } catch (Exception e) {
-            LOGGER.error("oops... something went wrong: ", e);
+        }
+        catch (Exception e)
+        {
+            LOGGER.error("Could not publish metrics to Ingest: ", e);
             return false;
         }
     }
@@ -132,6 +108,7 @@ public class IngestMonitorPublisher extends BufferedHandler<List<Metric>>
     protected boolean flush(Collection<List<Metric>> collection)
     {
         IdPOSTBody body = processMetrics(collection);
+        LOGGER.info(String.format("publishing %s to ingest api.", body));
         return send(body);
     }
 }
