@@ -19,7 +19,7 @@ public class AnypointMonitoringIngestAPIClient {
     }
 
     public AnypointMonitoringIngestAPIClient(String endpoint, String apiVersion, String organizationId, String environmentId) {
-        this(String.format("%s/monitoring/api/v%s/organizations/%s/environments/%s", endpoint, apiVersion, organizationId, environmentId));
+        this(String.format("%s/monitoring/ingest/api/v%s/organizations/%s/environments/%s", endpoint, apiVersion, organizationId, environmentId));
     }
 
     private Client getClient() {
