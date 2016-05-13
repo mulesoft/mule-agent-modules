@@ -12,13 +12,17 @@ import java.util.*;
 /**
  * Created by sebastianvinci on 5/13/16.
  */
-public class MetricTransformerTest {
+public class MetricTransformerTest
+{
 
     @Test
-    public void shouldBehaveCorrectlyOnCollectionOfEmptyLists() {
+    public void shouldBehaveCorrectlyOnCollectionOfEmptyLists()
+    {
         Collection<List<Metric>> collection = new LinkedList<>();
         for (int i = 0; i < 1000; i++)
+        {
             collection.add(new LinkedList<Metric>());
+        }
 
         IdPOSTBody result = new MetricTransformer().transform(collection);
 
@@ -51,7 +55,8 @@ public class MetricTransformerTest {
     }
 
     @Test
-    public void shouldBehaveCorrectlyOnEmptyCollection() {
+    public void shouldBehaveCorrectlyOnEmptyCollection()
+    {
         Collection<List<Metric>> collection = new LinkedList<>();
 
         IdPOSTBody result = new MetricTransformer().transform(collection);
@@ -101,7 +106,8 @@ public class MetricTransformerTest {
     }
 
     @Test
-    public void properlyCalculatesMetrics() {
+    public void properlyCalculatesMetrics()
+    {
         Collection<List<Metric>> collection = completeTestCase();
 
         IdPOSTBody result = new MetricTransformer().transform(collection);
@@ -128,7 +134,8 @@ public class MetricTransformerTest {
         Assert.assertEquals(memoryTotal.getCount(), new Double(5d));
     }
 
-    private Collection<List<Metric>> completeTestCase() {
+    private Collection<List<Metric>> completeTestCase()
+    {
         List<Metric> elements1 = Lists.newArrayList(
                 new Metric(new Date().getTime(), "java.lang:type=OperatingSystem:CPU", 3.4d),
                 new Metric(new Date().getTime(), "java.lang:type=Memory:heap total", 3.9d),
