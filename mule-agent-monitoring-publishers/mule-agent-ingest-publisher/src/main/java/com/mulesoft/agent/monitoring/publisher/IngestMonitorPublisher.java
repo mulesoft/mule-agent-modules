@@ -28,8 +28,7 @@ import java.util.List;
 
 /**
  * <p>
- * Handler that publishes JMX information obtained from the Monitoring Service to a running Nagios instance.
- * Utilizes the NCSA protocol.
+ * Handler that publishes JMX information obtained from the Monitoring Service to a running Ingest API instance.
  * </p>
  */
 @Named("mule.agent.ingest.metrics.internal.handler")
@@ -79,8 +78,6 @@ public class IngestMonitorPublisher extends BufferedHandler<List<Metric>>
             }
         }
     }
-
-
 
     private IdPOSTBody processMetrics(Collection<List<Metric>> collection)
     {
