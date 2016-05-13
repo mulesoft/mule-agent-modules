@@ -2,9 +2,11 @@ package com.mulesoft.agent.monitoring.publisher;
 
 import com.google.common.collect.Sets;
 import com.mulesoft.agent.domain.monitoring.Metric;
-import com.mulesoft.agent.monitoring.publisher.api.resource.targets.id.model.IdPOSTBody;
-import com.mulesoft.agent.monitoring.publisher.api.resource.targets.id.model.IngestMetric;
+import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestMetric;
+import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestMetricPostBody;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -13,11 +15,18 @@ import java.util.Set;
 /**
  * Created by sebastianvinci on 5/12/16.
  */
+@Singleton
 final class MetricTransformer {
 
     private static final String CPU_METRIC_NAME = "java.lang:type=OperatingSystem:CPU";
     private static final String MEMORY_USAGE_METRIC_NAME = "java.lang:type=Memory:heap used";
     private static final String MEMORY_TOTAL_METRIC_NAME = "java.lang:type=Memory:heap total";
+
+    @Inject
+    MetricTransformer()
+    {
+        super();
+    }
 
     private void processMetric(Metric metric, IngestMetric sample, String expectedName)
     {
@@ -58,7 +67,7 @@ final class MetricTransformer {
         return Sets.newHashSet(metric);
     }
 
-    IdPOSTBody transform(Collection<List<Metric>> collection)
+    IngestMetricPostBody transform(Collection<List<Metric>> collection)
     {
         Date now = new Date();
 
@@ -76,7 +85,7 @@ final class MetricTransformer {
             }
         }
 
-        return new IdPOSTBody(finishMetric(cpuUsageSample), finishMetric(memoryUsageSample), finishMetric(memoryTotalSample));
+        return new IngestMetricPostBody(finishMetric(cpuUsageSample), finishMetric(memoryUsageSample), finishMetric(memoryTotalSample));
     }
 
 }

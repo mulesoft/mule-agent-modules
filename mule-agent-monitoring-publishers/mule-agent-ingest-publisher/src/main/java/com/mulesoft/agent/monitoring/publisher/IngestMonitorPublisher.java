@@ -15,12 +15,13 @@ import com.mulesoft.agent.buffer.BufferedHandler;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.PostConfigure;
 import com.mulesoft.agent.domain.monitoring.Metric;
-import com.mulesoft.agent.monitoring.publisher.api.AnypointMonitoringIngestAPIClient;
-import com.mulesoft.agent.monitoring.publisher.api.resource.targets.id.model.IdPOSTBody;
+import com.mulesoft.agent.monitoring.publisher.ingest.AnypointMonitoringIngestAPIClient;
+import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestMetricPostBody;
 import com.mulesoft.agent.services.OnOffSwitch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.Collection;
@@ -31,30 +32,28 @@ import java.util.List;
  * Handler that publishes JMX information obtained from the Monitoring Service to a running Ingest API instance.
  * </p>
  */
-@Named("mule.agent.ingest.metrics.internal.handler")
 @Singleton
+@Named("mule.agent.ingest.metrics.internal.handler")
 public class IngestMonitorPublisher extends BufferedHandler<List<Metric>>
 {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(IngestMonitorPublisher.class);
 
     @Configurable("http://0.0.0.0:8070")
-    String ingestEndpoint;
-
+    private String ingestEndpoint;
     @Configurable("1")
-    String apiVersion;
-
+    private String apiVersion;
     @Configurable("6c001e57-aa67-431e-b5cf-8ad1145c5f30")
-    String organizationId;
-
+    private String organizationId;
     @Configurable("7a964cfd-5cda-47b6-bcfe-817fa0f00362")
-    String environmentId;
-
+    private String environmentId;
     @Configurable("asdqwe")
-    String targetId;
-
+    private String targetId;
     @Configurable("true")
-    protected boolean enabled;
+    private Boolean enabled;
+    @Inject
+    private MetricTransformer transformer;
+    private AnypointMonitoringIngestAPIClient client;
 
     @Override
     protected boolean canHandle(List<Metric> metrics)
@@ -77,20 +76,19 @@ public class IngestMonitorPublisher extends BufferedHandler<List<Metric>>
                 this.buffer.setMaximumCapacity(100);
             }
         }
+        this.client = AnypointMonitoringIngestAPIClient.create(ingestEndpoint, apiVersion, organizationId, environmentId);
     }
 
-    private IdPOSTBody processMetrics(Collection<List<Metric>> collection)
+    private IngestMetricPostBody processMetrics(Collection<List<Metric>> collection)
     {
-        return new MetricTransformer().transform(collection);
+        return this.transformer.transform(collection);
     }
 
-    private boolean send(IdPOSTBody body)
+    private boolean send(IngestMetricPostBody body)
     {
         try
         {
-            AnypointMonitoringIngestAPIClient
-                    .create(ingestEndpoint, apiVersion, organizationId, environmentId)
-                    .targets.id(targetId).post(body);
+            this.client.postMetrics(targetId, body);
             LOGGER.info("Published metrics to Ingest successfully");
             return true;
         }
@@ -104,7 +102,7 @@ public class IngestMonitorPublisher extends BufferedHandler<List<Metric>>
     @Override
     protected boolean flush(Collection<List<Metric>> collection)
     {
-        IdPOSTBody body = processMetrics(collection);
+        IngestMetricPostBody body = processMetrics(collection);
         LOGGER.info(String.format("publishing %s to ingest api.", body));
         return send(body);
     }

@@ -2,8 +2,8 @@ package com.mulesoft.agent.monitoring.publisher;
 
 import com.google.common.collect.Lists;
 import com.mulesoft.agent.domain.monitoring.Metric;
-import com.mulesoft.agent.monitoring.publisher.api.resource.targets.id.model.IdPOSTBody;
-import com.mulesoft.agent.monitoring.publisher.api.resource.targets.id.model.IngestMetric;
+import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestMetricPostBody;
+import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestMetric;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -24,34 +24,32 @@ public class MetricTransformerTest
             collection.add(new LinkedList<Metric>());
         }
 
-        IdPOSTBody result = new MetricTransformer().transform(collection);
+        IngestMetricPostBody result = new MetricTransformer().transform(collection);
 
-        Assert.assertEquals(result.getCpuUsage().size(), 1);
-
-        Assert.assertEquals(result.getMemoryUsage().size(), 1);
-
-        Assert.assertEquals(result.getMemoryTotal().size(), 1);
+        Assert.assertEquals(1, result.getCpuUsage().size());
+        Assert.assertEquals(1, result.getMemoryUsage().size());
+        Assert.assertEquals(1, result.getMemoryTotal().size());
 
         IngestMetric cpu = result.getCpuUsage().iterator().next();
-        Assert.assertEquals(cpu.getMin(), null);
-        Assert.assertEquals(cpu.getMax(), null);
-        Assert.assertEquals(cpu.getSum(), new Double(0));
-        Assert.assertEquals(cpu.getAvg(), new Double(0));
-        Assert.assertEquals(cpu.getCount(), new Double(0d));
+        Assert.assertEquals(null, cpu.getMin());
+        Assert.assertEquals(null, cpu.getMax());
+        Assert.assertEquals(new Double(0), cpu.getSum());
+        Assert.assertEquals(new Double(0), cpu.getAvg());
+        Assert.assertEquals(new Double(0d), cpu.getCount());
 
         IngestMetric memoryUsage = result.getMemoryUsage().iterator().next();
-        Assert.assertEquals(memoryUsage.getMin(), null);
-        Assert.assertEquals(memoryUsage.getMax(), null);
-        Assert.assertEquals(memoryUsage.getSum(), new Double(0));
-        Assert.assertEquals(memoryUsage.getAvg(), new Double(0));
-        Assert.assertEquals(memoryUsage.getCount(), new Double(0d));
+        Assert.assertEquals(null, memoryUsage.getMin());
+        Assert.assertEquals(null, memoryUsage.getMax());
+        Assert.assertEquals(new Double(0), memoryUsage.getSum());
+        Assert.assertEquals(new Double(0), memoryUsage.getAvg());
+        Assert.assertEquals(new Double(0d), memoryUsage.getCount());
 
         IngestMetric memoryTotal = result.getMemoryTotal().iterator().next();
-        Assert.assertEquals(memoryTotal.getMin(), null);
-        Assert.assertEquals(memoryTotal.getMax(), null);
-        Assert.assertEquals(memoryTotal.getSum(), new Double(0));
-        Assert.assertEquals(memoryTotal.getAvg(), new Double(0));
-        Assert.assertEquals(memoryTotal.getCount(), new Double(0d));
+        Assert.assertEquals(null, memoryTotal.getMin());
+        Assert.assertEquals(null, memoryTotal.getMax());
+        Assert.assertEquals(new Double(0), memoryTotal.getSum());
+        Assert.assertEquals(new Double(0), memoryTotal.getAvg());
+        Assert.assertEquals(new Double(0d), memoryTotal.getCount());
     }
 
     @Test
@@ -59,34 +57,32 @@ public class MetricTransformerTest
     {
         Collection<List<Metric>> collection = new LinkedList<>();
 
-        IdPOSTBody result = new MetricTransformer().transform(collection);
+        IngestMetricPostBody result = new MetricTransformer().transform(collection);
 
-        Assert.assertEquals(result.getCpuUsage().size(), 1);
-
-        Assert.assertEquals(result.getMemoryUsage().size(), 1);
-
-        Assert.assertEquals(result.getMemoryTotal().size(), 1);
+        Assert.assertEquals(1, result.getCpuUsage().size());
+        Assert.assertEquals(1, result.getMemoryUsage().size());
+        Assert.assertEquals(1, result.getMemoryTotal().size());
 
         IngestMetric cpu = result.getCpuUsage().iterator().next();
-        Assert.assertEquals(cpu.getMin(), null);
-        Assert.assertEquals(cpu.getMax(), null);
-        Assert.assertEquals(cpu.getSum(), new Double(0));
-        Assert.assertEquals(cpu.getAvg(), new Double(0));
-        Assert.assertEquals(cpu.getCount(), new Double(0d));
+        Assert.assertEquals(null, cpu.getMin());
+        Assert.assertEquals(null, cpu.getMax());
+        Assert.assertEquals(new Double(0), cpu.getSum());
+        Assert.assertEquals(new Double(0), cpu.getAvg());
+        Assert.assertEquals(new Double(0d), cpu.getCount());
 
         IngestMetric memoryUsage = result.getMemoryUsage().iterator().next();
-        Assert.assertEquals(memoryUsage.getMin(), null);
-        Assert.assertEquals(memoryUsage.getMax(), null);
-        Assert.assertEquals(memoryUsage.getSum(), new Double(0));
-        Assert.assertEquals(memoryUsage.getAvg(), new Double(0));
-        Assert.assertEquals(memoryUsage.getCount(), new Double(0d));
+        Assert.assertEquals(null, memoryUsage.getMin());
+        Assert.assertEquals(null, memoryUsage.getMax());
+        Assert.assertEquals(new Double(0), memoryUsage.getSum());
+        Assert.assertEquals(new Double(0d), memoryUsage.getAvg());
+        Assert.assertEquals(new Double(0d), memoryUsage.getCount());
 
         IngestMetric memoryTotal = result.getMemoryTotal().iterator().next();
-        Assert.assertEquals(memoryTotal.getMin(), null);
-        Assert.assertEquals(memoryTotal.getMax(), null);
-        Assert.assertEquals(memoryTotal.getSum(), new Double(0));
-        Assert.assertEquals(memoryTotal.getAvg(), new Double(0));
-        Assert.assertEquals(memoryTotal.getCount(), new Double(0d));
+        Assert.assertEquals(null, memoryTotal.getMin());
+        Assert.assertEquals(null, memoryTotal.getMax());
+        Assert.assertEquals(new Double(0), memoryTotal.getSum());
+        Assert.assertEquals(new Double(0d), memoryTotal.getAvg());
+        Assert.assertEquals(new Double(0d), memoryTotal.getCount());
     }
 
     @Test
@@ -94,15 +90,15 @@ public class MetricTransformerTest
     {
         Collection<List<Metric>> collection = completeTestCase();
 
-        IdPOSTBody result = new MetricTransformer().transform(collection);
-        Assert.assertEquals(result.getCpuUsage().size(), 1);
-        Assert.assertEquals(result.getCpuUsage().iterator().next().getCount(), new Double(4));
+        IngestMetricPostBody result = new MetricTransformer().transform(collection);
+        Assert.assertEquals(1, result.getCpuUsage().size());
+        Assert.assertEquals(new Double(4), result.getCpuUsage().iterator().next().getCount());
 
-        Assert.assertEquals(result.getMemoryUsage().size(), 1);
-        Assert.assertEquals(result.getMemoryUsage().iterator().next().getCount(), new Double(6));
+        Assert.assertEquals(1, result.getMemoryUsage().size());
+        Assert.assertEquals(new Double(6), result.getMemoryUsage().iterator().next().getCount());
 
-        Assert.assertEquals(result.getMemoryTotal().size(), 1);
-        Assert.assertEquals(result.getMemoryTotal().iterator().next().getCount(), new Double(5));
+        Assert.assertEquals(1, result.getMemoryTotal().size());
+        Assert.assertEquals(new Double(5), result.getMemoryTotal().iterator().next().getCount());
     }
 
     @Test
@@ -110,28 +106,28 @@ public class MetricTransformerTest
     {
         Collection<List<Metric>> collection = completeTestCase();
 
-        IdPOSTBody result = new MetricTransformer().transform(collection);
+        IngestMetricPostBody result = new MetricTransformer().transform(collection);
 
         IngestMetric cpu = result.getCpuUsage().iterator().next();
-        Assert.assertEquals(cpu.getMin(), new Double(0.1d));
-        Assert.assertEquals(cpu.getMax(), new Double(8.1d));
-        Assert.assertEquals(cpu.getSum(), new Double(16.8d));
-        Assert.assertEquals(cpu.getAvg(), new Double(4.2d));
-        Assert.assertEquals(cpu.getCount(), new Double(4d));
+        Assert.assertEquals(new Double(0.1d), cpu.getMin());
+        Assert.assertEquals(new Double(8.1d), cpu.getMax());
+        Assert.assertEquals(new Double(16.8d), cpu.getSum());
+        Assert.assertEquals(new Double(4.2d), cpu.getAvg());
+        Assert.assertEquals(new Double(4d), cpu.getCount());
 
         IngestMetric memoryUsage = result.getMemoryUsage().iterator().next();
-        Assert.assertEquals(memoryUsage.getMin(), new Double(0.7d));
-        Assert.assertEquals(memoryUsage.getMax(), new Double(10d));
-        Assert.assertEquals(memoryUsage.getSum(), new Double(35.5d));
-        Assert.assertEquals(memoryUsage.getAvg(), new Double(5.916666666666667d));
-        Assert.assertEquals(memoryUsage.getCount(), new Double(6d));
+        Assert.assertEquals(new Double(0.7d), memoryUsage.getMin());
+        Assert.assertEquals(new Double(10d), memoryUsage.getMax());
+        Assert.assertEquals(new Double(35.5d), memoryUsage.getSum());
+        Assert.assertEquals(new Double(5.916666666666667d), memoryUsage.getAvg());
+        Assert.assertEquals(new Double(6d), memoryUsage.getCount());
 
         IngestMetric memoryTotal = result.getMemoryTotal().iterator().next();
-        Assert.assertEquals(memoryTotal.getMin(), new Double(3.9d));
-        Assert.assertEquals(memoryTotal.getMax(), new Double(15.3d));
-        Assert.assertEquals(memoryTotal.getSum(), new Double(42.22d));
-        Assert.assertEquals(memoryTotal.getAvg(), new Double(8.443999999999999d));
-        Assert.assertEquals(memoryTotal.getCount(), new Double(5d));
+        Assert.assertEquals(new Double(3.9d), memoryTotal.getMin());
+        Assert.assertEquals(new Double(15.3d), memoryTotal.getMax());
+        Assert.assertEquals(new Double(42.22d), memoryTotal.getSum());
+        Assert.assertEquals(new Double(8.443999999999999d), memoryTotal.getAvg());
+        Assert.assertEquals(new Double(5d), memoryTotal.getCount());
     }
 
     private Collection<List<Metric>> completeTestCase()

@@ -1,5 +1,5 @@
 
-package com.mulesoft.agent.monitoring.publisher.api.resource.targets.id.model;
+package com.mulesoft.agent.monitoring.publisher.ingest.model;
 
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -25,7 +25,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
     "memory-usage",
     "memory-total"
 })
-public class IdPOSTBody
+public class IngestMetricPostBody
 {
 
     /**
@@ -59,7 +59,7 @@ public class IdPOSTBody
      * No args constructor for use in serialization
      * 
      */
-    public IdPOSTBody()
+    public IngestMetricPostBody()
     {
     }
 
@@ -70,7 +70,7 @@ public class IdPOSTBody
      * @param memoryTotal
      * @param id
      */
-    public IdPOSTBody(Set<IngestMetric> cpuUsage, Set<IngestMetric> memoryUsage, Set<IngestMetric> memoryTotal)
+    public IngestMetricPostBody(Set<IngestMetric> cpuUsage, Set<IngestMetric> memoryUsage, Set<IngestMetric> memoryTotal)
     {
         this.cpuUsage = cpuUsage;
         this.memoryUsage = memoryUsage;
@@ -103,7 +103,7 @@ public class IdPOSTBody
         this.cpuUsage = cpuUsage;
     }
 
-    public IdPOSTBody withCpuUsage(Set<IngestMetric> cpuUsage)
+    public IngestMetricPostBody withCpuUsage(Set<IngestMetric> cpuUsage)
     {
         this.cpuUsage = cpuUsage;
         return this;
@@ -135,7 +135,7 @@ public class IdPOSTBody
         this.memoryUsage = memoryUsage;
     }
 
-    public IdPOSTBody withMemoryUsage(Set<IngestMetric> memoryUsage)
+    public IngestMetricPostBody withMemoryUsage(Set<IngestMetric> memoryUsage)
     {
         this.memoryUsage = memoryUsage;
         return this;
@@ -167,7 +167,7 @@ public class IdPOSTBody
         this.memoryTotal = memoryTotal;
     }
 
-    public IdPOSTBody withMemoryTotal(Set<IngestMetric> memoryTotal)
+    public IngestMetricPostBody withMemoryTotal(Set<IngestMetric> memoryTotal)
     {
         this.memoryTotal = memoryTotal;
         return this;
@@ -191,7 +191,7 @@ public class IdPOSTBody
         this.additionalProperties.put(name, value);
     }
 
-    public IdPOSTBody withAdditionalProperty(String name, Object value)
+    public IngestMetricPostBody withAdditionalProperty(String name, Object value)
     {
         this.additionalProperties.put(name, value);
         return this;
@@ -210,11 +210,11 @@ public class IdPOSTBody
         {
             return true;
         }
-        if ((other instanceof IdPOSTBody) == false)
+        if ((other instanceof IngestMetricPostBody) == false)
         {
             return false;
         }
-        IdPOSTBody rhs = ((IdPOSTBody) other);
+        IngestMetricPostBody rhs = ((IngestMetricPostBody) other);
         return new EqualsBuilder().append(cpuUsage, rhs.cpuUsage).append(memoryUsage, rhs.memoryUsage).append(memoryTotal, rhs.memoryTotal).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 

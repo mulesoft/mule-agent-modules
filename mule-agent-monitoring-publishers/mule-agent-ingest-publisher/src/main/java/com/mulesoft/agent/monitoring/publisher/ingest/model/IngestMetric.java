@@ -1,4 +1,4 @@
-package com.mulesoft.agent.monitoring.publisher.api.resource.targets.id.model;
+package com.mulesoft.agent.monitoring.publisher.ingest.model;
 
 import com.fasterxml.jackson.annotation.*;
 import org.apache.commons.lang.builder.EqualsBuilder;
