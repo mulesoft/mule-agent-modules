@@ -25,29 +25,29 @@ import org.apache.commons.lang.builder.ToStringBuilder;
     "memory-usage",
     "memory-total"
 })
-public class IngestMetricPostBody
+public class IngestTargetMetricPostBody
 {
 
     /**
-     * 
+     *
      * (Required)
-     * 
+     *
      */
     @JsonProperty("cpu-usage")
     @JsonDeserialize(as = java.util.LinkedHashSet.class)
     private Set<IngestMetric> cpuUsage = new LinkedHashSet<IngestMetric>();
     /**
-     * 
+     *
      * (Required)
-     * 
+     *
      */
     @JsonProperty("memory-usage")
     @JsonDeserialize(as = java.util.LinkedHashSet.class)
     private Set<IngestMetric> memoryUsage = new LinkedHashSet<IngestMetric>();
     /**
-     * 
+     *
      * (Required)
-     * 
+     *
      */
     @JsonProperty("memory-total")
     @JsonDeserialize(as = java.util.LinkedHashSet.class)
@@ -57,20 +57,20 @@ public class IngestMetricPostBody
 
     /**
      * No args constructor for use in serialization
-     * 
+     *
      */
-    public IngestMetricPostBody()
+    public IngestTargetMetricPostBody()
     {
     }
 
     /**
-     * 
+     *
      * @param cpuUsage
      * @param memoryUsage
      * @param memoryTotal
      * @param id
      */
-    public IngestMetricPostBody(Set<IngestMetric> cpuUsage, Set<IngestMetric> memoryUsage, Set<IngestMetric> memoryTotal)
+    public IngestTargetMetricPostBody(Set<IngestMetric> cpuUsage, Set<IngestMetric> memoryUsage, Set<IngestMetric> memoryTotal)
     {
         this.cpuUsage = cpuUsage;
         this.memoryUsage = memoryUsage;
@@ -78,9 +78,9 @@ public class IngestMetricPostBody
     }
 
     /**
-     * 
+     *
      * (Required)
-     * 
+     *
      * @return
      *     The cpuUsage
      */
@@ -91,9 +91,9 @@ public class IngestMetricPostBody
     }
 
     /**
-     * 
+     *
      * (Required)
-     * 
+     *
      * @param cpuUsage
      *     The cpu-usage
      */
@@ -103,16 +103,10 @@ public class IngestMetricPostBody
         this.cpuUsage = cpuUsage;
     }
 
-    public IngestMetricPostBody withCpuUsage(Set<IngestMetric> cpuUsage)
-    {
-        this.cpuUsage = cpuUsage;
-        return this;
-    }
-
     /**
-     * 
+     *
      * (Required)
-     * 
+     *
      * @return
      *     The memoryUsage
      */
@@ -123,9 +117,9 @@ public class IngestMetricPostBody
     }
 
     /**
-     * 
+     *
      * (Required)
-     * 
+     *
      * @param memoryUsage
      *     The memory-usage
      */
@@ -135,16 +129,10 @@ public class IngestMetricPostBody
         this.memoryUsage = memoryUsage;
     }
 
-    public IngestMetricPostBody withMemoryUsage(Set<IngestMetric> memoryUsage)
-    {
-        this.memoryUsage = memoryUsage;
-        return this;
-    }
-
     /**
-     * 
+     *
      * (Required)
-     * 
+     *
      * @return
      *     The memoryTotal
      */
@@ -155,9 +143,9 @@ public class IngestMetricPostBody
     }
 
     /**
-     * 
+     *
      * (Required)
-     * 
+     *
      * @param memoryTotal
      *     The memory-total
      */
@@ -165,12 +153,6 @@ public class IngestMetricPostBody
     public void setMemoryTotal(Set<IngestMetric> memoryTotal)
     {
         this.memoryTotal = memoryTotal;
-    }
-
-    public IngestMetricPostBody withMemoryTotal(Set<IngestMetric> memoryTotal)
-    {
-        this.memoryTotal = memoryTotal;
-        return this;
     }
 
     @Override
@@ -191,12 +173,6 @@ public class IngestMetricPostBody
         this.additionalProperties.put(name, value);
     }
 
-    public IngestMetricPostBody withAdditionalProperty(String name, Object value)
-    {
-        this.additionalProperties.put(name, value);
-        return this;
-    }
-
     @Override
     public int hashCode()
     {
@@ -210,11 +186,11 @@ public class IngestMetricPostBody
         {
             return true;
         }
-        if ((other instanceof IngestMetricPostBody) == false)
+        if ((other instanceof IngestTargetMetricPostBody) == false)
         {
             return false;
         }
-        IngestMetricPostBody rhs = ((IngestMetricPostBody) other);
+        IngestTargetMetricPostBody rhs = ((IngestTargetMetricPostBody) other);
         return new EqualsBuilder().append(cpuUsage, rhs.cpuUsage).append(memoryUsage, rhs.memoryUsage).append(memoryTotal, rhs.memoryTotal).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 

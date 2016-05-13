@@ -16,7 +16,8 @@ import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.PostConfigure;
 import com.mulesoft.agent.domain.monitoring.Metric;
 import com.mulesoft.agent.monitoring.publisher.ingest.AnypointMonitoringIngestAPIClient;
-import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestMetricPostBody;
+import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestApplicationMetricPostBody;
+import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestTargetMetricPostBody;
 import com.mulesoft.agent.services.OnOffSwitch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,8 +48,10 @@ public class IngestMonitorPublisher extends BufferedHandler<List<Metric>>
     private String organizationId;
     @Configurable("7a964cfd-5cda-47b6-bcfe-817fa0f00362")
     private String environmentId;
-    @Configurable("asdqwe")
+    @Configurable("1")
     private String targetId;
+    @Configurable("1")
+    private String applicationId;
     @Configurable("true")
     private Boolean enabled;
     @Inject
@@ -79,16 +82,22 @@ public class IngestMonitorPublisher extends BufferedHandler<List<Metric>>
         this.client = AnypointMonitoringIngestAPIClient.create(ingestEndpoint, apiVersion, organizationId, environmentId);
     }
 
-    private IngestMetricPostBody processMetrics(Collection<List<Metric>> collection)
+    private IngestTargetMetricPostBody processTargetMetrics(Collection<List<Metric>> collection)
     {
-        return this.transformer.transform(collection);
+        return this.transformer.transformTargetMetrics(collection);
     }
 
-    private boolean send(IngestMetricPostBody body)
+    private IngestApplicationMetricPostBody processApplicationMetrics(Collection<List<Metric>> collection)
+    {
+        return this.transformer.transformApplicationMetrics(collection);
+    }
+
+    private boolean send(IngestTargetMetricPostBody targetBody, IngestApplicationMetricPostBody appBody)
     {
         try
         {
-            this.client.postMetrics(targetId, body);
+            this.client.postTargetMetrics(targetId, targetBody);
+            this.client.postApplicationMetrics(applicationId, appBody);
             LOGGER.info("Published metrics to Ingest successfully");
             return true;
         }
@@ -102,8 +111,9 @@ public class IngestMonitorPublisher extends BufferedHandler<List<Metric>>
     @Override
     protected boolean flush(Collection<List<Metric>> collection)
     {
-        IngestMetricPostBody body = processMetrics(collection);
-        LOGGER.info(String.format("publishing %s to ingest api.", body));
-        return send(body);
+        IngestTargetMetricPostBody targetBody = processTargetMetrics(collection);
+        IngestApplicationMetricPostBody appBody = processApplicationMetrics(collection);
+        LOGGER.info(String.format("publishing metrics to ingest api.", targetBody));
+        return send(targetBody, appBody);
     }
 }

@@ -1,7 +1,8 @@
 
 package com.mulesoft.agent.monitoring.publisher.ingest;
 
-import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestMetricPostBody;
+import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestApplicationMetricPostBody;
+import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestTargetMetricPostBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,20 +36,30 @@ public class AnypointMonitoringIngestAPIClient
         return new AnypointMonitoringIngestAPIClient(endpoint, apiVersion, organizationId, environmentId);
     }
 
-    public void postMetrics(final String id, final IngestMetricPostBody body) {
-        final String url = this.baseUrl + "/targets/" + id;
-        LOGGER.info(String.format("Sending %s to %s...", body.toString(), url));
+    private <T> void doPost(final String url, final Entity<T> json) {
         final Response response = this.client
                 .target(url)
                 .request(MediaType.APPLICATION_JSON_TYPE)
-                .post(Entity.json(body));
+                .post(json);
         if (response.getStatusInfo().getFamily() != Response.Status.Family.SUCCESSFUL)
         {
             Response.StatusType statusInfo = response.getStatusInfo();
-            LOGGER.error(String.format("Failed to send %s to %s. Response status: %s", body.toString(), url, statusInfo.getReasonPhrase()));
-            throw new RuntimeException(((((("("+ statusInfo.getFamily())+") ")+ statusInfo.getStatusCode())+" ")+ statusInfo.getReasonPhrase()));
+            throw new RuntimeException("(" + statusInfo.getFamily()+ ") " + statusInfo.getStatusCode() + " " + statusInfo.getReasonPhrase());
         }
-        LOGGER.info(String.format("Successfully sent %s to %s!", body.toString(), url));
+    }
+
+    public void postTargetMetrics(final String id, final IngestTargetMetricPostBody body) {
+        final String url = this.baseUrl + "/targets/" + id;
+        LOGGER.info(String.format("Sending %s to %s...", body.toString(), url));
+        Entity<IngestTargetMetricPostBody> json = Entity.json(body);
+        this.doPost(url, json);
+    }
+
+    public void postApplicationMetrics(final String id, final IngestApplicationMetricPostBody body) {
+        final String url = this.baseUrl + "/applications/" + id;
+        Entity<IngestApplicationMetricPostBody> json = Entity.json(body);
+        LOGGER.info(String.format("Sending %s to %s...", body.toString(), url));
+        this.doPost(url, json);
     }
 
 }

@@ -2,7 +2,7 @@ package com.mulesoft.agent.monitoring.publisher;
 
 import com.google.common.collect.Lists;
 import com.mulesoft.agent.domain.monitoring.Metric;
-import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestMetricPostBody;
+import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestTargetMetricPostBody;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestMetric;
 import org.junit.Assert;
 import org.junit.Test;
@@ -24,7 +24,7 @@ public class MetricTransformerTest
             collection.add(new LinkedList<Metric>());
         }
 
-        IngestMetricPostBody result = new MetricTransformer().transform(collection);
+        IngestTargetMetricPostBody result = new MetricTransformer().transformTargetMetrics(collection);
 
         Assert.assertEquals(1, result.getCpuUsage().size());
         Assert.assertEquals(1, result.getMemoryUsage().size());
@@ -57,7 +57,7 @@ public class MetricTransformerTest
     {
         Collection<List<Metric>> collection = new LinkedList<>();
 
-        IngestMetricPostBody result = new MetricTransformer().transform(collection);
+        IngestTargetMetricPostBody result = new MetricTransformer().transformTargetMetrics(collection);
 
         Assert.assertEquals(1, result.getCpuUsage().size());
         Assert.assertEquals(1, result.getMemoryUsage().size());
@@ -90,7 +90,7 @@ public class MetricTransformerTest
     {
         Collection<List<Metric>> collection = completeTestCase();
 
-        IngestMetricPostBody result = new MetricTransformer().transform(collection);
+        IngestTargetMetricPostBody result = new MetricTransformer().transformTargetMetrics(collection);
         Assert.assertEquals(1, result.getCpuUsage().size());
         Assert.assertEquals(new Double(4), result.getCpuUsage().iterator().next().getCount());
 
@@ -106,7 +106,7 @@ public class MetricTransformerTest
     {
         Collection<List<Metric>> collection = completeTestCase();
 
-        IngestMetricPostBody result = new MetricTransformer().transform(collection);
+        IngestTargetMetricPostBody result = new MetricTransformer().transformTargetMetrics(collection);
 
         IngestMetric cpu = result.getCpuUsage().iterator().next();
         Assert.assertEquals(new Double(0.1d), cpu.getMin());
