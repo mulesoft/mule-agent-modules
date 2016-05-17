@@ -16,6 +16,20 @@ public class MetricTransformerTest
 {
 
     @Test
+    public void appMetricsshouldNotThrowNPEWhenIPassACoupleNullsToIt()
+    {
+        Collection<List<Metric>> collection = someNullsTestCase();
+        new MetricTransformer().transformApplicationMetrics(collection);
+    }
+
+    @Test
+    public void shouldNotThrowNPEWhenIPassACoupleNullsToIt()
+    {
+        Collection<List<Metric>> collection = someNullsTestCase();
+        new MetricTransformer().transformTargetMetrics(collection);
+    }
+
+    @Test
     public void shouldBehaveCorrectlyOnCollectionOfEmptyLists()
     {
         Collection<List<Metric>> collection = new LinkedList<>();
@@ -130,30 +144,60 @@ public class MetricTransformerTest
         Assert.assertEquals(new Double(5d), memoryTotal.getCount());
     }
 
+    private Collection<List<Metric>> someNullsTestCase() {
+        List<Metric> elements1 = Lists.newArrayList(
+                metric(null, 3.4d),
+                metric("java.lang:type=Memory:heap total", null),
+                null,
+                metric("java.lang:type=OperatingSystem:CPU", 8.1d),
+                metric("java.lang:type=Memory:heap used", 9.2d),
+                metric(null, null),
+                metric("java.lang:type=Memory:heap used", 0.7d),
+                metric("java.lang:type=OperatingSystem:CPU", 5.2d),
+                metric("java.lang:type=Memory:heap total", 15.3d),
+                metric("java.lang:type=Memory:heap used", null),
+                metric("java.lang:type=Memory:heap total", 5d)
+        );
+        List<Metric> elements2 = Lists.newArrayList(
+                metric("java.lang:type=Memory:heap used", 5d),
+                metric(null, 8.12d),
+                null,
+                metric("java.lang:type=Memory:heap used", 10d),
+                metric("this metric should be left out", 1d),
+                metric("java.lang:type=OperatingSystem:CPU", 0.1d)
+        );
+        return Lists.newArrayList(elements1, elements2, null);
+    }
+
     private Collection<List<Metric>> completeTestCase()
     {
         List<Metric> elements1 = Lists.newArrayList(
-                new Metric(new Date().getTime(), "java.lang:type=OperatingSystem:CPU", 3.4d),
-                new Metric(new Date().getTime(), "java.lang:type=Memory:heap total", 3.9d),
-                new Metric(new Date().getTime(), "this metric should be left out", 1d),
-                new Metric(new Date().getTime(), "java.lang:type=OperatingSystem:CPU", 8.1d),
-                new Metric(new Date().getTime(), "java.lang:type=Memory:heap used", 9.2d),
-                new Metric(new Date().getTime(), "java.lang:type=Memory:heap total", 9.9d),
-                new Metric(new Date().getTime(), "java.lang:type=Memory:heap used", 0.7d),
-                new Metric(new Date().getTime(), "java.lang:type=OperatingSystem:CPU", 5.2d),
-                new Metric(new Date().getTime(), "java.lang:type=Memory:heap total", 15.3d),
-                new Metric(new Date().getTime(), "java.lang:type=Memory:heap used", 2.9d),
-                new Metric(new Date().getTime(), "java.lang:type=Memory:heap total", 5d)
+                metric("java.lang:type=OperatingSystem:CPU", 3.4d),
+                metric("java.lang:type=Memory:heap total", 3.9d),
+                metric("this metric should be left out", 1d),
+                metric("java.lang:type=OperatingSystem:CPU", 8.1d),
+                metric("java.lang:type=Memory:heap used", 9.2d),
+                metric("java.lang:type=Memory:heap total", 9.9d),
+                metric("java.lang:type=Memory:heap used", 0.7d),
+                metric("java.lang:type=OperatingSystem:CPU", 5.2d),
+                metric("java.lang:type=Memory:heap total", 15.3d),
+                metric("java.lang:type=Memory:heap used", 2.9d),
+                metric("java.lang:type=Memory:heap total", 5d)
         );
         List<Metric> elements2 = Lists.newArrayList(
-                new Metric(new Date().getTime(), "java.lang:type=Memory:heap used", 5d),
-                new Metric(new Date().getTime(), "java.lang:type=Memory:heap total", 8.12d),
-                new Metric(new Date().getTime(), "java.lang:type=Memory:heap used", 7.7d),
-                new Metric(new Date().getTime(), "java.lang:type=Memory:heap used", 10d),
-                new Metric(new Date().getTime(), "this metric should be left out", 1d),
-                new Metric(new Date().getTime(), "java.lang:type=OperatingSystem:CPU", 0.1d)
+                metric("java.lang:type=Memory:heap used", 5d),
+                metric("java.lang:type=Memory:heap total", 8.12d),
+                metric("java.lang:type=Memory:heap used", 7.7d),
+                metric("java.lang:type=Memory:heap used", 10d),
+                metric("this metric should be left out", 1d),
+                metric("java.lang:type=OperatingSystem:CPU", 0.1d)
                 );
         return Lists.newArrayList(elements1, elements2);
+    }
+
+    private Metric metric(String name, Double value)
+    {
+        return new Metric(new Date().getTime(), name, value);
     }
 
 }

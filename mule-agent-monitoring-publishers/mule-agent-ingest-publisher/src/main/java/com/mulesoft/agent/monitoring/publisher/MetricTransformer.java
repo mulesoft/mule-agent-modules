@@ -1,15 +1,18 @@
 package com.mulesoft.agent.monitoring.publisher;
 
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Sets;
 import com.mulesoft.agent.domain.monitoring.Metric;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestApplicationMetricPostBody;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestMetric;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestTargetMetricPostBody;
+import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created by sebastianvinci on 5/12/16.
@@ -29,6 +32,8 @@ final class MetricTransformer {
 
     private void processMetric(Metric metric, IngestMetric sample, String expectedName)
     {
+        if (metric == null || StringUtils.isBlank(metric.getName()) || metric.getValue() == null) return;
+
         Double value = metric.getValue().doubleValue();
         if (metric.getName().contains(expectedName))
         {
@@ -76,11 +81,13 @@ final class MetricTransformer {
 
         for (List<Metric> metrics : collection)
         {
-            for (Metric metric : metrics)
+            if (metrics != null)
             {
-                this.processCpuUsage(metric, cpuUsageSample);
-                this.processMemoryTotal(metric, memoryTotalSample);
-                this.processMemoryUsage(metric, memoryUsageSample);
+                for (Metric metric : metrics) {
+                    this.processCpuUsage(metric, cpuUsageSample);
+                    this.processMemoryTotal(metric, memoryTotalSample);
+                    this.processMemoryUsage(metric, memoryUsageSample);
+                }
             }
         }
 
@@ -99,11 +106,13 @@ final class MetricTransformer {
 
         for (List<Metric> metrics : collection)
         {
-            for (Metric metric : metrics)
+            if (metrics != null)
             {
-                this.processMemoryUsage(metric, memoryUsageSample);
-                this.processCpuUsage(metric, cpuUsageSample);
-                this.processMemoryTotal(metric, memoryTotalSample);
+                for (Metric metric : metrics) {
+                    this.processMemoryUsage(metric, memoryUsageSample);
+                    this.processCpuUsage(metric, cpuUsageSample);
+                    this.processMemoryTotal(metric, memoryTotalSample);
+                }
             }
         }
 
