@@ -12,6 +12,9 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+/**
+ * Monitoring Ingest API Client
+ */
 public class AnypointMonitoringIngestAPIClient
 {
 

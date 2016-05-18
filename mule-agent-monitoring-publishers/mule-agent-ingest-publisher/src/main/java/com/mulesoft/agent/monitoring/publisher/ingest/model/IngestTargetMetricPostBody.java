@@ -1,14 +1,6 @@
 
 package com.mulesoft.agent.monitoring.publisher.ingest.model;
 
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-import javax.annotation.Generated;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -17,6 +9,13 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
+import javax.annotation.Generated;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+/**
+ * Represents the body of the post to publish target metrics to the monitoring ingest API.
+ */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
@@ -28,32 +27,17 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class IngestTargetMetricPostBody
 {
 
-    /**
-     *
-     * (Required)
-     *
-     */
     @JsonProperty("cpu-usage")
     @JsonDeserialize(as = java.util.LinkedHashSet.class)
     private Set<IngestMetric> cpuUsage = new LinkedHashSet<IngestMetric>();
-    /**
-     *
-     * (Required)
-     *
-     */
+
     @JsonProperty("memory-usage")
     @JsonDeserialize(as = java.util.LinkedHashSet.class)
     private Set<IngestMetric> memoryUsage = new LinkedHashSet<IngestMetric>();
-    /**
-     *
-     * (Required)
-     *
-     */
+
     @JsonProperty("memory-total")
     @JsonDeserialize(as = java.util.LinkedHashSet.class)
     private Set<IngestMetric> memoryTotal = new LinkedHashSet<IngestMetric>();
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
      * No args constructor for use in serialization
@@ -77,78 +61,36 @@ public class IngestTargetMetricPostBody
         this.memoryTotal = memoryTotal;
     }
 
-    /**
-     *
-     * (Required)
-     *
-     * @return
-     *     The cpuUsage
-     */
     @JsonProperty("cpu-usage")
     public Set<IngestMetric> getCpuUsage()
     {
         return cpuUsage;
     }
 
-    /**
-     *
-     * (Required)
-     *
-     * @param cpuUsage
-     *     The cpu-usage
-     */
     @JsonProperty("cpu-usage")
     public void setCpuUsage(Set<IngestMetric> cpuUsage)
     {
         this.cpuUsage = cpuUsage;
     }
 
-    /**
-     *
-     * (Required)
-     *
-     * @return
-     *     The memoryUsage
-     */
     @JsonProperty("memory-usage")
     public Set<IngestMetric> getMemoryUsage()
     {
         return memoryUsage;
     }
 
-    /**
-     *
-     * (Required)
-     *
-     * @param memoryUsage
-     *     The memory-usage
-     */
     @JsonProperty("memory-usage")
     public void setMemoryUsage(Set<IngestMetric> memoryUsage)
     {
         this.memoryUsage = memoryUsage;
     }
 
-    /**
-     *
-     * (Required)
-     *
-     * @return
-     *     The memoryTotal
-     */
     @JsonProperty("memory-total")
     public Set<IngestMetric> getMemoryTotal()
     {
         return memoryTotal;
     }
 
-    /**
-     *
-     * (Required)
-     *
-     * @param memoryTotal
-     *     The memory-total
-     */
     @JsonProperty("memory-total")
     public void setMemoryTotal(Set<IngestMetric> memoryTotal)
     {
@@ -161,22 +103,10 @@ public class IngestTargetMetricPostBody
         return ToStringBuilder.reflectionToString(this);
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties()
-    {
-        return this.additionalProperties;
-    }
-
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value)
-    {
-        this.additionalProperties.put(name, value);
-    }
-
     @Override
     public int hashCode()
     {
-        return new HashCodeBuilder().append(cpuUsage).append(memoryUsage).append(memoryTotal).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(cpuUsage).append(memoryUsage).append(memoryTotal).toHashCode();
     }
 
     @Override
@@ -191,7 +121,7 @@ public class IngestTargetMetricPostBody
             return false;
         }
         IngestTargetMetricPostBody rhs = ((IngestTargetMetricPostBody) other);
-        return new EqualsBuilder().append(cpuUsage, rhs.cpuUsage).append(memoryUsage, rhs.memoryUsage).append(memoryTotal, rhs.memoryTotal).append(additionalProperties, rhs.additionalProperties).isEquals();
+        return new EqualsBuilder().append(cpuUsage, rhs.cpuUsage).append(memoryUsage, rhs.memoryUsage).append(memoryTotal, rhs.memoryTotal).isEquals();
     }
 
 }

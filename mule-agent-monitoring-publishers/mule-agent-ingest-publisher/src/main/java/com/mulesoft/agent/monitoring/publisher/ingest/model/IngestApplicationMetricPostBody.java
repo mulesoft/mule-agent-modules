@@ -1,14 +1,6 @@
 
 package com.mulesoft.agent.monitoring.publisher.ingest.model;
 
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-import javax.annotation.Generated;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -17,6 +9,13 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
+import javax.annotation.Generated;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+/**
+ * Represents the body of the post to publish application metrics to the monitoring ingest API.
+ */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
@@ -27,32 +26,17 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class IngestApplicationMetricPostBody
 {
 
-    /**
-     *
-     * (Required)
-     *
-     */
     @JsonProperty("message-count")
     @JsonDeserialize(as = java.util.LinkedHashSet.class)
     private Set<IngestMetric> messageCount = new LinkedHashSet<IngestMetric>();
-    /**
-     *
-     * (Required)
-     *
-     */
+
     @JsonProperty("response-time")
     @JsonDeserialize(as = java.util.LinkedHashSet.class)
     private Set<IngestMetric> responseTime = new LinkedHashSet<IngestMetric>();
-    /**
-     *
-     * (Required)
-     *
-     */
+
     @JsonProperty("error-count")
     @JsonDeserialize(as = java.util.LinkedHashSet.class)
     private Set<IngestMetric> errorCount = new LinkedHashSet<IngestMetric>();
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
      * No args constructor for use in serialization
@@ -76,78 +60,36 @@ public class IngestApplicationMetricPostBody
         this.errorCount = errorCount;
     }
 
-    /**
-     *
-     * (Required)
-     *
-     * @return
-     *     The messageCount
-     */
     @JsonProperty("message-count")
     public Set<IngestMetric> getMessageCount()
     {
         return messageCount;
     }
 
-    /**
-     *
-     * (Required)
-     *
-     * @param messageCount
-     *     The message-count
-     */
     @JsonProperty("message-count")
     public void setMessageCount(Set<IngestMetric> messageCount)
     {
         this.messageCount = messageCount;
     }
 
-    /**
-     *
-     * (Required)
-     *
-     * @return
-     *     The responseTime
-     */
     @JsonProperty("response-time")
     public Set<IngestMetric> getResponseTime()
     {
         return responseTime;
     }
 
-    /**
-     *
-     * (Required)
-     *
-     * @param responseTime
-     *     The response-time
-     */
     @JsonProperty("response-time")
     public void setResponseTime(Set<IngestMetric> responseTime)
     {
         this.responseTime = responseTime;
     }
 
-    /**
-     *
-     * (Required)
-     *
-     * @return
-     *     The errorCount
-     */
     @JsonProperty("error-count")
     public Set<IngestMetric> getErrorCount()
     {
         return errorCount;
     }
 
-    /**
-     *
-     * (Required)
-     *
-     * @param errorCount
-     *     The error-count
-     */
     @JsonProperty("error-count")
     public void setErrorCount(Set<IngestMetric> errorCount)
     {
@@ -160,22 +102,10 @@ public class IngestApplicationMetricPostBody
         return ToStringBuilder.reflectionToString(this);
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties()
-    {
-        return this.additionalProperties;
-    }
-
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value)
-    {
-        this.additionalProperties.put(name, value);
-    }
-
     @Override
     public int hashCode()
     {
-        return new HashCodeBuilder().append(messageCount).append(responseTime).append(errorCount).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(messageCount).append(responseTime).append(errorCount).toHashCode();
     }
 
     @Override
@@ -190,7 +120,7 @@ public class IngestApplicationMetricPostBody
             return false;
         }
         IngestApplicationMetricPostBody rhs = ((IngestApplicationMetricPostBody) other);
-        return new EqualsBuilder().append(messageCount, rhs.messageCount).append(responseTime, rhs.responseTime).append(errorCount, rhs.errorCount).append(additionalProperties, rhs.additionalProperties).isEquals();
+        return new EqualsBuilder().append(messageCount, rhs.messageCount).append(responseTime, rhs.responseTime).append(errorCount, rhs.errorCount).isEquals();
     }
 
 }
