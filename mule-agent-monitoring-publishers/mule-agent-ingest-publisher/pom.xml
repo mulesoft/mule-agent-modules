@@ -2,7 +2,7 @@
   <parent>
     <artifactId>mule-agent-monitoring-publishers</artifactId>
     <groupId>com.mulesoft.agent</groupId>
-    <version>1.4.1-SNAPSHOT</version>
+    <version>1.5.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -25,10 +25,6 @@
       <dependency>
           <groupId>org.glassfish.jersey.media</groupId>
           <artifactId>jersey-media-json-jackson</artifactId>
-      </dependency>
-      <dependency>
-          <groupId>commons-lang</groupId>
-          <artifactId>commons-lang</artifactId>
       </dependency>
       <dependency>
           <groupId>commons-lang</groupId>
