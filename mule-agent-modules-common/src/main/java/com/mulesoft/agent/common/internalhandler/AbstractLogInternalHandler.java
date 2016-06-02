@@ -18,14 +18,17 @@ import org.apache.logging.log4j.core.appender.rolling.CompositeTriggeringPolicy;
 import org.apache.logging.log4j.core.appender.rolling.DefaultRolloverStrategy;
 import org.apache.logging.log4j.core.appender.rolling.SizeBasedTriggeringPolicy;
 import org.apache.logging.log4j.core.appender.rolling.TimeBasedTriggeringPolicy;
+import org.apache.logging.log4j.core.appender.rolling.action.Action;
 import org.apache.logging.log4j.core.config.AppenderRef;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
+import org.apache.logging.log4j.core.config.Property;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
+import java.nio.charset.Charset;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.Deflater;
 
@@ -171,25 +174,26 @@ public abstract class AbstractLogInternalHandler<T> implements InitializableInte
             this.logContext = new LoggerContext(contextName);
             this.logConfiguration = logContext.getConfiguration();
 
-            Layout<? extends Serializable> layout = PatternLayout.createLayout(PATTERN_LAYOUT, null, null, null, true, true, null, null);
+            Layout<? extends Serializable> layout = PatternLayout.newBuilder().withPattern(PATTERN_LAYOUT).
+                withCharset(Charset.forName("UTF-8")).withAlwaysWriteExceptions(true).withNoConsoleNoAnsi(false).build();
+
             String dayTrigger = TimeUnit.DAYS.toMillis(this.daysTrigger) + "";
             String sizeTrigger = (this.mbTrigger * 1024 * 1024) + "";
             TimeBasedTriggeringPolicy timeBasedTriggeringPolicy = TimeBasedTriggeringPolicy.createPolicy(dayTrigger, "true");
             SizeBasedTriggeringPolicy sizeBasedTriggeringPolicy = SizeBasedTriggeringPolicy.createPolicy(sizeTrigger);
             CompositeTriggeringPolicy policy = CompositeTriggeringPolicy.createPolicy(timeBasedTriggeringPolicy, sizeBasedTriggeringPolicy);
-            DefaultRolloverStrategy strategy = DefaultRolloverStrategy.createStrategy("7", "1", "7",
-                    Deflater.DEFAULT_COMPRESSION + "", this.logConfiguration);
 
             String fileName = this.getFileName().replace(MULE_HOME_PLACEHOLDER, System.getProperty("mule.home"));
             String filePattern = this.getFilePattern().replace(MULE_HOME_PLACEHOLDER, System.getProperty("mule.home"));
             this.appender = RollingRandomAccessFileAppender.createAppender(fileName, filePattern, "true",
                     this.appenderName, this.immediateFlush + "", this.bufferSize + "",
-                    policy, strategy, layout, null, "false", null, null, this.logConfiguration);
+                    policy, null, layout, null, "false", null, null, this.logConfiguration);
 
             this.appender.start();
 
             AppenderRef[] ref = new AppenderRef[]{};
-            this.loggerConfig = LoggerConfig.createLogger("false", Level.INFO, this.loggerName, "false", ref, null, null, null);
+            this.loggerConfig = LoggerConfig.createLogger("false", Level.INFO, this.loggerName, "false", ref,
+                    null, this.logConfiguration, null);
             this.loggerConfig.addAppender(this.appender, null, null);
             this.logConfiguration.addLogger(this.loggerName, this.loggerConfig);
 

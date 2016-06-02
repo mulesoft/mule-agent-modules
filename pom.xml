@@ -43,7 +43,7 @@
         <javax.validation.version>1.0.0.GA</javax.validation.version>
         <jersey.version>2.11</jersey.version>
         <junit.version>4.10</junit.version>
-        <log4j.version>2.1</log4j.version>
+        <log4j.version>2.5</log4j.version>
         <mockito.version>1.9.5</mockito.version>
         <slfj4.version>1.6.1</slfj4.version>
         <splunk.version>1.4.0.0</splunk.version>
