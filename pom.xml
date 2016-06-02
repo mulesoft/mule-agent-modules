@@ -141,6 +141,13 @@
                 <scope>provided</scope>
             </dependency>
             <dependency>
+                <groupId>com.mulesoft.agent</groupId>
+                <artifactId>mule-agent-internal-handlers</artifactId>
+                <version>${mule.agent.api.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-core</artifactId>
                 <version>${spring.version}</version>

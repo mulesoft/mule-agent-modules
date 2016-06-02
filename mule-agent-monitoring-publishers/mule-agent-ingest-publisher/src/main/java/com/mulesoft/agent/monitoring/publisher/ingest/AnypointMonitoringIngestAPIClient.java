@@ -2,6 +2,7 @@
 package com.mulesoft.agent.monitoring.publisher.ingest;
 
 import com.google.common.collect.Maps;
+import com.mulesoft.agent.clients.AuthenticationProxyClient;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestApplicationMetricPostBody;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestTargetMetricPostBody;
 import org.slf4j.Logger;
@@ -25,16 +26,16 @@ public class AnypointMonitoringIngestAPIClient
     private final String targetMetricsPath;
     private final String applicationMetricsPath;
 
-    private final AuthProxyClient authProxyClient;
+    private final AuthenticationProxyClient authProxyClient;
 
-    private AnypointMonitoringIngestAPIClient(String apiVersion, AuthProxyClient authProxyClient)
+    private AnypointMonitoringIngestAPIClient(String apiVersion, AuthenticationProxyClient authProxyClient)
     {
         this.targetMetricsPath = String.format("/monitoring/ingest/api/v%s/targets", apiVersion);
         this.applicationMetricsPath  = String.format("/monitoring/ingest/api/v%s/applications", apiVersion);
         this.authProxyClient = authProxyClient;
     }
 
-    public static AnypointMonitoringIngestAPIClient create(String apiVersion, AuthProxyClient authProxyClient)
+    public static AnypointMonitoringIngestAPIClient create(String apiVersion, AuthenticationProxyClient authProxyClient)
     {
         return new AnypointMonitoringIngestAPIClient(apiVersion, authProxyClient);
     }

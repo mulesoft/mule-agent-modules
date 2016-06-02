@@ -4,11 +4,12 @@ import com.mulesoft.agent.AgentEnableOperationException;
 import com.mulesoft.agent.buffer.BufferConfiguration;
 import com.mulesoft.agent.buffer.BufferType;
 import com.mulesoft.agent.buffer.BufferedHandler;
+import com.mulesoft.agent.clients.AuthenticationProxyClient;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.PostConfigure;
 import com.mulesoft.agent.configuration.common.SecurityConfiguration;
+import com.mulesoft.agent.handlers.internal.client.AuthProxyClient;
 import com.mulesoft.agent.monitoring.publisher.ingest.AnypointMonitoringIngestAPIClient;
-import com.mulesoft.agent.monitoring.publisher.ingest.AuthProxyClient;
 import com.mulesoft.agent.monitoring.publisher.ingest.builder.IngestMetricBuilder;
 import com.mulesoft.agent.services.OnOffSwitch;
 import org.slf4j.Logger;
@@ -57,7 +58,7 @@ public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
                 this.buffer.setMaximumCapacity(100);
             }
         }
-        AuthProxyClient authProxyClient = AuthProxyClient.create(authProxyEndpoint, securityConfiguration);
+        AuthenticationProxyClient authProxyClient = AuthProxyClient.create(authProxyEndpoint, securityConfiguration);
         this.client = AnypointMonitoringIngestAPIClient.create(apiVersion, authProxyClient);
     }
 
