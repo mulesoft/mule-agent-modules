@@ -25,7 +25,7 @@ public class MetricClassificationTest {
     @Test
     public void shouldNotThrowNPEWhenIPassNullToIt()
     {
-        new MetricClassification(null, null);
+        new MetricClassification(null, (Collection<List<Metric>>) null);
     }
 
     @Test
@@ -37,7 +37,7 @@ public class MetricClassificationTest {
     @Test
     public void shouldNotThrowNPEWhenMetricsIsNull()
     {
-        new MetricClassification(keys, null);
+        new MetricClassification(keys, (Collection<List<Metric>>) null);
     }
 
     @Test

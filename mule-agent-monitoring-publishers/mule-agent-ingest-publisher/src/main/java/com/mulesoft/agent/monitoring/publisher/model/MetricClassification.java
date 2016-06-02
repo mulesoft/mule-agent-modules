@@ -19,6 +19,11 @@ public class MetricClassification
 
     private final Map<String, List<Metric>> classification = Maps.newHashMap();
 
+    public MetricClassification(List<String> keys, List<Metric> sample) {
+        super();
+        classify(keys, sample);
+    }
+
     public MetricClassification(List<String> keys, Collection<List<Metric>> samples)
     {
         super();
@@ -28,26 +33,30 @@ public class MetricClassification
         }
         for (List<Metric> sample : samples)
         {
-            if (sample == null)
+            classify(keys, sample);
+        }
+    }
+
+    private void classify(List<String> keys, List<Metric> sample) {
+        if (sample == null)
+        {
+            return;
+        }
+        for (Metric metric : sample)
+        {
+            if (metric == null || StringUtils.isBlank(metric.getName()))
             {
                 continue;
             }
-            for (Metric metric : sample)
+            if (keys.contains(metric.getName()))
             {
-                if (metric == null || StringUtils.isBlank(metric.getName()))
-                {
-                    continue;
+                String key = metric.getName();
+                List<Metric> class_ = classification.get(key);
+                if (class_ == null) {
+                    class_ = Lists.newLinkedList();
+                    classification.put(key, class_);
                 }
-                if (keys.contains(metric.getName()))
-                {
-                    String key = metric.getName();
-                    List<Metric> class_ = classification.get(key);
-                    if (class_ == null) {
-                        class_ = Lists.newLinkedList();
-                        classification.put(key, class_);
-                    }
-                    class_.add(metric);
-                }
+                class_.add(metric);
             }
         }
     }

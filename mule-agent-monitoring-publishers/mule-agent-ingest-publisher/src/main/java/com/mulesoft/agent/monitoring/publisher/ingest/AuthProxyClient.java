@@ -1,5 +1,17 @@
 package com.mulesoft.agent.monitoring.publisher.ingest;
 
+import com.mulesoft.agent.configuration.common.SecurityConfiguration;
+
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.Response;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -8,23 +20,11 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManagerFactory;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import com.mulesoft.agent.configuration.common.SecurityConfiguration;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AuthProxyClient
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AnypointMonitoringIngestAPIClient.class);
 
     private final String baseUrl;
     private final Client client;
@@ -66,19 +66,24 @@ public class AuthProxyClient
         return keyStore;
     }
 
-    public <T> void post(String path, Entity<T> json)
+    public <T> void post(String path, Entity<T> json, Map<String, Object> headers)
     {
-        LOGGER.info("Doing POST request to auth proxy at " + path);
-        final Response response = this.client
+        Invocation.Builder request = this.client
                 .target(this.baseUrl + path)
                 .request(MediaType.APPLICATION_JSON_TYPE)
+                .headers(new MultivaluedHashMap<>(headers));
+        final Response response = request
                 .post(json);
-        LOGGER.info("Auth Proxy response code: " + String.valueOf(response.getStatus()));
         if (response.getStatusInfo().getFamily() != Response.Status.Family.SUCCESSFUL)
         {
             Response.StatusType statusInfo = response.getStatusInfo();
             throw new RuntimeException("(" + statusInfo.getFamily()+ ") " + statusInfo.getStatusCode() + " " + statusInfo.getReasonPhrase());
         }
+    }
+
+    public <T> void post(String path, Entity<T> json)
+    {
+        this.post(path, json, new HashMap<String, Object>(0));
     }
 
 }
