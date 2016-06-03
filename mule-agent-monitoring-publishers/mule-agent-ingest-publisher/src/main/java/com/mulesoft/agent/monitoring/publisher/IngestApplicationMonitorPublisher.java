@@ -2,6 +2,9 @@ package com.mulesoft.agent.monitoring.publisher;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.mulesoft.agent.AgentEnableOperationException;
+import com.mulesoft.agent.configuration.Configurable;
+import com.mulesoft.agent.configuration.PostConfigure;
 import com.mulesoft.agent.domain.monitoring.Metric;
 import com.mulesoft.agent.monitoring.publisher.ingest.builder.IngestApplicationMetricPostBodyBuilder;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestApplicationMetricPostBody;
@@ -18,6 +21,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.*;
 
 /**
  * <p>
@@ -31,13 +35,63 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Ma
 
     private final static Logger LOGGER = LoggerFactory.getLogger(IngestApplicationMonitorPublisher.class);
 
+    private static final Long TIME_OUT_DEFAULT = 10000L;
+    private static final TimeUnit TIME_UNIT_DEFAULT = TimeUnit.MILLISECONDS;
+
     private static final String MESSAGE_COUNT_NAME = "messageCount";
     private static final String RESPONSE_TIME_NAME = "responseTime";
     private static final String ERROR_COUNT_NAME = "errorCount";
     private static final List<String> keys = Lists.newArrayList(MESSAGE_COUNT_NAME, RESPONSE_TIME_NAME, ERROR_COUNT_NAME);
 
+    private Long applicationPublishTimeOut;
+    private TimeUnit applicationPublishTimeUnit;
+
     @Inject
     private IngestApplicationMetricPostBodyBuilder appMetricBuilder;
+    private ExecutorService executor;
+
+    @Override
+    @PostConfigure
+    public void postConfigurable() throws AgentEnableOperationException {
+        super.postConfigurable();
+
+        this.applicationPublishTimeOut = TIME_OUT_DEFAULT;
+        String systemConfiguredTimeOut = System.getProperty("application.metric.publish.timeout");
+        if (systemConfiguredTimeOut != null)
+        {
+            try {
+                this.applicationPublishTimeOut = Long.valueOf(systemConfiguredTimeOut);
+            } catch (NumberFormatException e)
+            {
+                LOGGER.warn("Received invalid value for application.metric.publish.timeout: " + systemConfiguredTimeOut);
+            }
+        }
+
+        this.applicationPublishTimeUnit = TIME_UNIT_DEFAULT;
+        String systemConfiguredTimeUnit = System.getProperty("application.metric.publish.timeout.unit");
+        if (systemConfiguredTimeUnit != null)
+        {
+            try {
+                this.applicationPublishTimeUnit = TimeUnit.valueOf(systemConfiguredTimeUnit);
+            } catch (NumberFormatException e)
+            {
+                LOGGER.warn("application.metric.publish.timeout.unit: " + systemConfiguredTimeUnit);
+            }
+        }
+
+        ThreadFactory threadFactory = new ThreadFactory()
+        {
+            @Override
+            public Thread newThread(Runnable r)
+            {
+                Thread t = new Thread(r);
+                t.setDaemon(true);
+                t.setPriority(Thread.MIN_PRIORITY);
+                return t;
+            }
+        };
+        this.executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), threadFactory);
+    }
 
     private Map<String, IngestApplicationMetricPostBody> processApplicationMetrics(Collection<Map<String, List<Metric>>> collection)
     {
@@ -74,13 +128,22 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Ma
         try
         {
             Map<String, IngestApplicationMetricPostBody> applicationBodies = this.processApplicationMetrics(collection);
-            for (Map.Entry<String, IngestApplicationMetricPostBody> entry : applicationBodies.entrySet())
+            CountDownLatch latch = new CountDownLatch(applicationBodies.size());
+
+            final List<Boolean> results = Lists.newLinkedList();
+            for (final Map.Entry<String, IngestApplicationMetricPostBody> entry : applicationBodies.entrySet())
             {
-                LOGGER.info("Publishing metrics for app " + entry.getKey());
-                this.client.postApplicationMetrics(entry.getKey(), entry.getValue());
+                this.executor.submit(new Runnable() {
+                    @Override
+                    public void run() {
+                        boolean result = IngestApplicationMonitorPublisher.this.client.postApplicationMetrics(entry.getKey(), entry.getValue());
+                        results.add(result);
+                    }
+                });
             }
-            LOGGER.info("Published application metrics to Ingest successfully");
-            return true;
+            latch.await(applicationPublishTimeOut, applicationPublishTimeUnit);
+
+            return !results.contains(false);
         }
         catch (Exception e)
         {

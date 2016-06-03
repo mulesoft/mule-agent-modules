@@ -8,11 +8,6 @@ import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestTargetMetricPo
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.util.HashMap;
 
 /**
@@ -21,6 +16,7 @@ import java.util.HashMap;
 public class AnypointMonitoringIngestAPIClient
 {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(AnypointMonitoringIngestAPIClient.class);
     private static final String APPLICATION_NAME_HEADER = "X-APPLICATION-NAME";
 
     private final String targetMetricsPath;
@@ -40,14 +36,32 @@ public class AnypointMonitoringIngestAPIClient
         return new AnypointMonitoringIngestAPIClient(apiVersion, authProxyClient);
     }
 
-    public void postTargetMetrics(final IngestTargetMetricPostBody body) {
-        this.authProxyClient.post(this.targetMetricsPath, Entity.json(body));
+    public boolean postTargetMetrics(final IngestTargetMetricPostBody body) {
+        try
+        {
+            this.authProxyClient.post(this.targetMetricsPath, body);
+            return true;
+        }
+        catch (Exception e)
+        {
+            LOGGER.error("Could not publish target", e);
+            return false;
+        }
     }
 
-    public void postApplicationMetrics(final String applicationName, final IngestApplicationMetricPostBody body) {
+    public boolean postApplicationMetrics(final String applicationName, final IngestApplicationMetricPostBody body) {
         HashMap<String, Object> headers = Maps.newHashMap();
         headers.put(APPLICATION_NAME_HEADER, applicationName);
-        this.authProxyClient.post(this.applicationMetricsPath, Entity.json(body), headers);
+        try
+        {
+            this.authProxyClient.post(this.applicationMetricsPath, body, headers);
+            return true;
+        }
+        catch (Exception e)
+        {
+            LOGGER.error("Could not publish metrics for application " + applicationName, e);
+            return false;
+        }
     }
 
 }
