@@ -15,6 +15,7 @@
         <module>mule-agent-db-event-tracker</module>
         <module>mule-agent-splunk-event-tracker</module>
         <module>mule-agent-log-event-tracker</module>
+        <module>mule-agent-analytics-event-tracker</module>
     </modules>
 
     <properties>

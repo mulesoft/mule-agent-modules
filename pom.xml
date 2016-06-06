@@ -33,23 +33,24 @@
     <properties>
         <mule.agent.api.version>1.5.0-SNAPSHOT</mule.agent.api.version>
 
+        <async.http.client.version>1.8.14</async.http.client.version>
+        <aws.sdk.version>1.6.0</aws.sdk.version>
         <common.logging.version>1.1.3</common.logging.version>
         <common.beanutils.version>1.9.2</common.beanutils.version>
         <commons.lang.version>2.4</commons.lang.version>
-        <log4j.version>2.1</log4j.version>
-        <splunk.version>1.4.0.0</splunk.version>
-        <uuid.version>3.1.3</uuid.version>
-        <junit.version>4.10</junit.version>
-        <mockito.version>1.9.5</mockito.version>
-        <aws.sdk.version>1.6.0</aws.sdk.version>
-        <spring.version>3.2.10.RELEASE</spring.version>
-        <javax.validation.version>1.0.0.GA</javax.validation.version>
-        <slfj4.version>1.6.1</slfj4.version>
-        <jackson.version>2.3.2</jackson.version>
-        <async.http.client.version>1.8.14</async.http.client.version>
         <gw.version>2.2.0</gw.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jackson.version>2.3.2</jackson.version>
+        <javax.validation.version>1.0.0.GA</javax.validation.version>
         <jersey.version>2.11</jersey.version>
+        <junit.version>4.10</junit.version>
+        <log4j.version>2.1</log4j.version>
+        <mockito.version>1.9.5</mockito.version>
+        <slfj4.version>1.6.1</slfj4.version>
+        <splunk.version>1.4.0.0</splunk.version>
+        <spring.version>3.2.10.RELEASE</spring.version>
+        <uuid.version>3.1.3</uuid.version>
+
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <build>
@@ -105,47 +106,38 @@
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>com.splunk</groupId>
-                <artifactId>splunk</artifactId>
-                <version>${splunk.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.uuid</groupId>
-                <artifactId>java-uuid-generator</artifactId>
-                <version>${uuid.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.jersey.core</groupId>
-                <artifactId>jersey-client</artifactId>
-                <version>${jersey.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.jersey.media</groupId>
-                <artifactId>jersey-media-json-jackson</artifactId>
-                <version>${jersey.version}</version>
-                <scope>provided</scope>
-            </dependency>
 
-            <dependency>
-                <groupId>javax.validation</groupId>
-                <artifactId>validation-api</artifactId>
-                <version>${javax.validation.version}</version>
-                <scope>provided</scope>
-            </dependency>
+            <!-- Mule Agent Dependencies -->
             <dependency>
                 <groupId>com.mulesoft.agent</groupId>
                 <artifactId>mule-agent-api</artifactId>
                 <version>${mule.agent.api.version}</version>
                 <scope>provided</scope>
             </dependency>
+
             <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-core</artifactId>
-                <version>${spring.version}</version>
+                <groupId>com.mulesoft.agent</groupId>
+                <artifactId>mule-agent-internal-handlers</artifactId>
+                <version>${mule.agent.api.version}</version>
                 <scope>provided</scope>
             </dependency>
+
+            <!-- AsyncHttpClient -->
+            <dependency>
+                <groupId>com.ning</groupId>
+                <artifactId>async-http-client</artifactId>
+                <version>${async.http.client.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- AWS SDK -->
+            <dependency>
+                <groupId>com.amazonaws</groupId>
+                <artifactId>aws-java-sdk</artifactId>
+                <version>${aws.sdk.version}</version>
+            </dependency>
+
+            <!-- Common Utils -->
             <dependency>
                 <groupId>commons-beanutils</groupId>
                 <artifactId>commons-beanutils</artifactId>
@@ -160,12 +152,7 @@
                 <scope>provided</scope>
             </dependency>
 
-            <dependency>
-                <groupId>com.amazonaws</groupId>
-                <artifactId>aws-java-sdk</artifactId>
-                <version>${aws.sdk.version}</version>
-            </dependency>
-
+            <!-- Jackson -->
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
@@ -179,11 +166,49 @@
                 <scope>provided</scope>
             </dependency>
 
-            <!-- AsyncHttpClient -->
+            <!-- Jersey -->
             <dependency>
-                <groupId>com.ning</groupId>
-                <artifactId>async-http-client</artifactId>
-                <version>${async.http.client.version}</version>
+                <groupId>org.glassfish.jersey.core</groupId>
+                <artifactId>jersey-client</artifactId>
+                <version>${jersey.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- Jersey + Jackson -->
+            <dependency>
+                <groupId>org.glassfish.jersey.media</groupId>
+                <artifactId>jersey-media-json-jackson</artifactId>
+                <version>${jersey.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- Splunk -->
+            <dependency>
+                <groupId>com.splunk</groupId>
+                <artifactId>splunk</artifactId>
+                <version>${splunk.version}</version>
+            </dependency>
+
+            <!-- Spring -->
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-core</artifactId>
+                <version>${spring.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- UUID Generator -->
+            <dependency>
+                <groupId>com.fasterxml.uuid</groupId>
+                <artifactId>java-uuid-generator</artifactId>
+                <version>${uuid.version}</version>
+            </dependency>
+
+            <!-- Validation API -->
+            <dependency>
+                <groupId>javax.validation</groupId>
+                <artifactId>validation-api</artifactId>
+                <version>${javax.validation.version}</version>
                 <scope>provided</scope>
             </dependency>
 
