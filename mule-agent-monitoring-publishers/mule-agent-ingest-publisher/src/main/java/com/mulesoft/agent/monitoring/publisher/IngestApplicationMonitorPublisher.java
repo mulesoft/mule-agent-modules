@@ -6,6 +6,8 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.mulesoft.agent.AgentEnableOperationException;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.PostConfigure;
+import com.mulesoft.agent.domain.monitoring.ApplicationMetrics;
+import com.mulesoft.agent.domain.monitoring.GroupedApplicationsMetrics;
 import com.mulesoft.agent.domain.monitoring.Metric;
 import com.mulesoft.agent.monitoring.publisher.ingest.builder.IngestApplicationMetricPostBodyBuilder;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestApplicationMetricPostBody;
@@ -31,7 +33,7 @@ import java.util.concurrent.*;
  */
 @Singleton
 @Named("mule.agent.ingest.application.metrics.internal.handler")
-public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Map<String, List<Metric>>>
+public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<GroupedApplicationsMetrics>
 {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(IngestApplicationMonitorPublisher.class);
@@ -58,19 +60,19 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Ma
         this.executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), threadFactory);
     }
 
-    private Map<String, IngestApplicationMetricPostBody> processApplicationMetrics(Collection<Map<String, List<Metric>>> collection)
+    private Map<String, IngestApplicationMetricPostBody> processApplicationMetrics(Collection<GroupedApplicationsMetrics> collection)
     {
         Map<String, List<Metric>> metricsByApplicationName = Maps.newHashMap();
 
-        for (Map<String, List<Metric>> metrics : collection) {
-            for (Map.Entry<String, List<Metric>> entry : metrics.entrySet()) {
+        for (GroupedApplicationsMetrics metrics : collection) {
+            for (Map.Entry<String, ApplicationMetrics> entry : metrics.getMetricsByApplicationName().entrySet()) {
                 List<Metric> processed = metricsByApplicationName.get(entry.getKey());
                 if (processed == null)
                 {
                     processed = Lists.newLinkedList();
                     metricsByApplicationName.put(entry.getKey(), processed);
                 }
-                processed.addAll(entry.getValue());
+                processed.addAll(entry.getValue().getMetrics());
             }
         }
 
@@ -88,7 +90,7 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Ma
         return bodies;
     }
 
-    protected boolean send(Collection<Map<String, List<Metric>>> collection)
+    protected boolean send(Collection<GroupedApplicationsMetrics> collection)
     {
         try
         {
