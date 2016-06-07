@@ -2,6 +2,7 @@ package com.mulesoft.agent.monitoring.publisher;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.mulesoft.agent.AgentEnableOperationException;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.PostConfigure;
@@ -53,17 +54,7 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Ma
     @Override
     @PostConfigure
     public void postConfigurable() throws AgentEnableOperationException {
-        ThreadFactory threadFactory = new ThreadFactory()
-        {
-            @Override
-            public Thread newThread(Runnable r)
-            {
-                Thread t = new Thread(r);
-                t.setDaemon(true);
-                t.setPriority(Thread.MIN_PRIORITY);
-                return t;
-            }
-        };
+        ThreadFactory threadFactory = new ThreadFactoryBuilder().setDaemon(true).setPriority(Thread.MIN_PRIORITY).setNameFormat("monitoring-application-publisher-%d").build();
         this.executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), threadFactory);
     }
 
