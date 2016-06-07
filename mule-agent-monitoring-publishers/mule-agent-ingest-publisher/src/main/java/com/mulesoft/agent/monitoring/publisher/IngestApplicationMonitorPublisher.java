@@ -3,6 +3,7 @@ package com.mulesoft.agent.monitoring.publisher;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mulesoft.agent.AgentEnableOperationException;
+import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.PostConfigure;
 import com.mulesoft.agent.domain.monitoring.Metric;
 import com.mulesoft.agent.monitoring.publisher.ingest.builder.IngestApplicationMetricPostBodyBuilder;
@@ -34,15 +35,15 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Ma
 
     private final static Logger LOGGER = LoggerFactory.getLogger(IngestApplicationMonitorPublisher.class);
 
-    private static final Long TIME_OUT_DEFAULT = 10000L;
-    private static final TimeUnit TIME_UNIT_DEFAULT = TimeUnit.MILLISECONDS;
-
     private static final String MESSAGE_COUNT_NAME = "messageCount";
     private static final String RESPONSE_TIME_NAME = "responseTime";
     private static final String ERROR_COUNT_NAME = "errorCount";
+
     private static final List<String> keys = Lists.newArrayList(MESSAGE_COUNT_NAME, RESPONSE_TIME_NAME, ERROR_COUNT_NAME);
 
+    @Configurable("10000")
     private Long applicationPublishTimeOut;
+    @Configurable("MILLISECONDS")
     private TimeUnit applicationPublishTimeUnit;
 
     @Inject
@@ -52,32 +53,6 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Ma
     @Override
     @PostConfigure
     public void postConfigurable() throws AgentEnableOperationException {
-        super.postConfigurable();
-
-        this.applicationPublishTimeOut = TIME_OUT_DEFAULT;
-        String systemConfiguredTimeOut = System.getProperty("application.metric.publish.timeout");
-        if (systemConfiguredTimeOut != null)
-        {
-            try {
-                this.applicationPublishTimeOut = Long.valueOf(systemConfiguredTimeOut);
-            } catch (NumberFormatException e)
-            {
-                LOGGER.warn("Received invalid value for application.metric.publish.timeout: " + systemConfiguredTimeOut);
-            }
-        }
-
-        this.applicationPublishTimeUnit = TIME_UNIT_DEFAULT;
-        String systemConfiguredTimeUnit = System.getProperty("application.metric.publish.timeout.unit");
-        if (systemConfiguredTimeUnit != null)
-        {
-            try {
-                this.applicationPublishTimeUnit = TimeUnit.valueOf(systemConfiguredTimeUnit);
-            } catch (NumberFormatException e)
-            {
-                LOGGER.warn("application.metric.publish.timeout.unit: " + systemConfiguredTimeUnit);
-            }
-        }
-
         ThreadFactory threadFactory = new ThreadFactory()
         {
             @Override
