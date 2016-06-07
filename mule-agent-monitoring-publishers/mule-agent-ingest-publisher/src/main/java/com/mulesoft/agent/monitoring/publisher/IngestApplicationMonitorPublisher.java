@@ -12,6 +12,7 @@ import com.mulesoft.agent.domain.monitoring.Metric;
 import com.mulesoft.agent.monitoring.publisher.ingest.builder.IngestApplicationMetricPostBodyBuilder;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestApplicationMetricPostBody;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestMetric;
+import com.mulesoft.agent.monitoring.publisher.model.IngestApplicationMetric;
 import com.mulesoft.agent.monitoring.publisher.model.MetricClassification;
 import com.mulesoft.agent.monitoring.publisher.model.MetricSample;
 import org.slf4j.Logger;
@@ -60,7 +61,7 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Gr
         this.executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), threadFactory);
     }
 
-    private Map<String, IngestApplicationMetricPostBody> processApplicationMetrics(Collection<GroupedApplicationsMetrics> collection)
+    private List<IngestApplicationMetric> processApplicationMetrics(Collection<GroupedApplicationsMetrics> collection)
     {
         Map<String, List<Metric>> metricsByApplicationName = Maps.newHashMap();
 
@@ -76,7 +77,7 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Gr
             }
         }
 
-        Map<String, IngestApplicationMetricPostBody> bodies = Maps.newHashMap();
+        List<IngestApplicationMetric> result = Lists.newLinkedList();
         Date now = new Date();
 
         for (Map.Entry<String, List<Metric>> entry : metricsByApplicationName.entrySet())
@@ -85,25 +86,25 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Gr
             IngestMetric cpuUsageSample = metricBuilder.build(new MetricSample(now, classification.getMetrics(MESSAGE_COUNT_NAME)));
             IngestMetric memoryUsageSample = metricBuilder.build(new MetricSample(now, classification.getMetrics(RESPONSE_TIME_NAME)));
             IngestMetric memoryTotalSample = metricBuilder.build(new MetricSample(now, classification.getMetrics(ERROR_COUNT_NAME)));
-            bodies.put(entry.getKey(), appMetricBuilder.build(cpuUsageSample, memoryUsageSample, memoryTotalSample));
+            result.add(new IngestApplicationMetric(entry.getKey(), appMetricBuilder.build(cpuUsageSample, memoryUsageSample, memoryTotalSample)));
         }
-        return bodies;
+        return result;
     }
 
     protected boolean send(Collection<GroupedApplicationsMetrics> collection)
     {
         try
         {
-            Map<String, IngestApplicationMetricPostBody> applicationBodies = this.processApplicationMetrics(collection);
-            CountDownLatch latch = new CountDownLatch(applicationBodies.size());
+            List<IngestApplicationMetric> metrics = this.processApplicationMetrics(collection);
+            CountDownLatch latch = new CountDownLatch(metrics.size());
 
             final List<Boolean> results = Lists.newLinkedList();
-            for (final Map.Entry<String, IngestApplicationMetricPostBody> entry : applicationBodies.entrySet())
+            for (final IngestApplicationMetric metric : metrics)
             {
                 this.executor.submit(new Runnable() {
                     @Override
                     public void run() {
-                        boolean result = IngestApplicationMonitorPublisher.this.client.postApplicationMetrics(entry.getKey(), entry.getValue());
+                        boolean result = IngestApplicationMonitorPublisher.this.client.postApplicationMetrics(metric.getApplicationName(), metric.getBody());
                         results.add(result);
                     }
                 });
