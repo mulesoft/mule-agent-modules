@@ -21,10 +21,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.*;
 
 /**
@@ -96,16 +93,28 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Gr
         try
         {
             List<IngestApplicationMetric> metrics = this.processApplicationMetrics(collection);
-            CountDownLatch latch = new CountDownLatch(metrics.size());
+            final CountDownLatch latch = new CountDownLatch(metrics.size());
 
-            final List<Boolean> results = Lists.newLinkedList();
+            final List<Boolean> results = Collections.synchronizedList(Lists.<Boolean>newLinkedList());
             for (final IngestApplicationMetric metric : metrics)
             {
                 this.executor.submit(new Runnable() {
                     @Override
                     public void run() {
-                        boolean result = IngestApplicationMonitorPublisher.this.client.postApplicationMetrics(metric.getApplicationName(), metric.getBody());
-                        results.add(result);
+                        try
+                        {
+                            boolean result = client.postApplicationMetrics(metric.getApplicationName(), metric.getBody());
+                            results.add(result);
+                        }
+                        catch (Exception e)
+                        {
+                            LOGGER.info("could not publish application metrics for " + metric.getApplicationName());
+                            results.add(false);
+                        }
+                        finally
+                        {
+                            latch.countDown();
+                        }
                     }
                 });
             }
