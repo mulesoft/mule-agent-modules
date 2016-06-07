@@ -48,10 +48,9 @@ public class IngestApplicationMetricPostBody
 
     /**
      *
-     * @param messageCount
-     * @param responseTime
-     * @param errorCount
-     * @param id
+     * @param messageCount Samples for message count
+     * @param responseTime Samples for response time
+     * @param errorCount Samples for error count
      */
     public IngestApplicationMetricPostBody(Set<IngestMetric> messageCount, Set<IngestMetric> responseTime, Set<IngestMetric> errorCount)
     {

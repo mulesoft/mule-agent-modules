@@ -52,12 +52,12 @@ public class IngestMetric
 
     /**
      *
-     * @param min
-     * @param avg
-     * @param max
-     * @param count
-     * @param sum
-     * @param time
+     * @param min Minimum value
+     * @param avg Average value
+     * @param max Maximum value
+     * @param count Quantity of samples
+     * @param sum Sum of all samples
+     * @param time Sample's date
      */
     public IngestMetric(Date time, Double min, Double max, Double sum, Double avg, Double count)
     {

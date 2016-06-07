@@ -49,10 +49,9 @@ public class IngestTargetMetricPostBody
 
     /**
      *
-     * @param cpuUsage
-     * @param memoryUsage
-     * @param memoryTotal
-     * @param id
+     * @param cpuUsage Samples for CPU Usage
+     * @param memoryUsage Samples for Memory Usage
+     * @param memoryTotal Samples for Memory Total
      */
     public IngestTargetMetricPostBody(Set<IngestMetric> cpuUsage, Set<IngestMetric> memoryUsage, Set<IngestMetric> memoryTotal)
     {
