@@ -3,7 +3,6 @@ package com.mulesoft.agent.monitoring.publisher;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mulesoft.agent.AgentEnableOperationException;
-import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.PostConfigure;
 import com.mulesoft.agent.domain.monitoring.Metric;
 import com.mulesoft.agent.monitoring.publisher.ingest.builder.IngestApplicationMetricPostBodyBuilder;
