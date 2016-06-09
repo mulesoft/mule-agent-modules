@@ -12,6 +12,7 @@ import com.mulesoft.agent.handlers.internal.client.DefaultAuthenticationProxyCli
 import com.mulesoft.agent.monitoring.publisher.ingest.AnypointMonitoringIngestAPIClient;
 import com.mulesoft.agent.monitoring.publisher.ingest.builder.IngestMetricBuilder;
 import com.mulesoft.agent.services.OnOffSwitch;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +29,7 @@ public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
     @Configurable("{}")
     private SecurityConfiguration securityConfiguration;
 
-    @Configurable("http://localhost:8088")
+    @Configurable
     private String authProxyEndpoint;
 
     @Configurable("1")
@@ -46,20 +47,50 @@ public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
     @PostConfigure
     public void postConfigurable() throws AgentEnableOperationException
     {
-        if(this.enabledSwitch == null)
+        this.enable(this.enabled);
+        if (this.buffer == null)
+        {
+            this.buffer = new BufferConfiguration();
+            this.buffer.setType(BufferType.MEMORY);
+            this.buffer.setRetryCount(1);
+            this.buffer.setFlushFrequency(60000L);
+            this.buffer.setMaximumCapacity(100);
+        }
+        if (this.enabledSwitch.isEnabled())
+        {
+            AuthenticationProxyClient authProxyClient = DefaultAuthenticationProxyClient.create(authProxyEndpoint, securityConfiguration);
+            this.client = AnypointMonitoringIngestAPIClient.create(apiVersion, authProxyClient);
+        }
+    }
+
+    @Override
+    public void enable(boolean state) throws AgentEnableOperationException {
+        if (this.checkConfiguration())
+        {
+            this.enabled = state;
+        }
+        else
+        {
+            this.enabled = false;
+        }
+        if (this.enabledSwitch == null)
         {
             this.enabledSwitch = OnOffSwitch.newNullSwitch(this.enabled);
-            if (this.buffer == null)
-            {
-                this.buffer = new BufferConfiguration();
-                this.buffer.setType(BufferType.MEMORY);
-                this.buffer.setRetryCount(1);
-                this.buffer.setFlushFrequency(60000L);
-                this.buffer.setMaximumCapacity(100);
-            }
         }
-        AuthenticationProxyClient authProxyClient = DefaultAuthenticationProxyClient.create(authProxyEndpoint, securityConfiguration);
-        this.client = AnypointMonitoringIngestAPIClient.create(apiVersion, authProxyClient);
+        else
+        {
+            this.enabledSwitch.switchTo(this.enabled);
+        }
+    }
+
+    private boolean checkConfiguration() throws AgentEnableOperationException {
+        return this.securityConfiguration != null &&
+                StringUtils.isNotBlank(this.securityConfiguration.getKeyStoreAlias()) &&
+                StringUtils.isNotBlank(this.securityConfiguration.getKeyStoreAliasPassword()) &&
+                StringUtils.isNotBlank(this.securityConfiguration.getKeyStoreFile()) &&
+                StringUtils.isNotBlank(this.securityConfiguration.getKeyStorePassword()) &&
+                StringUtils.isNotBlank(this.securityConfiguration.getTrustStoreFile()) &&
+                StringUtils.isNotBlank(this.authProxyEndpoint);
     }
 
     protected abstract boolean send(Collection<T> collection);
