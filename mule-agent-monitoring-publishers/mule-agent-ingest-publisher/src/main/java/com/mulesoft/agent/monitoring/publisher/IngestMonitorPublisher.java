@@ -8,6 +8,7 @@ import com.mulesoft.agent.clients.AuthenticationProxyClient;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.PostConfigure;
 import com.mulesoft.agent.configuration.common.SecurityConfiguration;
+import com.mulesoft.agent.handlers.exception.InitializationException;
 import com.mulesoft.agent.handlers.internal.client.DefaultAuthenticationProxyClient;
 import com.mulesoft.agent.monitoring.publisher.ingest.AnypointMonitoringIngestAPIClient;
 import com.mulesoft.agent.monitoring.publisher.ingest.builder.IngestMetricBuilder;
@@ -44,10 +45,17 @@ public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
     protected AnypointMonitoringIngestAPIClient client;
 
     @Override
-    @PostConfigure
-    public void postConfigurable() throws AgentEnableOperationException
-    {
-        this.enable(this.enabled);
+    public void initialize() throws InitializationException {
+        if (!this.checkConfiguration()) {
+            throw new InitializationException("Could not initialize ingest monitor publisher. Its configuration is invalid.");
+        }
+        AuthenticationProxyClient authProxyClient = DefaultAuthenticationProxyClient.create(authProxyEndpoint, securityConfiguration);
+        this.client = AnypointMonitoringIngestAPIClient.create(apiVersion, authProxyClient);
+        super.initialize();
+    }
+
+    @Override
+    public BufferConfiguration getBuffer() {
         if (this.buffer == null)
         {
             this.buffer = new BufferConfiguration();
@@ -56,35 +64,10 @@ public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
             this.buffer.setFlushFrequency(60000L);
             this.buffer.setMaximumCapacity(100);
         }
-        if (this.enabledSwitch.isEnabled())
-        {
-            AuthenticationProxyClient authProxyClient = DefaultAuthenticationProxyClient.create(authProxyEndpoint, securityConfiguration);
-            this.client = AnypointMonitoringIngestAPIClient.create(apiVersion, authProxyClient);
-        }
+        return this.buffer;
     }
 
-    @Override
-    public void enable(boolean state) throws AgentEnableOperationException {
-        if (this.checkConfiguration())
-        {
-            this.enabled = state;
-        }
-        else
-        {
-            LOGGER.warn("Can't enable ingest monitoring publisher. Its configuration is invalid.");
-            this.enabled = false;
-        }
-        if (this.enabledSwitch == null)
-        {
-            this.enabledSwitch = OnOffSwitch.newNullSwitch(this.enabled);
-        }
-        else
-        {
-            this.enabledSwitch.switchTo(this.enabled);
-        }
-    }
-
-    private boolean checkConfiguration() throws AgentEnableOperationException {
+    private boolean checkConfiguration() {
         return this.securityConfiguration != null &&
                 StringUtils.isNotBlank(this.securityConfiguration.getKeyStoreAlias()) &&
                 StringUtils.isNotBlank(this.securityConfiguration.getKeyStoreAliasPassword()) &&
