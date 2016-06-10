@@ -71,6 +71,7 @@ public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
         }
         else
         {
+            LOGGER.warn("Can't enable ingest monitoring publisher. Its configuration is invalid.");
             this.enabled = false;
         }
         if (this.enabledSwitch == null)
