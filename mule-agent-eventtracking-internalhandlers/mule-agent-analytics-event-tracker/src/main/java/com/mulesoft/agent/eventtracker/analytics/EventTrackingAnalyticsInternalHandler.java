@@ -18,6 +18,9 @@ import javax.inject.Singleton;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.mulesoft.agent.buffer.BufferConfiguration;
+import com.mulesoft.agent.buffer.BufferExhaustedAction;
+import com.mulesoft.agent.buffer.BufferType;
 import com.mulesoft.agent.buffer.BufferedHandler;
 import com.mulesoft.agent.clients.AuthenticationProxyClient;
 import com.mulesoft.agent.configuration.Configurable;
@@ -106,7 +109,7 @@ public class EventTrackingAnalyticsInternalHandler extends BufferedHandler<Agent
                 Map<String, Object> headers = new HashMap<>();
                 headers.put("X-APPLICATION-NAME", applicationNotifications.get(0).getApplication());
                 String serializedEvents = getMapper().writeValueAsString(applicationNotifications);
-                authProxyClient.put("/insight/api/v1/", serializedEvents, headers);
+                authProxyClient.put("/insight/ingest/api/v1/", serializedEvents, headers);
             }
             return true;
         }
@@ -114,6 +117,26 @@ public class EventTrackingAnalyticsInternalHandler extends BufferedHandler<Agent
         {
             LOGGER.error("Could not send tracking event to the Analytics service", e);
             return false;
+        }
+    }
+
+    @Override
+    public BufferConfiguration getBuffer()
+    {
+        if (buffer != null)
+        {
+            return buffer;
+        }
+        else
+        {
+            BufferConfiguration defaultBuffer = new BufferConfiguration();
+            defaultBuffer.setType(BufferType.MEMORY);
+            defaultBuffer.setRetryCount(3);
+            defaultBuffer.setFlushFrequency(10000l);
+            defaultBuffer.setMaximumCapacity(5000);
+            defaultBuffer.setDiscardMessagesOnFlushFailure(false);
+            defaultBuffer.setWhenExhausted(BufferExhaustedAction.FLUSH);
+            return defaultBuffer;
         }
     }
 
