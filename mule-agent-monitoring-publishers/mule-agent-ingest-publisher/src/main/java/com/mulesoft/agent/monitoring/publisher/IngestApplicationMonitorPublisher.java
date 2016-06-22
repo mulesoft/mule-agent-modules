@@ -10,19 +10,27 @@ import com.mulesoft.agent.domain.monitoring.ApplicationMetrics;
 import com.mulesoft.agent.domain.monitoring.GroupedApplicationsMetrics;
 import com.mulesoft.agent.domain.monitoring.Metric;
 import com.mulesoft.agent.monitoring.publisher.ingest.builder.IngestApplicationMetricPostBodyBuilder;
-import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestApplicationMetricPostBody;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestMetric;
 import com.mulesoft.agent.monitoring.publisher.model.IngestApplicationMetric;
 import com.mulesoft.agent.monitoring.publisher.model.MetricClassification;
 import com.mulesoft.agent.monitoring.publisher.model.MetricSample;
+import com.mulesoft.agent.services.OnOffSwitch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -46,14 +54,33 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Gr
     private Long applicationPublishTimeOut;
     @Configurable("MILLISECONDS")
     private TimeUnit applicationPublishTimeUnit;
+    @Configurable("true")
+    private Boolean enabled;
 
     @Inject
     private IngestApplicationMetricPostBodyBuilder appMetricBuilder;
     private ExecutorService executor;
 
+
     @Override
+    public void enable(boolean state)
+            throws AgentEnableOperationException
+    {
+        this.enabledSwitch.switchTo(state);
+    }
+
+    @Override
+    public boolean isEnabled()
+    {
+        return this.enabledSwitch.isEnabled();
+    }
+
     @PostConfigure
     public void postConfigurable() throws AgentEnableOperationException {
+        if (this.enabledSwitch == null)
+        {
+            this.enabledSwitch = OnOffSwitch.newNullSwitch(this.enabled);
+        }
         ThreadFactory threadFactory = new ThreadFactoryBuilder().setDaemon(true).setPriority(Thread.MIN_PRIORITY).setNameFormat("monitoring-application-publisher-%d").build();
         this.executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), threadFactory);
     }
@@ -80,10 +107,10 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Gr
         for (Map.Entry<String, List<Metric>> entry : metricsByApplicationName.entrySet())
         {
             MetricClassification classification = new MetricClassification(keys, entry.getValue());
-            IngestMetric cpuUsageSample = metricBuilder.build(new MetricSample(now, classification.getMetrics(MESSAGE_COUNT_NAME)));
-            IngestMetric memoryUsageSample = metricBuilder.build(new MetricSample(now, classification.getMetrics(RESPONSE_TIME_NAME)));
-            IngestMetric memoryTotalSample = metricBuilder.build(new MetricSample(now, classification.getMetrics(ERROR_COUNT_NAME)));
-            result.add(new IngestApplicationMetric(entry.getKey(), appMetricBuilder.build(cpuUsageSample, memoryUsageSample, memoryTotalSample)));
+            IngestMetric messageCount = metricBuilder.build(new MetricSample(now, classification.getMetrics(MESSAGE_COUNT_NAME)));
+            IngestMetric responseTime = metricBuilder.build(new MetricSample(now, classification.getMetrics(RESPONSE_TIME_NAME)));
+            IngestMetric errorCount = metricBuilder.build(new MetricSample(now, classification.getMetrics(ERROR_COUNT_NAME)));
+            result.add(new IngestApplicationMetric(entry.getKey(), appMetricBuilder.build(messageCount, responseTime, errorCount)));
         }
         return result;
     }

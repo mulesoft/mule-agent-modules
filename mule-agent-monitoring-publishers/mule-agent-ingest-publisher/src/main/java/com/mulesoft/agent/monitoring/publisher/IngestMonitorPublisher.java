@@ -28,7 +28,7 @@ public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
     private final static Logger LOGGER = LoggerFactory.getLogger(IngestMonitorPublisher.class);
 
     @Configurable("{}")
-    private SecurityConfiguration securityConfiguration;
+    private SecurityConfiguration security;
 
     @Configurable
     private String authProxyEndpoint;
@@ -44,12 +44,36 @@ public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
 
     protected AnypointMonitoringIngestAPIClient client;
 
+    protected OnOffSwitch enabledSwitch;
+
+    @Override
+    public void enable(boolean state)
+            throws AgentEnableOperationException
+    {
+        this.enabledSwitch.switchTo(state);
+    }
+
+    @Override
+    public boolean isEnabled()
+    {
+        return this.enabledSwitch.isEnabled();
+    }
+
+    @PostConfigure
+    public void postConfigurable() throws AgentEnableOperationException
+    {
+        if (this.enabledSwitch == null)
+        {
+            this.enabledSwitch = OnOffSwitch.newNullSwitch(this.enabled);
+        }
+    }
+
     @Override
     public void initialize() throws InitializationException {
         if (!this.checkConfiguration()) {
             throw new InitializationException("Could not initialize ingest monitor publisher. Its configuration is invalid.");
         }
-        AuthenticationProxyClient authProxyClient = DefaultAuthenticationProxyClient.create(authProxyEndpoint, securityConfiguration);
+        AuthenticationProxyClient authProxyClient = DefaultAuthenticationProxyClient.create(authProxyEndpoint, security);
         this.client = AnypointMonitoringIngestAPIClient.create(apiVersion, authProxyClient);
         super.initialize();
     }
@@ -68,12 +92,12 @@ public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
     }
 
     private boolean checkConfiguration() {
-        return this.securityConfiguration != null &&
-                StringUtils.isNotBlank(this.securityConfiguration.getKeyStoreAlias()) &&
-                StringUtils.isNotBlank(this.securityConfiguration.getKeyStoreAliasPassword()) &&
-                StringUtils.isNotBlank(this.securityConfiguration.getKeyStoreFile()) &&
-                StringUtils.isNotBlank(this.securityConfiguration.getKeyStorePassword()) &&
-                StringUtils.isNotBlank(this.securityConfiguration.getTrustStoreFile()) &&
+        return this.security != null &&
+                StringUtils.isNotBlank(this.security.getKeyStoreAlias()) &&
+                StringUtils.isNotBlank(this.security.getKeyStoreAliasPassword()) &&
+                StringUtils.isNotBlank(this.security.getKeyStoreFile()) &&
+                StringUtils.isNotBlank(this.security.getKeyStorePassword()) &&
+                StringUtils.isNotBlank(this.security.getTrustStoreFile()) &&
                 StringUtils.isNotBlank(this.authProxyEndpoint);
     }
 
