@@ -24,7 +24,7 @@ import com.mulesoft.agent.buffer.BufferType;
 import com.mulesoft.agent.buffer.BufferedHandler;
 import com.mulesoft.agent.clients.AuthenticationProxyClient;
 import com.mulesoft.agent.configuration.Configurable;
-import com.mulesoft.agent.configuration.common.SecurityConfiguration;
+import com.mulesoft.agent.configuration.common.AuthenticationProxyConfiguration;
 import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
 import com.mulesoft.agent.handlers.exception.InitializationException;
 import com.mulesoft.agent.handlers.internal.client.DefaultAuthenticationProxyClient;
@@ -58,19 +58,11 @@ public class EventTrackingAnalyticsInternalHandler extends BufferedHandler<Agent
 
     /**
      * <p>
-     * The security configuration to be used to open a connection with the Authentication Proxy.
+     * The configuration to be used to open a connection with the Authentication Proxy.
      * </p>
      */
     @Configurable("{}")
-    private SecurityConfiguration security;
-
-    /**
-     * <p>
-     * The URL of the Authentication Proxy.
-     * </p>
-     */
-    @Configurable("https://localhost:8083")
-    private String authProxyEndpoint;
+    private AuthenticationProxyConfiguration authenticationProxy;
 
     /**
      * <p>
@@ -90,7 +82,7 @@ public class EventTrackingAnalyticsInternalHandler extends BufferedHandler<Agent
     @Override
     public void initialize() throws InitializationException {
         super.initialize();
-        authProxyClient = DefaultAuthenticationProxyClient.create(authProxyEndpoint, security);
+        authProxyClient = DefaultAuthenticationProxyClient.create(authenticationProxy);
     }
 
     @Override
