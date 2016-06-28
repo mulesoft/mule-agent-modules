@@ -11,7 +11,7 @@ import java.util.Map;
 
 /**
  * <p>
- *     This class represents CPU, Memory Usage and Memory Total groups of metrics.
+ * This class represents CPU, Memory Usage and Memory Total groups of metrics.
  * </p>
  */
 public class MetricClassification
@@ -26,7 +26,6 @@ public class MetricClassification
 
     public MetricClassification(List<String> keys, Collection<List<Metric>> samples)
     {
-        super();
         if (samples == null || keys == null || keys.size() == 0)
         {
             return;
@@ -37,7 +36,8 @@ public class MetricClassification
         }
     }
 
-    private void classify(List<String> keys, List<Metric> sample) {
+    private void classify(List<String> keys, List<Metric> sample)
+    {
         if (sample == null)
         {
             return;
@@ -48,15 +48,22 @@ public class MetricClassification
             {
                 continue;
             }
-            if (keys.contains(metric.getName()))
+            for (String classifier : keys)
             {
+                if (!classifier.equalsIgnoreCase(metric.getName()))
+                {
+                    continue;
+                }
+
                 String key = metric.getName();
                 List<Metric> class_ = classification.get(key);
-                if (class_ == null) {
+                if (class_ == null)
+                {
                     class_ = Lists.newLinkedList();
                     classification.put(key, class_);
                 }
                 class_.add(metric);
+                break;
             }
         }
     }
@@ -71,5 +78,4 @@ public class MetricClassification
         List<Metric> metrics = this.classification.get(key);
         return metrics != null ? metrics : Lists.<Metric>newLinkedList();
     }
-
 }

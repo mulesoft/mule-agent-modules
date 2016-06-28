@@ -8,19 +8,18 @@
 
 package com.mulesoft.agent.monitoring.publisher;
 
-import com.google.common.collect.Lists;
 import com.mulesoft.agent.domain.monitoring.Metric;
 import com.mulesoft.agent.monitoring.publisher.ingest.builder.IngestTargetMetricPostBodyBuilder;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestMetric;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestTargetMetricPostBody;
-import com.mulesoft.agent.monitoring.publisher.model.MetricClassification;
-import com.mulesoft.agent.monitoring.publisher.model.MetricSample;
+import com.mulesoft.agent.monitoring.publisher.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -40,7 +39,7 @@ public class IngestTargetMonitorPublisher extends IngestMonitorPublisher<List<Me
     private static final String CPU_METRIC_NAME = "java.lang:type=OperatingSystem:CPU";
     private static final String MEMORY_USAGE_METRIC_NAME = "java.lang:type=Memory:heap used";
     private static final String MEMORY_TOTAL_METRIC_NAME = "java.lang:type=Memory:heap total";
-    private static final List<String> keys = Lists.newArrayList(CPU_METRIC_NAME, MEMORY_TOTAL_METRIC_NAME, MEMORY_USAGE_METRIC_NAME);
+    private static List<String> keys = Arrays.asList(CPU_METRIC_NAME, MEMORY_TOTAL_METRIC_NAME, MEMORY_USAGE_METRIC_NAME);
 
     @Inject
     private IngestTargetMetricPostBodyBuilder targetMetricBuilder;
@@ -51,9 +50,16 @@ public class IngestTargetMonitorPublisher extends IngestMonitorPublisher<List<Me
 
         MetricClassification classification = new MetricClassification(keys, collection);
 
-        IngestMetric cpuUsageSample = metricBuilder.build(new MetricSample(now, classification.getMetrics(CPU_METRIC_NAME)));
-        IngestMetric memoryUsageSample = metricBuilder.build(new MetricSample(now, classification.getMetrics(MEMORY_USAGE_METRIC_NAME)));
-        IngestMetric memoryTotalSample = metricBuilder.build(new MetricSample(now, classification.getMetrics(MEMORY_TOTAL_METRIC_NAME)));
+        List<Metric> cpuMetrics = classification.getMetrics(CPU_METRIC_NAME);
+        List<Metric> memoryUsageMetrics = classification.getMetrics(MEMORY_USAGE_METRIC_NAME);
+        List<Metric> memoryTotalMetrics = classification.getMetrics(MEMORY_TOTAL_METRIC_NAME);
+        LOGGER.info("found " + (cpuMetrics != null ? cpuMetrics.size() : 0) + " cpu metrics, " +
+                (memoryUsageMetrics != null ? memoryUsageMetrics.size() : 0) + " memory usage metrics and " +
+                (memoryTotalMetrics != null ? memoryTotalMetrics.size() : 0) + " memory total metrics");
+
+        IngestMetric cpuUsageSample = metricBuilder.build(new CPUMetricSampleDecorator(new DefaultMetricSample(now, cpuMetrics)));
+        IngestMetric memoryUsageSample = metricBuilder.build(new MemoryMetricSampleDecorator(new DefaultMetricSample(now, memoryUsageMetrics)));
+        IngestMetric memoryTotalSample = metricBuilder.build(new MemoryMetricSampleDecorator(new DefaultMetricSample(now, memoryTotalMetrics)));
 
         return targetMetricBuilder.build(cpuUsageSample, memoryUsageSample, memoryTotalSample);
     }
@@ -63,9 +69,16 @@ public class IngestTargetMonitorPublisher extends IngestMonitorPublisher<List<Me
         try
         {
             IngestTargetMetricPostBody targetBody = this.processTargetMetrics(collection);
-            this.client.postTargetMetrics(targetBody);
-            LOGGER.info("Published target metrics to Ingest successfully");
-            return true;
+            boolean result = this.client.postTargetMetrics(targetBody);
+            if (result)
+            {
+                LOGGER.info("Published target metrics to Ingest successfully");
+            }
+            else
+            {
+                LOGGER.error("Could not publish target metrics to Ingest");
+            }
+            return result;
         }
         catch (Exception e)
         {

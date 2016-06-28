@@ -10,7 +10,8 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class MetricClassificationTest {
+public class MetricClassificationTest
+{
 
     private MetricClassificationTestCases metricClassificationTestCases = new MetricClassificationTestCases();
     private List<String> keys = Lists.newArrayList(MetricClassificationTestCases.CPU_USAGE_NAME, MetricClassificationTestCases.MEMORY_TOTAL_NAME, MetricClassificationTestCases.MEMORY_USAGE_NAME);
