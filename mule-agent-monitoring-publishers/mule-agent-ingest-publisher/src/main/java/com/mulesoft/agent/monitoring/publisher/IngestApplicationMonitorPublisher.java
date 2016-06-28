@@ -11,9 +11,9 @@ import com.mulesoft.agent.domain.monitoring.GroupedApplicationsMetrics;
 import com.mulesoft.agent.domain.monitoring.Metric;
 import com.mulesoft.agent.monitoring.publisher.ingest.builder.IngestApplicationMetricPostBodyBuilder;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestMetric;
+import com.mulesoft.agent.monitoring.publisher.model.DefaultMetricSample;
 import com.mulesoft.agent.monitoring.publisher.model.IngestApplicationMetric;
 import com.mulesoft.agent.monitoring.publisher.model.MetricClassification;
-import com.mulesoft.agent.monitoring.publisher.model.MetricSample;
 import com.mulesoft.agent.services.OnOffSwitch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,7 +76,8 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Gr
     }
 
     @PostConfigure
-    public void postConfigurable() throws AgentEnableOperationException {
+    public void postConfigurable() throws AgentEnableOperationException
+    {
         if (this.enabledSwitch == null)
         {
             this.enabledSwitch = OnOffSwitch.newNullSwitch(this.enabled);
@@ -89,8 +90,11 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Gr
     {
         Map<String, List<Metric>> metricsByApplicationName = Maps.newHashMap();
 
-        for (GroupedApplicationsMetrics metrics : collection) {
-            for (Map.Entry<String, ApplicationMetrics> entry : metrics.getMetricsByApplicationName().entrySet()) {
+        for (GroupedApplicationsMetrics metrics : collection)
+        {
+            for (Map.Entry<String, ApplicationMetrics> entry : metrics.getMetricsByApplicationName().entrySet())
+            {
+                LOGGER.debug("processing " + entry.getValue().getMetrics().size()  + " metrics for " + entry.getValue().getApplicationName());
                 List<Metric> processed = metricsByApplicationName.get(entry.getKey());
                 if (processed == null)
                 {
@@ -107,9 +111,9 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Gr
         for (Map.Entry<String, List<Metric>> entry : metricsByApplicationName.entrySet())
         {
             MetricClassification classification = new MetricClassification(keys, entry.getValue());
-            IngestMetric messageCount = metricBuilder.build(new MetricSample(now, classification.getMetrics(MESSAGE_COUNT_NAME)));
-            IngestMetric responseTime = metricBuilder.build(new MetricSample(now, classification.getMetrics(RESPONSE_TIME_NAME)));
-            IngestMetric errorCount = metricBuilder.build(new MetricSample(now, classification.getMetrics(ERROR_COUNT_NAME)));
+            IngestMetric messageCount = metricBuilder.build(new DefaultMetricSample(now, classification.getMetrics(MESSAGE_COUNT_NAME)));
+            IngestMetric responseTime = metricBuilder.build(new DefaultMetricSample(now, classification.getMetrics(RESPONSE_TIME_NAME)));
+            IngestMetric errorCount = metricBuilder.build(new DefaultMetricSample(now, classification.getMetrics(ERROR_COUNT_NAME)));
             result.add(new IngestApplicationMetric(entry.getKey(), appMetricBuilder.build(messageCount, responseTime, errorCount)));
         }
         return result;
@@ -125,12 +129,22 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Gr
             final List<Boolean> results = Collections.synchronizedList(Lists.<Boolean>newLinkedList());
             for (final IngestApplicationMetric metric : metrics)
             {
-                this.executor.submit(new Runnable() {
+                this.executor.submit(new Runnable()
+                {
                     @Override
-                    public void run() {
+                    public void run()
+                    {
                         try
                         {
                             boolean result = client.postApplicationMetrics(metric.getApplicationName(), metric.getBody());
+                            if (result)
+                            {
+                                LOGGER.info("successfully published application metrics for " + metric.getApplicationName());
+                            }
+                            else
+                            {
+                                LOGGER.error("could not publish application metrics for " + metric.getApplicationName());
+                            }
                             results.add(result);
                         }
                         catch (Exception e)
@@ -147,7 +161,16 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Gr
             }
             latch.await(applicationPublishTimeOut, applicationPublishTimeUnit);
 
-            return !results.contains(false);
+            boolean result = !results.contains(false);
+            if (result)
+            {
+                LOGGER.info("Published app metrics to Ingest successfully");
+            }
+            else
+            {
+                LOGGER.error("Some metrics for applications could not be published.");
+            }
+            return result;
         }
         catch (Exception e)
         {

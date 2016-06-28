@@ -1,12 +1,13 @@
 package com.mulesoft.agent.monitoring.publisher.ingest.builder;
 
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestMetric;
+import com.mulesoft.agent.monitoring.publisher.model.DefaultMetricSample;
 import com.mulesoft.agent.monitoring.publisher.model.MetricSample;
 
 import javax.inject.Singleton;
 
 /**
- * Builds an IngesMetric from a MetricSample.
+ * Builds an IngesMetric from a DefaultMetricSample.
  */
 @Singleton
 public class IngestMetricBuilder {

@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import java.util.Date;
 
-public class MetricSampleTest
+public class DefaultMetricSampleTest
 {
 
     private MetricSampleTestCases testCases = new MetricSampleTestCases();
@@ -13,7 +13,7 @@ public class MetricSampleTest
     @Test
     public void complete()
     {
-        MetricSample sample = new MetricSample(new Date(), testCases.complete());
+        DefaultMetricSample sample = new DefaultMetricSample(new Date(), testCases.complete());
         Assert.assertEquals(20d, sample.getMax());
         Assert.assertEquals(2d, sample.getMin());
         Assert.assertEquals(8.833333333333334d, sample.getAvg());
@@ -24,7 +24,7 @@ public class MetricSampleTest
     @Test
     public void shouldNotThrowNPEWhenGivenACoupleOfNulls()
     {
-        MetricSample sample = new MetricSample(new Date(), testCases.aCoupleOfNulls());
+        DefaultMetricSample sample = new DefaultMetricSample(new Date(), testCases.aCoupleOfNulls());
         Assert.assertEquals(20d, sample.getMax());
         Assert.assertEquals(2d, sample.getMin());
         Assert.assertEquals(8.833333333333334d, sample.getAvg());
@@ -35,7 +35,7 @@ public class MetricSampleTest
     @Test
     public void shouldNotThrowNPEWhenGivenNull()
     {
-        MetricSample sample = new MetricSample(new Date(), null);
+        DefaultMetricSample sample = new DefaultMetricSample(new Date(), null);
         Assert.assertEquals(null, sample.getMax());
         Assert.assertEquals(null, sample.getMin());
         Assert.assertEquals(0d, sample.getAvg());
