@@ -55,6 +55,9 @@ public class AnalyticsEventSerializer extends JsonSerializer<AgentTrackingNotifi
             if (value.getNotificationType().equals("ExceptionNotification")) {
                 jgen.writeStringField("EXCEPTION_DETAILS", value.getSource());
             }
+            if (value.getNotificationType().equals("ComponentNotification")) {
+                jgen.writeStringField("COMPONENT_CLASS", value.getSource());
+            }
             if (value.getCorrelationId() != null) {
                 jgen.writeStringField("MESSAGE_CORRELATION_ID", value.getCorrelationId());
             }

@@ -16,8 +16,8 @@ import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
  */
 public enum AnalyticsEventType {
 
-    ASYNC_START("AsyncMessageNotification", "async process scheduled"),
-    ASYNC_END("AsyncMessageNotification", "async process complete"),
+    PROCESS_ASYNC_SCHEDULED("AsyncMessageNotification", "async process scheduled"),
+    PROCESS_ASYNC_COMPLETE("AsyncMessageNotification", "async process complete"),
 
     COMPONENT_PRE_INVOKE("ComponentMessageNotification", "component pre invoke"),
     COMPONENT_POST_INVOKE("ComponentMessageNotification", "component post invoke"),
@@ -44,9 +44,9 @@ public enum AnalyticsEventType {
     PROCESS_COMPLETE("PipelineMessageNotification", "pipeline process complete"),
     PROCESS_END("PipelineMessageNotification", "pipeline request message processing end"),
 
-    TRANSACTION_BEGIN("TransactionNotification", "begin"),
-    TRANSACTION_COMMIT("TransactionNotification", "commit"),
-    TRANSACTION_ROLLBACK("TransactionNotification", "rollback"),
+    TRANSACTION_BEGAN("TransactionNotification", "begin"),
+    TRANSACTION_COMMITTED("TransactionNotification", "commit"),
+    TRANSACTION_ROLLEDBACK("TransactionNotification", "rollback"),
 
     CUSTOM_EVENT_ACTION("EventNotification", "custom event"),
 
