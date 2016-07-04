@@ -14,7 +14,7 @@ public class MemoryMetricSampleDecorator extends MetricSampleDecorator
     @Override
     protected Double processValue(Double value)
     {
-        return value / (1024 * 1024 * 1024);
+        return value / (1024 * 1024);
     }
 
 }
