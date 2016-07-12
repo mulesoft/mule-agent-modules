@@ -15,18 +15,18 @@ public class MetricClassificationTest
 
     private MetricClassificationTestCases metricClassificationTestCases = new MetricClassificationTestCases();
     private List<String> keys = Lists.newArrayList(MetricClassificationTestCases.CPU_USAGE_NAME, MetricClassificationTestCases.MEMORY_TOTAL_NAME, MetricClassificationTestCases.MEMORY_USAGE_NAME);
+    private List<String> keysWithNull = Lists.newArrayList(null, MetricClassificationTestCases.CPU_USAGE_NAME, MetricClassificationTestCases.MEMORY_TOTAL_NAME, MetricClassificationTestCases.MEMORY_USAGE_NAME);
 
     @Test
     public void shouldNotThrowNPEWhenIPassACoupleNullsToIt()
     {
-        Collection<List<Metric>> collection = metricClassificationTestCases.someNullsTestCase();
-        new MetricClassification(keys, collection);
+        new MetricClassification(keys, metricClassificationTestCases.someNullsTestCase());
     }
 
     @Test
     public void shouldNotThrowNPEWhenIPassNullToIt()
     {
-        new MetricClassification(null, (Collection<List<Metric>>) null);
+        new MetricClassification(null, null);
     }
 
     @Test
@@ -38,7 +38,13 @@ public class MetricClassificationTest
     @Test
     public void shouldNotThrowNPEWhenMetricsIsNull()
     {
-        new MetricClassification(keys, (Collection<List<Metric>>) null);
+        new MetricClassification(keys, null);
+    }
+
+    @Test
+    public void shouldNotThrowNPEWhenKeysContainsNull()
+    {
+        new MetricClassification(keysWithNull, metricClassificationTestCases.completeTestCase());
     }
 
     @Test
@@ -52,7 +58,7 @@ public class MetricClassificationTest
     @Test
     public void shouldBeEmptyWhenCollectionOfEmptyListsIsGiven()
     {
-        MetricClassification classification = new MetricClassification(this.keys, metricClassificationTestCases.collectionOfEmptyLists());
+        MetricClassification classification = new MetricClassification(this.keys, metricClassificationTestCases.emptyList());
         Map<String, List<Metric>> map = classification.getClassification();
         Assert.assertEquals(0, map.size());
     }

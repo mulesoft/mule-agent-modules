@@ -112,7 +112,6 @@ public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
     @Override
     protected boolean flush(Collection<T> collection)
     {
-        LOGGER.info("publishing metrics to ingest api.");
         return send(collection);
     }
 }

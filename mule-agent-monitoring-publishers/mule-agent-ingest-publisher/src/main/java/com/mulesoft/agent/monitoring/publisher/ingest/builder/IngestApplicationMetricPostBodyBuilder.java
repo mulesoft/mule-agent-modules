@@ -7,6 +7,7 @@ import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestTargetMetricPo
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.Set;
 
 /**
  * Builds the body of an application metric post body from the 3 metrics it contains.
@@ -16,11 +17,12 @@ public class IngestApplicationMetricPostBodyBuilder {
 
     public IngestApplicationMetricPostBody build(IngestMetric messageCount, IngestMetric responseTime, IngestMetric errorCount)
     {
-        return new IngestApplicationMetricPostBody(
-                Sets.newHashSet(messageCount),
-                Sets.newHashSet(responseTime),
-                Sets.newHashSet(errorCount)
-        );
+        return this.build(Sets.newHashSet(messageCount), Sets.newHashSet(responseTime), Sets.newHashSet(errorCount));
+    }
+
+    public IngestApplicationMetricPostBody build(Set<IngestMetric> messageCount, Set<IngestMetric> responseTime, Set<IngestMetric> errorCount)
+    {
+        return new IngestApplicationMetricPostBody(messageCount, responseTime, errorCount);
     }
 
 }

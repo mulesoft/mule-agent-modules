@@ -24,21 +24,9 @@ public class MetricClassification
         classify(keys, sample);
     }
 
-    public MetricClassification(List<String> keys, Collection<List<Metric>> samples)
-    {
-        if (samples == null || keys == null || keys.size() == 0)
-        {
-            return;
-        }
-        for (List<Metric> sample : samples)
-        {
-            classify(keys, sample);
-        }
-    }
-
     private void classify(List<String> keys, List<Metric> sample)
     {
-        if (sample == null)
+        if (sample == null || keys == null)
         {
             return;
         }
@@ -50,7 +38,7 @@ public class MetricClassification
             }
             for (String classifier : keys)
             {
-                if (!classifier.equalsIgnoreCase(metric.getName()))
+                if (classifier == null || !classifier.equalsIgnoreCase(metric.getName()))
                 {
                     continue;
                 }
