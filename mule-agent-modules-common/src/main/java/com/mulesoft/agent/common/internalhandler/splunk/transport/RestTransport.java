@@ -12,8 +12,7 @@ import com.mulesoft.agent.common.internalhandler.splunk.transport.config.HttpSch
 import com.mulesoft.agent.common.internalhandler.splunk.transport.config.RestTransportConfig;
 import com.mulesoft.agent.handlers.exception.InitializationException;
 import com.splunk.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -30,7 +29,7 @@ import java.util.Collection;
  */
 public class RestTransport<T> extends AbstractTransport<T>
 {
-    private final static Logger LOGGER = LoggerFactory.getLogger(RestTransport.class);
+    private final static org.apache.logging.log4j.Logger LOGGER = LogManager.getLogger(RestTransport.class);
 
     /**
      * http://dev.splunk.com/view/java-sdk/SP-CAAAECX

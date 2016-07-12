@@ -11,8 +11,8 @@ import com.fasterxml.uuid.Generators;
 import com.mulesoft.agent.common.internalhandler.AbstractDBInternalHandler;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.module.client.model.HttpEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -34,7 +34,7 @@ import java.util.UUID;
 public class GatewayHttpEventsDBInternalHandler extends AbstractDBInternalHandler<HttpEvent>
 {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(GatewayHttpEventsDBInternalHandler.class);
+    private final static Logger LOGGER = LogManager.getLogger(GatewayHttpEventsDBInternalHandler.class);
 
     /**
      * <p>

@@ -17,8 +17,8 @@ import com.mulesoft.agent.monitoring.publisher.model.DefaultMetricSample;
 import com.mulesoft.agent.monitoring.publisher.model.IngestApplicationMetric;
 import com.mulesoft.agent.monitoring.publisher.model.MetricClassification;
 import com.mulesoft.agent.services.OnOffSwitch;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -36,7 +36,7 @@ import java.util.concurrent.*;
 public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<GroupedApplicationsMetrics>
 {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(IngestApplicationMonitorPublisher.class);
+    private final static Logger LOGGER = LogManager.getLogger(IngestApplicationMonitorPublisher.class);
 
     private static final String MESSAGE_COUNT_NAME = "messageCount";
     private static final String RESPONSE_TIME_NAME = "responseTime";

@@ -26,10 +26,8 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * <p>
@@ -41,7 +39,7 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public class ZabbixMonitorPublisher extends BufferedHandler<List<Metric>>
 {
-    private final static Logger LOGGER = LoggerFactory.getLogger(ZabbixMonitorPublisher.class);
+    private final static Logger LOGGER = LogManager.getLogger(ZabbixMonitorPublisher.class);
 
     private static final String MESSAGE_START = "{\"request\":\"sender data\",\"data\":[{\"host\":\"";
     private static final String MESSAGE_MIDDLE_LEFT = "\",\"key\":\"";

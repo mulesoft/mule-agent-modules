@@ -2,7 +2,6 @@ package com.mulesoft.agent.common.internalhandler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mulesoft.agent.AgentConfigurationException;
-import com.mulesoft.agent.AgentEnableOperationException;
 import com.mulesoft.agent.buffer.BufferConfiguration;
 import com.mulesoft.agent.buffer.BufferExhaustedAction;
 import com.mulesoft.agent.buffer.BufferType;
@@ -15,15 +14,14 @@ import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.Password;
 import com.mulesoft.agent.configuration.Type;
 import com.mulesoft.agent.handlers.exception.InitializationException;
-import com.mulesoft.agent.services.OnOffSwitch;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Collection;
 
 public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T>
 {
-    private final static Logger LOGGER = LoggerFactory.getLogger(AbstractSplunkInternalHandler.class);
+    private final static Logger LOGGER = LogManager.getLogger();
 
     private TransportFactory<T> transportFactory = new DefaultTransportFactory<>(this);
     private ObjectMapper objectMapper;

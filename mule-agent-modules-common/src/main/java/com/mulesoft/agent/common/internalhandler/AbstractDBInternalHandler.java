@@ -9,8 +9,8 @@ import com.mulesoft.agent.configuration.Password;
 import com.mulesoft.agent.configuration.Type;
 import com.mulesoft.agent.handlers.exception.InitializationException;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -19,7 +19,7 @@ import java.util.Collection;
 
 public abstract class AbstractDBInternalHandler<T> extends BufferedHandler<T>
 {
-    private final static Logger LOGGER = LoggerFactory.getLogger(AbstractDBInternalHandler.class);
+    private final static Logger LOGGER = LogManager.getLogger(AbstractDBInternalHandler.class);
 
     /**
      * <p>

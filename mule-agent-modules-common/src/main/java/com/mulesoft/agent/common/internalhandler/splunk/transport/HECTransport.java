@@ -13,8 +13,8 @@ import com.mulesoft.agent.common.internalhandler.splunk.transport.config.HECTran
 import com.mulesoft.agent.handlers.exception.InitializationException;
 import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.Response;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.*;
@@ -32,7 +32,7 @@ import java.util.concurrent.ExecutionException;
  */
 public class HECTransport<T> extends AbstractTransport<T>
 {
-    private final static Logger LOGGER = LoggerFactory.getLogger(HECTransport.class);
+    private final static Logger LOGGER = LogManager.getLogger(HECTransport.class);
     private final static int CONNECTION_TIMEOUT = 10 * 1000; //10 sec of timeout
     private final static String HEC_PATH = "/services/collector";
 

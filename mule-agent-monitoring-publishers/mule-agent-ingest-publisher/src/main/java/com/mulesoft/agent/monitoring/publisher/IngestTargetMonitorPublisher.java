@@ -13,12 +13,9 @@ import com.mulesoft.agent.domain.monitoring.Metric;
 import com.mulesoft.agent.monitoring.publisher.ingest.builder.IngestTargetMetricPostBodyBuilder;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestMetric;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestTargetMetricPostBody;
-import com.mulesoft.agent.monitoring.publisher.model.CPUMetricSampleDecorator;
-import com.mulesoft.agent.monitoring.publisher.model.DefaultMetricSample;
-import com.mulesoft.agent.monitoring.publisher.model.MemoryMetricSampleDecorator;
-import com.mulesoft.agent.monitoring.publisher.model.MetricClassification;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.mulesoft.agent.monitoring.publisher.model.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -38,7 +35,7 @@ import java.util.Set;
 public class IngestTargetMonitorPublisher extends IngestMonitorPublisher<List<Metric>>
 {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(IngestTargetMonitorPublisher.class);
+    private final static Logger LOGGER = LogManager.getLogger(IngestTargetMonitorPublisher.class);
 
     private static final String CPU_METRIC_NAME = "java.lang:type=OperatingSystem:CPU";
     private static final String MEMORY_USAGE_METRIC_NAME = "java.lang:type=Memory:heap used";

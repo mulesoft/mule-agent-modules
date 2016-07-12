@@ -10,9 +10,8 @@ package com.mulesoft.agent.common.internalhandler.splunk.transport;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mulesoft.agent.common.internalhandler.splunk.transport.config.TCPTransportConfig;
 import com.mulesoft.agent.handlers.exception.InitializationException;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -30,7 +29,7 @@ import java.util.Collection;
  */
 public class TCPTransport<T> extends AbstractTransport<T>
 {
-    private final static Logger LOGGER = LoggerFactory.getLogger(TCPTransport.class);
+    private final static Logger LOGGER = LogManager.getLogger(TCPTransport.class);
     private final static int CONNECTION_TIMEOUT = 10 * 1000; //10 sec of timeout
 
     private TCPTransportConfig config;
