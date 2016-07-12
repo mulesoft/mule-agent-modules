@@ -13,15 +13,6 @@ import java.util.Set;
 @Singleton
 public class IngestTargetMetricPostBodyBuilder {
 
-    public IngestTargetMetricPostBody build(IngestMetric cpuUsage, IngestMetric memoryUsage, IngestMetric memoryTotal)
-    {
-        return this.build(
-                Sets.newHashSet(cpuUsage),
-                Sets.newHashSet(memoryUsage),
-                Sets.newHashSet(memoryTotal)
-        );
-    }
-
     public IngestTargetMetricPostBody build(Set<IngestMetric> cpuUsage, Set<IngestMetric> memoryUsage, Set<IngestMetric> memoryTotal)
     {
         return new IngestTargetMetricPostBody(cpuUsage, memoryUsage, memoryTotal);

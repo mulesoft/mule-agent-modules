@@ -58,7 +58,7 @@ public class DefaultMetricSample implements MetricSample
         this.sum = sum;
         this.avg = count > 0 ? sum / count : 0d;
         this.count = count;
-        this.date = date;
+        this.date = date != null ? date : new Date();
     }
 
     public Date getDate()

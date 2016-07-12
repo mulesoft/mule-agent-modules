@@ -15,11 +15,6 @@ import java.util.Set;
 @Singleton
 public class IngestApplicationMetricPostBodyBuilder {
 
-    public IngestApplicationMetricPostBody build(IngestMetric messageCount, IngestMetric responseTime, IngestMetric errorCount)
-    {
-        return this.build(Sets.newHashSet(messageCount), Sets.newHashSet(responseTime), Sets.newHashSet(errorCount));
-    }
-
     public IngestApplicationMetricPostBody build(Set<IngestMetric> messageCount, Set<IngestMetric> responseTime, Set<IngestMetric> errorCount)
     {
         return new IngestApplicationMetricPostBody(messageCount, responseTime, errorCount);

@@ -2,6 +2,7 @@ package com.mulesoft.agent.monitoring.publisher;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.mulesoft.agent.AgentEnableOperationException;
 import com.mulesoft.agent.configuration.Configurable;
@@ -22,10 +23,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.*;
 
 /**
@@ -97,9 +95,21 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Gr
 
                 MetricClassification classification = new MetricClassification(keys, applicationMetrics);
 
-                IngestMetric messageCount = metricBuilder.build(new DefaultMetricSample(classification.getMetrics(MESSAGE_COUNT_NAME)));
-                IngestMetric responseTime = metricBuilder.build(new DefaultMetricSample(classification.getMetrics(RESPONSE_TIME_NAME)));
-                IngestMetric errorCount = metricBuilder.build(new DefaultMetricSample(classification.getMetrics(ERROR_COUNT_NAME)));
+                List<Metric> messageCountMetrics = classification.getMetrics(MESSAGE_COUNT_NAME);
+                List<Metric> responseTimeMetrics = classification.getMetrics(RESPONSE_TIME_NAME);
+                List<Metric> errorCountMetrics = classification.getMetrics(ERROR_COUNT_NAME);
+
+                Set<IngestMetric> messageCount = messageCountMetrics != null ?
+                        Sets.newHashSet(metricBuilder.build(new DefaultMetricSample(messageCountMetrics))) :
+                        Sets.<IngestMetric>newHashSet();
+
+                Set<IngestMetric> responseTime = responseTimeMetrics != null ?
+                        Sets.newHashSet(metricBuilder.build(new DefaultMetricSample(responseTimeMetrics))) :
+                        Sets.<IngestMetric>newHashSet();
+
+                Set<IngestMetric> errorCount = responseTimeMetrics != null ?
+                        Sets.newHashSet(metricBuilder.build(new DefaultMetricSample(errorCountMetrics))) :
+                        Sets.<IngestMetric>newHashSet();
 
                 if (bodyByApplicationName.get(applicationName) == null)
                 {
@@ -109,9 +119,9 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Gr
                 else
                 {
                     IngestApplicationMetricPostBody body = bodyByApplicationName.get(applicationName).getBody();
-                    body.getMessageCount().add(messageCount);
-                    body.getResponseTime().add(responseTime);
-                    body.getErrorCount().add(errorCount);
+                    body.getMessageCount().addAll(messageCount);
+                    body.getResponseTime().addAll(responseTime);
+                    body.getErrorCount().addAll(errorCount);
                 }
             }
         }
