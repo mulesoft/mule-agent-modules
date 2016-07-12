@@ -8,6 +8,7 @@
 
 package com.mulesoft.agent.monitoring.publisher;
 
+import com.google.common.collect.Sets;
 import com.mulesoft.agent.domain.monitoring.Metric;
 import com.mulesoft.agent.monitoring.publisher.ingest.builder.IngestTargetMetricPostBodyBuilder;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestMetric;
@@ -19,10 +20,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * <p>
@@ -46,26 +44,50 @@ public class IngestTargetMonitorPublisher extends IngestMonitorPublisher<List<Me
 
     private IngestTargetMetricPostBody processTargetMetrics(Collection<List<Metric>> collection)
     {
-        Date now = new Date();
 
-        MetricClassification classification = new MetricClassification(keys, collection);
+        Set<IngestMetric> cpuUsage = Sets.newHashSet();
+        Set<IngestMetric> memoryUsage = Sets.newHashSet();
+        Set<IngestMetric> memoryTotal = Sets.newHashSet();
 
-        List<Metric> cpuMetrics = classification.getMetrics(CPU_METRIC_NAME);
-        List<Metric> memoryUsageMetrics = classification.getMetrics(MEMORY_USAGE_METRIC_NAME);
-        List<Metric> memoryTotalMetrics = classification.getMetrics(MEMORY_TOTAL_METRIC_NAME);
-        LOGGER.info("found " + (cpuMetrics != null ? cpuMetrics.size() : 0) + " cpu metrics, " +
-                (memoryUsageMetrics != null ? memoryUsageMetrics.size() : 0) + " memory usage metrics and " +
-                (memoryTotalMetrics != null ? memoryTotalMetrics.size() : 0) + " memory total metrics");
+        for (List<Metric> sample : collection)
+        {
+            MetricClassification classification = new MetricClassification(keys, sample);
 
-        IngestMetric cpuUsageSample = metricBuilder.build(new CPUMetricSampleDecorator(new DefaultMetricSample(now, cpuMetrics)));
-        IngestMetric memoryUsageSample = metricBuilder.build(new MemoryMetricSampleDecorator(new DefaultMetricSample(now, memoryUsageMetrics)));
-        IngestMetric memoryTotalSample = metricBuilder.build(new MemoryMetricSampleDecorator(new DefaultMetricSample(now, memoryTotalMetrics)));
+            List<Metric> cpuMetrics = classification.getMetrics(CPU_METRIC_NAME);
+            List<Metric> memoryUsageMetrics = classification.getMetrics(MEMORY_USAGE_METRIC_NAME);
+            List<Metric> memoryTotalMetrics = classification.getMetrics(MEMORY_TOTAL_METRIC_NAME);
+            LOGGER.debug("found " + (cpuMetrics != null ? cpuMetrics.size() : 0) + " cpu metrics, " +
+                    (memoryUsageMetrics != null ? memoryUsageMetrics.size() : 0) + " memory usage metrics and " +
+                    (memoryTotalMetrics != null ? memoryTotalMetrics.size() : 0) + " memory total metrics");
 
-        return targetMetricBuilder.build(cpuUsageSample, memoryUsageSample, memoryTotalSample);
+            if (cpuMetrics != null)
+            {
+                cpuUsage.add(
+                        metricBuilder.build(new CPUMetricSampleDecorator(new DefaultMetricSample(cpuMetrics)))
+                );
+            }
+
+            if (memoryUsageMetrics != null)
+            {
+                memoryUsage.add(
+                        metricBuilder.build(new MemoryMetricSampleDecorator(new DefaultMetricSample(memoryUsageMetrics)))
+                );
+            }
+
+            if (memoryTotalMetrics != null)
+            {
+                memoryTotal.add(
+                        metricBuilder.build(new MemoryMetricSampleDecorator(new DefaultMetricSample(memoryTotalMetrics)))
+                );
+            }
+        }
+
+        return targetMetricBuilder.build(cpuUsage, memoryUsage, memoryTotal);
     }
 
     protected boolean send(Collection<List<Metric>> collection)
     {
+        LOGGER.info("publishing target metrics to ingest api.");
         try
         {
             IngestTargetMetricPostBody targetBody = this.processTargetMetrics(collection);

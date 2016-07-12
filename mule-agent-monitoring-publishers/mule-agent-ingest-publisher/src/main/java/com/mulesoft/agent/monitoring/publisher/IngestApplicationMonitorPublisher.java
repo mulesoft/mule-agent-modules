@@ -2,6 +2,7 @@ package com.mulesoft.agent.monitoring.publisher;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.mulesoft.agent.AgentEnableOperationException;
 import com.mulesoft.agent.configuration.Configurable;
@@ -10,6 +11,7 @@ import com.mulesoft.agent.domain.monitoring.ApplicationMetrics;
 import com.mulesoft.agent.domain.monitoring.GroupedApplicationsMetrics;
 import com.mulesoft.agent.domain.monitoring.Metric;
 import com.mulesoft.agent.monitoring.publisher.ingest.builder.IngestApplicationMetricPostBodyBuilder;
+import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestApplicationMetricPostBody;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestMetric;
 import com.mulesoft.agent.monitoring.publisher.model.DefaultMetricSample;
 import com.mulesoft.agent.monitoring.publisher.model.IngestApplicationMetric;
@@ -21,16 +23,8 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * <p>
@@ -86,44 +80,61 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Gr
         this.executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), threadFactory);
     }
 
-    private List<IngestApplicationMetric> processApplicationMetrics(Collection<GroupedApplicationsMetrics> collection)
+    private Collection<IngestApplicationMetric> processApplicationMetrics(Collection<GroupedApplicationsMetrics> collection)
     {
-        Map<String, List<Metric>> metricsByApplicationName = Maps.newHashMap();
+        Map<String, IngestApplicationMetric> bodyByApplicationName = Maps.newHashMap();
 
         for (GroupedApplicationsMetrics metrics : collection)
         {
-            for (Map.Entry<String, ApplicationMetrics> entry : metrics.getMetricsByApplicationName().entrySet())
+            for (ApplicationMetrics appMetrics : metrics.getMetricsByApplicationName().values())
             {
-                LOGGER.debug("processing " + entry.getValue().getMetrics().size()  + " metrics for " + entry.getValue().getApplicationName());
-                List<Metric> processed = metricsByApplicationName.get(entry.getKey());
-                if (processed == null)
+                String applicationName = appMetrics.getApplicationName();
+                List<Metric> applicationMetrics = appMetrics.getMetrics();
+
+                LOGGER.debug("processing " + applicationMetrics.size()  + " metrics for " + applicationName);
+
+                MetricClassification classification = new MetricClassification(keys, applicationMetrics);
+
+                List<Metric> messageCountMetrics = classification.getMetrics(MESSAGE_COUNT_NAME);
+                List<Metric> responseTimeMetrics = classification.getMetrics(RESPONSE_TIME_NAME);
+                List<Metric> errorCountMetrics = classification.getMetrics(ERROR_COUNT_NAME);
+
+                Set<IngestMetric> messageCount = messageCountMetrics != null ?
+                        Sets.newHashSet(metricBuilder.build(new DefaultMetricSample(messageCountMetrics))) :
+                        Sets.<IngestMetric>newHashSet();
+
+                Set<IngestMetric> responseTime = responseTimeMetrics != null ?
+                        Sets.newHashSet(metricBuilder.build(new DefaultMetricSample(responseTimeMetrics))) :
+                        Sets.<IngestMetric>newHashSet();
+
+                Set<IngestMetric> errorCount = responseTimeMetrics != null ?
+                        Sets.newHashSet(metricBuilder.build(new DefaultMetricSample(errorCountMetrics))) :
+                        Sets.<IngestMetric>newHashSet();
+
+                if (bodyByApplicationName.get(applicationName) == null)
                 {
-                    processed = Lists.newLinkedList();
-                    metricsByApplicationName.put(entry.getKey(), processed);
+                    IngestApplicationMetricPostBody body = appMetricBuilder.build(messageCount, responseTime, errorCount);
+                    bodyByApplicationName.put(applicationName, new IngestApplicationMetric(applicationName, body));
                 }
-                processed.addAll(entry.getValue().getMetrics());
+                else
+                {
+                    IngestApplicationMetricPostBody body = bodyByApplicationName.get(applicationName).getBody();
+                    body.getMessageCount().addAll(messageCount);
+                    body.getResponseTime().addAll(responseTime);
+                    body.getErrorCount().addAll(errorCount);
+                }
             }
         }
 
-        List<IngestApplicationMetric> result = Lists.newLinkedList();
-        Date now = new Date();
-
-        for (Map.Entry<String, List<Metric>> entry : metricsByApplicationName.entrySet())
-        {
-            MetricClassification classification = new MetricClassification(keys, entry.getValue());
-            IngestMetric messageCount = metricBuilder.build(new DefaultMetricSample(now, classification.getMetrics(MESSAGE_COUNT_NAME)));
-            IngestMetric responseTime = metricBuilder.build(new DefaultMetricSample(now, classification.getMetrics(RESPONSE_TIME_NAME)));
-            IngestMetric errorCount = metricBuilder.build(new DefaultMetricSample(now, classification.getMetrics(ERROR_COUNT_NAME)));
-            result.add(new IngestApplicationMetric(entry.getKey(), appMetricBuilder.build(messageCount, responseTime, errorCount)));
-        }
-        return result;
+        return bodyByApplicationName.values();
     }
 
     protected boolean send(Collection<GroupedApplicationsMetrics> collection)
     {
+        LOGGER.info("publishing application metrics to ingest api.");
         try
         {
-            List<IngestApplicationMetric> metrics = this.processApplicationMetrics(collection);
+            Collection<IngestApplicationMetric> metrics = this.processApplicationMetrics(collection);
             final CountDownLatch latch = new CountDownLatch(metrics.size());
 
             final List<Boolean> results = Collections.synchronizedList(Lists.<Boolean>newLinkedList());

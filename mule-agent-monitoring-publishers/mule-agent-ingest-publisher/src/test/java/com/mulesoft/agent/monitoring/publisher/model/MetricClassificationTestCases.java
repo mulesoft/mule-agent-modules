@@ -15,19 +15,14 @@ class MetricClassificationTestCases {
     static final String MEMORY_TOTAL_NAME = "java.lang:type=Memory:heap total";
     private static final String IGNORED_METRIC_NAME = "this metric should be left out";
 
-    Collection<List<Metric>> collectionOfEmptyLists()
+    List<Metric> emptyList()
     {
-        Collection<List<Metric>> collection = new LinkedList<>();
-        for (int i = 0; i < 1000; i++)
-        {
-            collection.add(new LinkedList<Metric>());
-        }
-        return collection;
+        return new LinkedList<Metric>();
     }
 
-    Collection<List<Metric>> someNullsTestCase()
+    List<Metric> someNullsTestCase()
     {
-        List<Metric> elements1 = Lists.newArrayList(
+        return Lists.newArrayList(
                 metric(null, 3.4d),
                 metric(MEMORY_TOTAL_NAME, null),
                 null,
@@ -38,9 +33,7 @@ class MetricClassificationTestCases {
                 metric(CPU_USAGE_NAME, 5.2d),
                 metric(MEMORY_TOTAL_NAME, 15.3d),
                 metric(MEMORY_USAGE_NAME, null),
-                metric(MEMORY_TOTAL_NAME, 5d)
-        );
-        List<Metric> elements2 = Lists.newArrayList(
+                metric(MEMORY_TOTAL_NAME, 5d),
                 metric(MEMORY_USAGE_NAME, 5d),
                 metric(null, 8.12d),
                 null,
@@ -48,12 +41,11 @@ class MetricClassificationTestCases {
                 metric(IGNORED_METRIC_NAME, 1d),
                 metric(CPU_USAGE_NAME, 0.1d)
         );
-        return Lists.newArrayList(elements1, elements2, null);
     }
 
-    Collection<List<Metric>> completeTestCase()
+    List<Metric> completeTestCase()
     {
-        List<Metric> elements1 = Lists.newArrayList(
+        return Lists.newArrayList(
                 metric(CPU_USAGE_NAME, 3.4d),
                 metric(MEMORY_TOTAL_NAME, 3.9d),
                 metric(IGNORED_METRIC_NAME, 1d),
@@ -64,9 +56,7 @@ class MetricClassificationTestCases {
                 metric(CPU_USAGE_NAME, 5.2d),
                 metric(MEMORY_TOTAL_NAME, 15.3d),
                 metric(MEMORY_USAGE_NAME, 2.9d),
-                metric(MEMORY_TOTAL_NAME, 5d)
-        );
-        List<Metric> elements2 = Lists.newArrayList(
+                metric(MEMORY_TOTAL_NAME, 5d),
                 metric(MEMORY_USAGE_NAME, 5d),
                 metric(MEMORY_TOTAL_NAME, 8.12d),
                 metric(MEMORY_USAGE_NAME, 7.7d),
@@ -74,7 +64,6 @@ class MetricClassificationTestCases {
                 metric(IGNORED_METRIC_NAME, 1d),
                 metric(CPU_USAGE_NAME, 0.1d)
         );
-        return Lists.newArrayList(elements1, elements2);
     }
 
     private Metric metric(String name, Double value)

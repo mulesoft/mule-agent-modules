@@ -20,13 +20,13 @@ public class DefaultMetricSample implements MetricSample
     private final Double avg;
     private final Double count;
 
-    public DefaultMetricSample(Date date, List<Metric> sample)
+    public DefaultMetricSample(List<Metric> sample)
     {
-        this.date = date;
         Double min = null;
         Double max = null;
         Double sum = 0d;
         Double count = 0d;
+        Date date = null;
 
         if (sample != null)
         {
@@ -47,6 +47,10 @@ public class DefaultMetricSample implements MetricSample
                 }
                 sum += value;
                 count += 1;
+                if (date == null || date.getTime() < metric.getTimestamp())
+                {
+                    date = new Date(metric.getTimestamp());
+                }
             }
         }
         this.max = max;
@@ -54,6 +58,7 @@ public class DefaultMetricSample implements MetricSample
         this.sum = sum;
         this.avg = count > 0 ? sum / count : 0d;
         this.count = count;
+        this.date = date != null ? date : new Date();
     }
 
     public Date getDate()
