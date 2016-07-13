@@ -48,7 +48,7 @@ public enum AnalyticsEventType {
     TRANSACTION_COMMITTED("TransactionNotification", "commit"),
     TRANSACTION_ROLLEDBACK("TransactionNotification", "rollback"),
 
-    CUSTOM_EVENT_ACTION("EventNotification", "custom event"),
+    CUSTOM_EVENT_EVENT_ACTION("EventNotification", "custom event"),
 
     EXCEPTION_ACTION("ExceptionNotification", "exception");
 
