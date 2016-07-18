@@ -9,6 +9,7 @@ import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.PostConfigure;
 import com.mulesoft.agent.configuration.common.AuthenticationProxyConfiguration;
 import com.mulesoft.agent.handlers.exception.InitializationException;
+import com.mulesoft.agent.handlers.internal.buffer.DiscardingMessageBufferConfigurationFactory;
 import com.mulesoft.agent.handlers.internal.client.DefaultAuthenticationProxyClient;
 import com.mulesoft.agent.monitoring.publisher.ingest.AnypointMonitoringIngestAPIClient;
 import com.mulesoft.agent.monitoring.publisher.ingest.builder.IngestMetricBuilder;
@@ -81,11 +82,7 @@ public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
     {
         if (this.buffer == null)
         {
-            this.buffer = new BufferConfiguration();
-            this.buffer.setType(BufferType.MEMORY);
-            this.buffer.setRetryCount(1);
-            this.buffer.setFlushFrequency(60000L);
-            this.buffer.setMaximumCapacity(100);
+            this.buffer = new DiscardingMessageBufferConfigurationFactory().create(60000L, 1000, BufferType.MEMORY, null);
         }
         return this.buffer;
     }

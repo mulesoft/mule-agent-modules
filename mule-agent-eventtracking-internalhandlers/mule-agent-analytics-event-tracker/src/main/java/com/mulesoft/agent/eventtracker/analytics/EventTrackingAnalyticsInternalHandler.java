@@ -27,6 +27,7 @@ import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.common.AuthenticationProxyConfiguration;
 import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
 import com.mulesoft.agent.handlers.exception.InitializationException;
+import com.mulesoft.agent.handlers.internal.buffer.DiscardingMessageBufferConfigurationFactory;
 import com.mulesoft.agent.handlers.internal.client.DefaultAuthenticationProxyClient;
 
 import org.slf4j.Logger;
@@ -115,21 +116,11 @@ public class EventTrackingAnalyticsInternalHandler extends BufferedHandler<Agent
     @Override
     public BufferConfiguration getBuffer()
     {
-        if (buffer != null)
+        if (this.buffer == null)
         {
-            return buffer;
+            this.buffer = new DiscardingMessageBufferConfigurationFactory().create(10000L, 5000, BufferType.MEMORY, null);
         }
-        else
-        {
-            BufferConfiguration defaultBuffer = new BufferConfiguration();
-            defaultBuffer.setType(BufferType.MEMORY);
-            defaultBuffer.setRetryCount(3);
-            defaultBuffer.setFlushFrequency(10000l);
-            defaultBuffer.setMaximumCapacity(5000);
-            defaultBuffer.setDiscardMessagesOnFlushFailure(false);
-            defaultBuffer.setWhenExhausted(BufferExhaustedAction.FLUSH);
-            return defaultBuffer;
-        }
+        return this.buffer;
     }
 
     /**
