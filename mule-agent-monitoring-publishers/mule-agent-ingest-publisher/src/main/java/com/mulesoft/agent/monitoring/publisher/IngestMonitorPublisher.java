@@ -82,7 +82,7 @@ public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
     {
         if (this.buffer == null)
         {
-            this.buffer = new DiscardingMessageBufferConfigurationFactory().create(60000L, 100, BufferType.MEMORY, null);
+            this.buffer = new DiscardingMessageBufferConfigurationFactory().create(60000L, 1000, BufferType.MEMORY, null);
         }
         return this.buffer;
     }
