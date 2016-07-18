@@ -99,15 +99,17 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Gr
                 List<Metric> responseTimeMetrics = classification.getMetrics(RESPONSE_TIME_NAME);
                 List<Metric> errorCountMetrics = classification.getMetrics(ERROR_COUNT_NAME);
 
+                IngestMetric messageCountSample = metricBuilder.build(new DefaultMetricSample(messageCountMetrics));
+
                 Set<IngestMetric> messageCount = messageCountMetrics != null ?
-                        Sets.newHashSet(metricBuilder.build(new DefaultMetricSample(messageCountMetrics))) :
+                        Sets.newHashSet(messageCountSample) :
                         Sets.<IngestMetric>newHashSet();
 
-                Set<IngestMetric> responseTime = responseTimeMetrics != null ?
+                Set<IngestMetric> responseTime = responseTimeMetrics != null && messageCountSample.getAvg() != 0d ?
                         Sets.newHashSet(metricBuilder.build(new DefaultMetricSample(responseTimeMetrics))) :
                         Sets.<IngestMetric>newHashSet();
 
-                Set<IngestMetric> errorCount = responseTimeMetrics != null ?
+                Set<IngestMetric> errorCount = responseTimeMetrics != null && messageCountSample.getAvg() != 0d ?
                         Sets.newHashSet(metricBuilder.build(new DefaultMetricSample(errorCountMetrics))) :
                         Sets.<IngestMetric>newHashSet();
 
