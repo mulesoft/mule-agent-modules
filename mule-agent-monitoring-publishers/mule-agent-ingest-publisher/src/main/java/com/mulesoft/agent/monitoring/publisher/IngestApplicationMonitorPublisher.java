@@ -1,5 +1,19 @@
 package com.mulesoft.agent.monitoring.publisher;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -17,14 +31,9 @@ import com.mulesoft.agent.monitoring.publisher.model.DefaultMetricSample;
 import com.mulesoft.agent.monitoring.publisher.model.IngestApplicationMetric;
 import com.mulesoft.agent.monitoring.publisher.model.MetricClassification;
 import com.mulesoft.agent.services.OnOffSwitch;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-import java.util.*;
-import java.util.concurrent.*;
 
 /**
  * <p>
@@ -139,7 +148,7 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Gr
             Collection<IngestApplicationMetric> metrics = this.processApplicationMetrics(collection);
             final CountDownLatch latch = new CountDownLatch(metrics.size());
 
-            final List<Boolean> results = Collections.synchronizedList(Lists.<Boolean>newLinkedList());
+            final List<Integer> statusCodes = Collections.synchronizedList(Lists.<Integer>newLinkedList());
             for (final IngestApplicationMetric metric : metrics)
             {
                 this.executor.submit(new Runnable()
@@ -149,8 +158,8 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Gr
                     {
                         try
                         {
-                            boolean result = client.postApplicationMetrics(metric.getApplicationName(), metric.getBody());
-                            if (result)
+                            int result = client.postApplicationMetrics(metric.getApplicationName(), metric.getBody());
+                            if (isSuccessStatusCode(result))
                             {
                                 LOGGER.info("successfully published application metrics for " + metric.getApplicationName());
                             }
@@ -158,12 +167,12 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Gr
                             {
                                 LOGGER.error("could not publish application metrics for " + metric.getApplicationName());
                             }
-                            results.add(result);
+                            statusCodes.add(result);
                         }
                         catch (Exception e)
                         {
                             LOGGER.info("could not publish application metrics for " + metric.getApplicationName());
-                            results.add(false);
+                            statusCodes.add(500);
                         }
                         finally
                         {
@@ -174,7 +183,14 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Gr
             }
             latch.await(applicationPublishTimeOut, applicationPublishTimeUnit);
 
-            boolean result = !results.contains(false);
+            boolean result = true;
+            for (int statusCode : statusCodes)
+            {
+                if (!isSuccessStatusCode(statusCode) && (!isClientErrorStatusCode(statusCode) || SUPPORTED_RETRY_CLIENT_ERRORS.contains(statusCode)))
+                {
+                    result = false;
+                }
+            }
             if (result)
             {
                 LOGGER.info("Published app metrics to Ingest successfully");

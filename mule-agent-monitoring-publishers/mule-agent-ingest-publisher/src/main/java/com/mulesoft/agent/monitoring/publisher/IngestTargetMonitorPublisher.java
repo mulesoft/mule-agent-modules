@@ -8,19 +8,26 @@
 
 package com.mulesoft.agent.monitoring.publisher;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import com.google.common.collect.Sets;
 import com.mulesoft.agent.domain.monitoring.Metric;
 import com.mulesoft.agent.monitoring.publisher.ingest.builder.IngestTargetMetricPostBodyBuilder;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestMetric;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestTargetMetricPostBody;
-import com.mulesoft.agent.monitoring.publisher.model.*;
+import com.mulesoft.agent.monitoring.publisher.model.CPUMetricSampleDecorator;
+import com.mulesoft.agent.monitoring.publisher.model.DefaultMetricSample;
+import com.mulesoft.agent.monitoring.publisher.model.MemoryMetricSampleDecorator;
+import com.mulesoft.agent.monitoring.publisher.model.MetricClassification;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-import java.util.*;
 
 /**
  * <p>
@@ -91,7 +98,8 @@ public class IngestTargetMonitorPublisher extends IngestMonitorPublisher<List<Me
         try
         {
             IngestTargetMetricPostBody targetBody = this.processTargetMetrics(collection);
-            boolean result = this.client.postTargetMetrics(targetBody);
+            int responseCode = this.client.postTargetMetrics(targetBody);
+            boolean result = isSuccessStatusCode(responseCode) || (isClientErrorStatusCode(responseCode) && !SUPPORTED_RETRY_CLIENT_ERRORS.contains(responseCode));
             if (result)
             {
                 LOGGER.info("Published target metrics to Ingest successfully");
