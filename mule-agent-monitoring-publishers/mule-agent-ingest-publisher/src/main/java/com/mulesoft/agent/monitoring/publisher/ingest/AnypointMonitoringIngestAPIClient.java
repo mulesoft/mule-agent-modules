@@ -1,14 +1,15 @@
 
 package com.mulesoft.agent.monitoring.publisher.ingest;
 
+import java.util.HashMap;
+
 import com.google.common.collect.Maps;
 import com.mulesoft.agent.clients.AuthenticationProxyClient;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestApplicationMetricPostBody;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestTargetMetricPostBody;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.HashMap;
 
 /**
  * Monitoring Ingest API Client
@@ -36,31 +37,31 @@ public class AnypointMonitoringIngestAPIClient
         return new AnypointMonitoringIngestAPIClient(apiVersion, authProxyClient);
     }
 
-    public boolean postTargetMetrics(final IngestTargetMetricPostBody body) {
+    public int postTargetMetrics(final IngestTargetMetricPostBody body)
+    {
         try
         {
-            this.authProxyClient.post(this.targetMetricsPath, body);
-            return true;
+            return this.authProxyClient.post(this.targetMetricsPath, body).getStatus();
         }
         catch (Exception e)
         {
             LOGGER.error("Could not publish target", e);
-            return false;
+            return 500;
         }
     }
 
-    public boolean postApplicationMetrics(final String applicationName, final IngestApplicationMetricPostBody body) {
+    public int postApplicationMetrics(final String applicationName, final IngestApplicationMetricPostBody body)
+    {
         HashMap<String, Object> headers = Maps.newHashMap();
         headers.put(APPLICATION_NAME_HEADER, applicationName);
         try
         {
-            this.authProxyClient.post(this.applicationMetricsPath, body, headers);
-            return true;
+            return this.authProxyClient.post(this.applicationMetricsPath, body, headers).getStatus();
         }
         catch (Exception e)
         {
             LOGGER.error("Could not publish metrics for application " + applicationName, e);
-            return false;
+            return 500;
         }
     }
 

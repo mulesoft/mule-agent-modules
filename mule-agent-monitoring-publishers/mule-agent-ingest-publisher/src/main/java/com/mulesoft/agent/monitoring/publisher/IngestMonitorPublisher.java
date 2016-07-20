@@ -1,5 +1,10 @@
 package com.mulesoft.agent.monitoring.publisher;
 
+import java.util.Collection;
+import java.util.List;
+import javax.inject.Inject;
+
+import com.google.common.collect.Lists;
 import com.mulesoft.agent.AgentEnableOperationException;
 import com.mulesoft.agent.buffer.BufferConfiguration;
 import com.mulesoft.agent.buffer.BufferType;
@@ -14,12 +19,10 @@ import com.mulesoft.agent.handlers.internal.client.DefaultAuthenticationProxyCli
 import com.mulesoft.agent.monitoring.publisher.ingest.AnypointMonitoringIngestAPIClient;
 import com.mulesoft.agent.monitoring.publisher.ingest.builder.IngestMetricBuilder;
 import com.mulesoft.agent.services.OnOffSwitch;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.inject.Inject;
-import java.util.Collection;
 
 /**
  * Created by sebastianvinci on 5/30/16.
@@ -27,6 +30,14 @@ import java.util.Collection;
 public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
 {
     private final static Logger LOGGER = LoggerFactory.getLogger(IngestMonitorPublisher.class);
+
+    /**
+     * <p>
+     * A list of HTTP client errors for which an attempt should be made to resend the messages. Any
+     * other client errors would result in discarding the messages.
+     * </p>
+     */
+    protected static final List<Integer> SUPPORTED_RETRY_CLIENT_ERRORS = Lists.newArrayList(408, 429);
 
     @Configurable("{}")
     private AuthenticationProxyConfiguration authenticationProxy;
@@ -110,5 +121,29 @@ public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
     protected boolean flush(Collection<T> collection)
     {
         return send(collection);
+    }
+
+    /**
+     * <p>
+     * Checks whether the provided HTTP status code belongs to the Success family.
+     * </p>
+     * @param statusCode The status code to check.
+     * @return true if the error code is between 200 and 300.
+     */
+    protected boolean isSuccessStatusCode(int statusCode)
+    {
+        return statusCode >= 200 && statusCode < 300;
+    }
+
+    /**
+     * <p>
+     * Checks whether the provided HTTP status code belongs to the Client Error family.
+     * </p>
+     * @param statusCode The status code to check.
+     * @return true if the error code is between 400 and 500.
+     */
+    protected boolean isClientErrorStatusCode(int statusCode)
+    {
+        return statusCode >= 400 && statusCode < 500;
     }
 }
