@@ -1,9 +1,5 @@
 package com.mulesoft.agent.monitoring.publisher;
 
-import java.util.Collection;
-import java.util.List;
-import javax.inject.Inject;
-
 import com.google.common.collect.Lists;
 import com.mulesoft.agent.AgentEnableOperationException;
 import com.mulesoft.agent.buffer.BufferConfiguration;
@@ -19,18 +15,17 @@ import com.mulesoft.agent.handlers.internal.client.DefaultAuthenticationProxyCli
 import com.mulesoft.agent.monitoring.publisher.ingest.AnypointMonitoringIngestAPIClient;
 import com.mulesoft.agent.monitoring.publisher.ingest.builder.IngestMetricBuilder;
 import com.mulesoft.agent.services.OnOffSwitch;
-
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.inject.Inject;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by sebastianvinci on 5/30/16.
  */
 public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
 {
-    private final static Logger LOGGER = LoggerFactory.getLogger(IngestMonitorPublisher.class);
-
     /**
      * <p>
      * A list of HTTP client errors for which an attempt should be made to resend the messages. Any

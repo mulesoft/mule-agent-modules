@@ -5,7 +5,6 @@ import com.google.common.collect.Maps;
 import com.mulesoft.agent.domain.monitoring.Metric;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 

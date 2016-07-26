@@ -1,19 +1,5 @@
 package com.mulesoft.agent.monitoring.publisher;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -31,9 +17,14 @@ import com.mulesoft.agent.monitoring.publisher.model.DefaultMetricSample;
 import com.mulesoft.agent.monitoring.publisher.model.IngestApplicationMetric;
 import com.mulesoft.agent.monitoring.publisher.model.MetricClassification;
 import com.mulesoft.agent.services.OnOffSwitch;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * <p>
@@ -142,7 +133,7 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Gr
 
     protected boolean send(Collection<GroupedApplicationsMetrics> collection)
     {
-        LOGGER.info("publishing application metrics to ingest api.");
+        LOGGER.debug("publishing application metrics to ingest api.");
         try
         {
             Collection<IngestApplicationMetric> metrics = this.processApplicationMetrics(collection);
@@ -161,17 +152,18 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Gr
                             int result = client.postApplicationMetrics(metric.getApplicationName(), metric.getBody());
                             if (isSuccessStatusCode(result))
                             {
-                                LOGGER.info("successfully published application metrics for " + metric.getApplicationName());
+                                LOGGER.debug("successfully published application metrics for " + metric.getApplicationName());
                             }
                             else
                             {
-                                LOGGER.error("could not publish application metrics for " + metric.getApplicationName());
+                                LOGGER.warn("could not publish application metrics for " + metric.getApplicationName());
                             }
                             statusCodes.add(result);
                         }
                         catch (Exception e)
                         {
-                            LOGGER.info("could not publish application metrics for " + metric.getApplicationName());
+                            LOGGER.warn(String.format("could not publish application metrics for %s, cause: %s", metric.getApplicationName(), e.getMessage()));
+                            LOGGER.debug("Error: ", e);
                             statusCodes.add(500);
                         }
                         finally
@@ -193,17 +185,18 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Gr
             }
             if (result)
             {
-                LOGGER.info("Published app metrics to Ingest successfully");
+                LOGGER.debug("Published app metrics to Ingest successfully");
             }
             else
             {
-                LOGGER.error("Some metrics for applications could not be published.");
+                LOGGER.warn("Some metrics for applications could not be published.");
             }
             return result;
         }
         catch (Exception e)
         {
-            LOGGER.error("Could not publish application metrics to Ingest: ", e);
+            LOGGER.warn(String.format("Could not publish application metrics to Ingest, cause: %s", e.getMessage()));
+            LOGGER.debug("Error: ", e);
             return false;
         }
     }

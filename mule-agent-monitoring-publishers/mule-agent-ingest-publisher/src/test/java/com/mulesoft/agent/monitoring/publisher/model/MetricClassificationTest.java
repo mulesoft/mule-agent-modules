@@ -2,13 +2,11 @@ package com.mulesoft.agent.monitoring.publisher.model;
 
 import com.google.common.collect.Lists;
 import com.mulesoft.agent.domain.monitoring.Metric;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.List;
+import java.util.Map;
 
 public class MetricClassificationTest
 {

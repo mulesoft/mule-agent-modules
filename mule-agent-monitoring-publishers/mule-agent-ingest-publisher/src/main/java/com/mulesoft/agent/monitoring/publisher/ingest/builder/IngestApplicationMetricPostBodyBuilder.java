@@ -1,11 +1,8 @@
 package com.mulesoft.agent.monitoring.publisher.ingest.builder;
 
-import com.google.common.collect.Sets;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestApplicationMetricPostBody;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestMetric;
-import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestTargetMetricPostBody;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Set;
 

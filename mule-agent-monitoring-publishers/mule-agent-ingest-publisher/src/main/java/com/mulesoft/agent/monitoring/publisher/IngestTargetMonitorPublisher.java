@@ -8,14 +8,6 @@
 
 package com.mulesoft.agent.monitoring.publisher;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-
 import com.google.common.collect.Sets;
 import com.mulesoft.agent.domain.monitoring.Metric;
 import com.mulesoft.agent.monitoring.publisher.ingest.builder.IngestTargetMetricPostBodyBuilder;
@@ -25,9 +17,16 @@ import com.mulesoft.agent.monitoring.publisher.model.CPUMetricSampleDecorator;
 import com.mulesoft.agent.monitoring.publisher.model.DefaultMetricSample;
 import com.mulesoft.agent.monitoring.publisher.model.MemoryMetricSampleDecorator;
 import com.mulesoft.agent.monitoring.publisher.model.MetricClassification;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -94,7 +93,7 @@ public class IngestTargetMonitorPublisher extends IngestMonitorPublisher<List<Me
 
     protected boolean send(Collection<List<Metric>> collection)
     {
-        LOGGER.info("publishing target metrics to ingest api.");
+        LOGGER.debug("publishing target metrics to ingest api.");
         try
         {
             IngestTargetMetricPostBody targetBody = this.processTargetMetrics(collection);
@@ -102,17 +101,18 @@ public class IngestTargetMonitorPublisher extends IngestMonitorPublisher<List<Me
             boolean result = isSuccessStatusCode(responseCode) || (isClientErrorStatusCode(responseCode) && !SUPPORTED_RETRY_CLIENT_ERRORS.contains(responseCode));
             if (result)
             {
-                LOGGER.info("Published target metrics to Ingest successfully");
+                LOGGER.debug("Published target metrics to Ingest successfully");
             }
             else
             {
-                LOGGER.error("Could not publish target metrics to Ingest");
+                LOGGER.warn("Could not publish target metrics to Ingest");
             }
             return result;
         }
         catch (Exception e)
         {
-            LOGGER.error("Could not publish target metrics to Ingest: ", e);
+            LOGGER.warn("Could not publish target metrics to Ingest, cause: " + e.getMessage());
+            LOGGER.debug("Error: ", e);
             return false;
         }
     }
