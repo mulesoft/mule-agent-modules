@@ -3,7 +3,6 @@ package com.mulesoft.agent.monitoring.publisher.model;
 import com.google.common.collect.Lists;
 import com.mulesoft.agent.domain.monitoring.Metric;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;

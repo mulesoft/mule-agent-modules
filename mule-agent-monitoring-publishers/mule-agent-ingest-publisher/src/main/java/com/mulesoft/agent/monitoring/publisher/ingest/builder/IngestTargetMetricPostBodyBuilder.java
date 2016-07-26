@@ -1,6 +1,5 @@
 package com.mulesoft.agent.monitoring.publisher.ingest.builder;
 
-import com.google.common.collect.Sets;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestMetric;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestTargetMetricPostBody;
 

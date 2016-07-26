@@ -1,15 +1,14 @@
 
 package com.mulesoft.agent.monitoring.publisher.ingest;
 
-import java.util.HashMap;
-
 import com.google.common.collect.Maps;
 import com.mulesoft.agent.clients.AuthenticationProxyClient;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestApplicationMetricPostBody;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestTargetMetricPostBody;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
 
 /**
  * Monitoring Ingest API Client
@@ -45,7 +44,8 @@ public class AnypointMonitoringIngestAPIClient
         }
         catch (Exception e)
         {
-            LOGGER.error("Could not publish target", e);
+            LOGGER.warn("Could not publish target, cause: " + e.getMessage());
+            LOGGER.debug("ERROR: ", e);
             return 500;
         }
     }
@@ -60,7 +60,8 @@ public class AnypointMonitoringIngestAPIClient
         }
         catch (Exception e)
         {
-            LOGGER.error("Could not publish metrics for application " + applicationName, e);
+            LOGGER.warn("Could not publish metrics for application " + applicationName + ", cause: " + e.getMessage());
+            LOGGER.debug("ERROR: ", e);
             return 500;
         }
     }
