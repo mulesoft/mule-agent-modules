@@ -66,21 +66,21 @@ public class IngestTargetMonitorPublisher extends IngestMonitorPublisher<List<Me
                     (memoryUsageMetrics != null ? memoryUsageMetrics.size() : 0) + " memory usage metrics and " +
                     (memoryTotalMetrics != null ? memoryTotalMetrics.size() : 0) + " memory total metrics");
 
-            if (cpuMetrics != null)
+            if (cpuMetrics != null && cpuMetrics.size() > 0)
             {
                 cpuUsage.add(
                         metricBuilder.build(new CPUMetricSampleDecorator(new DefaultMetricSample(cpuMetrics)))
                 );
             }
 
-            if (memoryUsageMetrics != null)
+            if (memoryUsageMetrics != null && memoryUsageMetrics.size() > 0)
             {
                 memoryUsage.add(
                         metricBuilder.build(new MemoryMetricSampleDecorator(new DefaultMetricSample(memoryUsageMetrics)))
                 );
             }
 
-            if (memoryTotalMetrics != null)
+            if (memoryTotalMetrics != null && memoryTotalMetrics.size() > 0)
             {
                 memoryTotal.add(
                         metricBuilder.build(new MemoryMetricSampleDecorator(new DefaultMetricSample(memoryTotalMetrics)))
