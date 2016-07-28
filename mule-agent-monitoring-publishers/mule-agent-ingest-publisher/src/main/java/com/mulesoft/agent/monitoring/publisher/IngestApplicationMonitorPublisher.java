@@ -101,15 +101,17 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Gr
 
                 IngestMetric messageCountSample = metricBuilder.build(new DefaultMetricSample(messageCountMetrics));
 
-                Set<IngestMetric> messageCount = messageCountMetrics != null ?
+                Set<IngestMetric> messageCount = messageCountMetrics != null && messageCountMetrics.size() > 0 ?
                         Sets.newHashSet(messageCountSample) :
                         Sets.<IngestMetric>newHashSet();
 
-                Set<IngestMetric> responseTime = responseTimeMetrics != null && messageCountSample.getAvg() != 0d ?
+                boolean avgMessageCountIsNotZero = messageCountSample.getAvg() != 0d;
+
+                Set<IngestMetric> responseTime = responseTimeMetrics != null && responseTimeMetrics.size() > 0 && avgMessageCountIsNotZero ?
                         Sets.newHashSet(metricBuilder.build(new DefaultMetricSample(responseTimeMetrics))) :
                         Sets.<IngestMetric>newHashSet();
 
-                Set<IngestMetric> errorCount = responseTimeMetrics != null && messageCountSample.getAvg() != 0d ?
+                Set<IngestMetric> errorCount = errorCountMetrics != null && errorCountMetrics.size() > 0 && avgMessageCountIsNotZero ?
                         Sets.newHashSet(metricBuilder.build(new DefaultMetricSample(errorCountMetrics))) :
                         Sets.<IngestMetric>newHashSet();
 
