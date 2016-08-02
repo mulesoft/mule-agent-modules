@@ -96,6 +96,7 @@ public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
     private boolean checkConfiguration()
     {
         return this.authenticationProxy != null &&
+                this.authenticationProxy.getSecurity() != null &&
                 StringUtils.isNotBlank(this.authenticationProxy.getSecurity().getKeyStoreAlias()) &&
                 StringUtils.isNotBlank(this.authenticationProxy.getSecurity().getKeyStoreAliasPassword()) &&
                 StringUtils.isNotBlank(this.authenticationProxy.getSecurity().getKeyStoreFile()) &&
