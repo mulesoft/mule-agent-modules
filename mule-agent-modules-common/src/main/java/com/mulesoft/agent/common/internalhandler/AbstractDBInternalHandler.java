@@ -93,7 +93,7 @@ public abstract class AbstractDBInternalHandler<T> extends BufferedHandler<T>
 
             return true;
         }
-        catch (SQLException e)
+        catch (Throwable e)
         {
             LOGGER.error("Couldn't insert the tracking notifications.", e);
             return false;
