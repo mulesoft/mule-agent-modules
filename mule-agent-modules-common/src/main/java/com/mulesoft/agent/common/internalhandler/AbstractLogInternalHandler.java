@@ -1,5 +1,8 @@
 package com.mulesoft.agent.common.internalhandler;
 
+import java.io.Serializable;
+import java.nio.charset.Charset;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mulesoft.agent.AgentEnableOperationException;
 import com.mulesoft.agent.common.internalhandler.serializer.DefaultObjectMapperFactory;
@@ -9,28 +12,21 @@ import com.mulesoft.agent.configuration.Type;
 import com.mulesoft.agent.handlers.InitializableInternalMessageHandler;
 import com.mulesoft.agent.handlers.exception.InitializationException;
 import com.mulesoft.agent.services.OnOffSwitch;
+
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.RollingRandomAccessFileAppender;
 import org.apache.logging.log4j.core.appender.rolling.CompositeTriggeringPolicy;
-import org.apache.logging.log4j.core.appender.rolling.DefaultRolloverStrategy;
 import org.apache.logging.log4j.core.appender.rolling.SizeBasedTriggeringPolicy;
 import org.apache.logging.log4j.core.appender.rolling.TimeBasedTriggeringPolicy;
-import org.apache.logging.log4j.core.appender.rolling.action.Action;
 import org.apache.logging.log4j.core.config.AppenderRef;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
-import org.apache.logging.log4j.core.config.Property;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.Serializable;
-import java.nio.charset.Charset;
-import java.util.concurrent.TimeUnit;
-import java.util.zip.Deflater;
 
 public abstract class AbstractLogInternalHandler<T> implements InitializableInternalMessageHandler<T>
 {
@@ -177,7 +173,7 @@ public abstract class AbstractLogInternalHandler<T> implements InitializableInte
             Layout<? extends Serializable> layout = PatternLayout.newBuilder().withPattern(PATTERN_LAYOUT).
                 withCharset(Charset.forName("UTF-8")).withAlwaysWriteExceptions(true).withNoConsoleNoAnsi(false).build();
 
-            String dayTrigger = TimeUnit.DAYS.toMillis(this.daysTrigger) + "";
+            String dayTrigger = this.daysTrigger + "";
             String sizeTrigger = (this.mbTrigger * 1024 * 1024) + "";
             TimeBasedTriggeringPolicy timeBasedTriggeringPolicy = TimeBasedTriggeringPolicy.createPolicy(dayTrigger, "true");
             SizeBasedTriggeringPolicy sizeBasedTriggeringPolicy = SizeBasedTriggeringPolicy.createPolicy(sizeTrigger);
