@@ -1,5 +1,7 @@
 package com.mulesoft.agent.monitoring.publisher;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.collect.Lists;
 import com.mulesoft.agent.AgentEnableOperationException;
 import com.mulesoft.agent.buffer.BufferConfiguration;
@@ -9,6 +11,7 @@ import com.mulesoft.agent.clients.AuthenticationProxyClient;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.PostConfigure;
 import com.mulesoft.agent.configuration.common.AuthenticationProxyConfiguration;
+import com.mulesoft.agent.configuration.common.ProxyConfiguration;
 import com.mulesoft.agent.handlers.exception.InitializationException;
 import com.mulesoft.agent.handlers.internal.buffer.DiscardingMessageBufferConfigurationFactory;
 import com.mulesoft.agent.handlers.internal.client.DefaultAuthenticationProxyClient;
@@ -18,11 +21,14 @@ import com.mulesoft.agent.services.OnOffSwitch;
 import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.List;
 
 /**
- * Created by sebastianvinci on 5/30/16.
+ * <p>
+ * Abstract monitoring metrics publisher.
+ * </p>
  */
 public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
 {
@@ -33,23 +39,45 @@ public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
      * </p>
      */
     protected static final List<Integer> SUPPORTED_RETRY_CLIENT_ERRORS = Lists.newArrayList(408, 429);
+    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SZ";
 
+    /**
+     * Authentication proxy configuration.
+     */
     @Configurable("{}")
     private AuthenticationProxyConfiguration authenticationProxy;
 
+    /**
+     * Monitoring API version.
+     */
     @Configurable("1")
     private String apiVersion;
 
+    /**
+     * Whether this publisher is enabled.
+     */
     @Configurable("true")
     private Boolean enabled;
 
+    /**
+     * Ingest metric builder.
+     */
     @Inject
     protected IngestMetricBuilder metricBuilder;
 
+    /**
+     * Monitoring Ingest Client
+     */
     protected AnypointMonitoringIngestAPIClient client;
 
+    /**
+     * Enabled Switch
+     */
     protected OnOffSwitch enabledSwitch;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void enable(boolean state)
             throws AgentEnableOperationException
@@ -57,12 +85,19 @@ public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
         this.enabledSwitch.switchTo(state);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isEnabled()
     {
         return this.enabledSwitch.isEnabled();
     }
 
+    /**
+     * Initialization code to be run after configuration.
+     * @throws AgentEnableOperationException
+     */
     @PostConfigure
     public void postConfigurable() throws AgentEnableOperationException
     {
@@ -72,13 +107,25 @@ public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
         }
     }
 
+    /**
+     * Initialization process.
+     * @throws InitializationException
+     */
     @Override
     public void initialize() throws InitializationException
     {
         if (!this.checkConfiguration()) {
             throw new InitializationException("Could not initialize ingest monitor publisher. Its configuration is invalid.");
         }
-        AuthenticationProxyClient authProxyClient = DefaultAuthenticationProxyClient.create(authenticationProxy);
+
+        ObjectMapper objectMapper = new ObjectMapper()
+                .setDateFormat(new SimpleDateFormat(DATE_FORMAT))
+                // to allow serialization of "empty" POJOs (no properties to serialize)
+                // (without this setting, an exception is thrown in those cases)
+                .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+        AuthenticationProxyClient authProxyClient = DefaultAuthenticationProxyClient.create(authenticationProxy, objectMapper);
         this.client = AnypointMonitoringIngestAPIClient.create(apiVersion, authProxyClient);
         super.initialize();
     }
