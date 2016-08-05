@@ -18,6 +18,7 @@ import javax.inject.Singleton;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.google.common.collect.Lists;
 import com.mulesoft.agent.buffer.BufferConfiguration;
 import com.mulesoft.agent.buffer.BufferExhaustedAction;
 import com.mulesoft.agent.buffer.BufferType;
@@ -25,6 +26,7 @@ import com.mulesoft.agent.buffer.BufferedHandler;
 import com.mulesoft.agent.clients.AuthenticationProxyClient;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.common.AuthenticationProxyConfiguration;
+import com.mulesoft.agent.configuration.common.ProxyConfiguration;
 import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
 import com.mulesoft.agent.handlers.exception.InitializationException;
 import com.mulesoft.agent.handlers.internal.buffer.DiscardingMessageBufferConfigurationFactory;
@@ -83,7 +85,7 @@ public class EventTrackingAnalyticsInternalHandler extends BufferedHandler<Agent
     @Override
     public void initialize() throws InitializationException {
         super.initialize();
-        authProxyClient = DefaultAuthenticationProxyClient.create(authenticationProxy);
+        authProxyClient = DefaultAuthenticationProxyClient.create(authenticationProxy, objectMapper);
     }
 
     @Override
@@ -97,18 +99,30 @@ public class EventTrackingAnalyticsInternalHandler extends BufferedHandler<Agent
     {
         try
         {
+            boolean fullSuccess = true;
             Collection<List<AgentTrackingNotification>> groupedNotifications = groupByApplication(notifications);
             for (List<AgentTrackingNotification> applicationNotifications : groupedNotifications) {
-                Map<String, Object> headers = new HashMap<>();
-                headers.put("X-APPLICATION-NAME", applicationNotifications.get(0).getApplication());
+                String applicationName = applicationNotifications.get(0).getApplication();
+                Map<String, Collection<String>> headers = new HashMap<>();
+                headers.put("X-APPLICATION-NAME", Lists.newArrayList(applicationName));
                 String serializedEvents = getMapper().writeValueAsString(applicationNotifications);
-                authProxyClient.put("/insight/ingest/api/v1/", serializedEvents, headers);
+                try
+                {
+                    authProxyClient.put("/insight/ingest/api/v1/", serializedEvents, headers);
+                }
+                catch (Exception e)
+                {
+                    fullSuccess = false;
+                    LOGGER.warn("Could not send tracking event to the Analytics service for application " + applicationName);
+                    LOGGER.debug("Could not send tracking event to the Analytics service for application " + applicationName, e);
+                }
             }
-            return true;
+            return fullSuccess;
         }
         catch (Exception e)
         {
-            LOGGER.error("Could not send tracking event to the Analytics service", e);
+            LOGGER.warn("Could not send tracking event to the Analytics service");
+            LOGGER.debug("Could not send tracking event to the Analytics service", e);
             return false;
         }
     }

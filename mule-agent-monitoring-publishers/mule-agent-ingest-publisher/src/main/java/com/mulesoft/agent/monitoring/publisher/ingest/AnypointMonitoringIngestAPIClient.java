@@ -1,6 +1,7 @@
 
 package com.mulesoft.agent.monitoring.publisher.ingest;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mulesoft.agent.clients.AuthenticationProxyClient;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestApplicationMetricPostBody;
@@ -8,6 +9,7 @@ import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestTargetMetricPo
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
 import java.util.HashMap;
 
 /**
@@ -40,7 +42,7 @@ public class AnypointMonitoringIngestAPIClient
     {
         try
         {
-            return this.authProxyClient.post(this.targetMetricsPath, body).getStatus();
+            return this.authProxyClient.post(this.targetMetricsPath, body).getStatusCode();
         }
         catch (Exception e)
         {
@@ -52,11 +54,11 @@ public class AnypointMonitoringIngestAPIClient
 
     public int postApplicationMetrics(final String applicationName, final IngestApplicationMetricPostBody body)
     {
-        HashMap<String, Object> headers = Maps.newHashMap();
-        headers.put(APPLICATION_NAME_HEADER, applicationName);
+        HashMap<String, Collection<String>> headers = Maps.newHashMap();
+        headers.put(APPLICATION_NAME_HEADER, Lists.newArrayList(applicationName));
         try
         {
-            return this.authProxyClient.post(this.applicationMetricsPath, body, headers).getStatus();
+            return this.authProxyClient.post(this.applicationMetricsPath, body, headers).getStatusCode();
         }
         catch (Exception e)
         {
