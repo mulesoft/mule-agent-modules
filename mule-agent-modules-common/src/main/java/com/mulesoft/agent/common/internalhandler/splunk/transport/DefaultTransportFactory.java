@@ -13,8 +13,8 @@ import com.mulesoft.agent.common.internalhandler.splunk.transport.config.HECTran
 import com.mulesoft.agent.common.internalhandler.splunk.transport.config.RestTransportConfig;
 import com.mulesoft.agent.common.internalhandler.splunk.transport.config.TCPTransportConfig;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * <p>
@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DefaultTransportFactory<T> implements TransportFactory<T>
 {
-    private final static Logger LOGGER = LoggerFactory.getLogger(DefaultTransportFactory.class);
+    private final static Logger LOGGER = LogManager.getLogger(DefaultTransportFactory.class);
 
     private final AbstractSplunkInternalHandler<T> internalHandler;
 

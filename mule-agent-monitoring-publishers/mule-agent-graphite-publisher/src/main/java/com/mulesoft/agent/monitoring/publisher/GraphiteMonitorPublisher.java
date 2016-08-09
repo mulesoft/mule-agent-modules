@@ -12,8 +12,8 @@ import com.mulesoft.agent.buffer.BufferedHandler;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.domain.monitoring.Metric;
 import com.mulesoft.agent.services.OnOffSwitch;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -37,7 +37,7 @@ import java.util.List;
 @Singleton
 public class GraphiteMonitorPublisher extends BufferedHandler<List<Metric>>
 {
-    private final static Logger LOGGER = LoggerFactory.getLogger(GraphiteMonitorPublisher.class);
+    private final static Logger LOGGER = LogManager.getLogger(GraphiteMonitorPublisher.class);
 
     /**
      * <p>

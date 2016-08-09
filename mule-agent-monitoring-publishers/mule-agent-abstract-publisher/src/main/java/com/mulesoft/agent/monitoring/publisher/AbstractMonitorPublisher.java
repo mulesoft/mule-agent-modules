@@ -13,13 +13,13 @@ import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.PostConfigure;
 import com.mulesoft.agent.handlers.InternalMessageHandler;
 import com.mulesoft.agent.services.OnOffSwitch;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 public abstract class AbstractMonitorPublisher<M> implements InternalMessageHandler<M>
 {
-    private final static Logger LOGGER = LoggerFactory.getLogger(AbstractMonitorPublisher.class);
+    private final static Logger LOGGER = LogManager.getLogger(AbstractMonitorPublisher.class);
 
     @Configurable("true")
     protected boolean enabled;

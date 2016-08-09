@@ -14,6 +14,8 @@ import com.mulesoft.agent.handlers.exception.InitializationException;
 import com.mulesoft.agent.services.OnOffSwitch;
 
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LoggerContext;
@@ -25,12 +27,10 @@ import org.apache.logging.log4j.core.config.AppenderRef;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.layout.PatternLayout;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public abstract class AbstractLogInternalHandler<T> implements InitializableInternalMessageHandler<T>
 {
-    private final static Logger LOGGER = LoggerFactory.getLogger(AbstractLogInternalHandler.class);
+    private final static Logger LOGGER = LogManager.getLogger(AbstractLogInternalHandler.class);
     public static String MULE_HOME_PLACEHOLDER = "$MULE_HOME";
     public static String PATTERN_LAYOUT = "%m%n";
 

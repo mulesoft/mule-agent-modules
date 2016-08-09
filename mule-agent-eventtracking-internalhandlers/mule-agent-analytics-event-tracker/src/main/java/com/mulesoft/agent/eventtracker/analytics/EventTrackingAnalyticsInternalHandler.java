@@ -7,33 +7,26 @@
 
 package com.mulesoft.agent.eventtracker.analytics;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import javax.inject.Named;
-import javax.inject.Singleton;
-
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.common.collect.Lists;
 import com.mulesoft.agent.buffer.BufferConfiguration;
-import com.mulesoft.agent.buffer.BufferExhaustedAction;
 import com.mulesoft.agent.buffer.BufferType;
 import com.mulesoft.agent.buffer.BufferedHandler;
 import com.mulesoft.agent.clients.AuthenticationProxyClient;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.common.AuthenticationProxyConfiguration;
-import com.mulesoft.agent.configuration.common.ProxyConfiguration;
 import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
 import com.mulesoft.agent.handlers.exception.InitializationException;
 import com.mulesoft.agent.handlers.internal.buffer.DiscardingMessageBufferConfigurationFactory;
 import com.mulesoft.agent.handlers.internal.client.DefaultAuthenticationProxyClient;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.inject.Named;
+import javax.inject.Singleton;
+import java.util.*;
 
 /**
  * <p>
@@ -50,7 +43,7 @@ public class EventTrackingAnalyticsInternalHandler extends BufferedHandler<Agent
      * Logger to be used to log information about this class.
      * </p>
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(EventTrackingAnalyticsInternalHandler.class);
+    private static final Logger LOGGER = LogManager.getLogger(EventTrackingAnalyticsInternalHandler.class);
 
     /**
      * <p>

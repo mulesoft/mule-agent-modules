@@ -6,8 +6,8 @@ import com.google.common.collect.Maps;
 import com.mulesoft.agent.clients.AuthenticationProxyClient;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestApplicationMetricPostBody;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestTargetMetricPostBody;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -18,7 +18,7 @@ import java.util.HashMap;
 public class AnypointMonitoringIngestAPIClient
 {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AnypointMonitoringIngestAPIClient.class);
+    private static final Logger LOGGER = LogManager.getLogger(AnypointMonitoringIngestAPIClient.class);
     private static final String APPLICATION_NAME_HEADER = "X-APPLICATION-NAME";
 
     private final String targetMetricsPath;

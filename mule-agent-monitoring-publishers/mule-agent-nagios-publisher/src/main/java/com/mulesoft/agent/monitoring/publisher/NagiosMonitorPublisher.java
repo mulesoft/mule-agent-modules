@@ -31,8 +31,8 @@ import javax.inject.Singleton;
 import javax.validation.constraints.NotNull;
 
 import com.mulesoft.agent.services.OnOffSwitch;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * <p>
@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public class NagiosMonitorPublisher extends BufferedHandler<List<Metric>>
 {
-    private final static Logger LOGGER = LoggerFactory.getLogger(NagiosMonitorPublisher.class);
+    private final static Logger LOGGER = LogManager.getLogger(NagiosMonitorPublisher.class);
 
     @Configurable("com.mulesoft.agent")
     String host;
