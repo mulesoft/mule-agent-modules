@@ -20,13 +20,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.common.collect.Lists;
 import com.mulesoft.agent.buffer.BufferConfiguration;
-import com.mulesoft.agent.buffer.BufferExhaustedAction;
 import com.mulesoft.agent.buffer.BufferType;
 import com.mulesoft.agent.buffer.BufferedHandler;
 import com.mulesoft.agent.clients.AuthenticationProxyClient;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.common.AuthenticationProxyConfiguration;
-import com.mulesoft.agent.configuration.common.ProxyConfiguration;
 import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
 import com.mulesoft.agent.handlers.exception.InitializationException;
 import com.mulesoft.agent.handlers.internal.buffer.DiscardingMessageBufferConfigurationFactory;
@@ -85,7 +83,7 @@ public class EventTrackingAnalyticsInternalHandler extends BufferedHandler<Agent
     @Override
     public void initialize() throws InitializationException {
         super.initialize();
-        authProxyClient = DefaultAuthenticationProxyClient.create(authenticationProxy, objectMapper);
+        authProxyClient = DefaultAuthenticationProxyClient.create(authenticationProxy, getMapper());
     }
 
     @Override
@@ -105,10 +103,9 @@ public class EventTrackingAnalyticsInternalHandler extends BufferedHandler<Agent
                 String applicationName = applicationNotifications.get(0).getApplication();
                 Map<String, Collection<String>> headers = new HashMap<>();
                 headers.put("X-APPLICATION-NAME", Lists.newArrayList(applicationName));
-                String serializedEvents = getMapper().writeValueAsString(applicationNotifications);
                 try
                 {
-                    authProxyClient.put("/insight/ingest/api/v1/", serializedEvents, headers);
+                    authProxyClient.put("/insight/ingest/api/v1/", applicationNotifications, headers);
                 }
                 catch (Exception e)
                 {
