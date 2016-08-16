@@ -78,7 +78,7 @@ public class EventTrackingAnalyticsInternalHandler extends BufferedHandler<Agent
     @Override
     public void initialize() throws InitializationException {
         super.initialize();
-        authProxyClient = DefaultAuthenticationProxyClient.create(authenticationProxy, objectMapper);
+        authProxyClient = DefaultAuthenticationProxyClient.create(authenticationProxy, getMapper());
     }
 
     @Override
@@ -98,10 +98,9 @@ public class EventTrackingAnalyticsInternalHandler extends BufferedHandler<Agent
                 String applicationName = applicationNotifications.get(0).getApplication();
                 Map<String, Collection<String>> headers = new HashMap<>();
                 headers.put("X-APPLICATION-NAME", Lists.newArrayList(applicationName));
-                String serializedEvents = getMapper().writeValueAsString(applicationNotifications);
                 try
                 {
-                    authProxyClient.put("/insight/ingest/api/v1/", serializedEvents, headers);
+                    authProxyClient.put("/insight/ingest/api/v1/", applicationNotifications, headers);
                 }
                 catch (Exception e)
                 {
