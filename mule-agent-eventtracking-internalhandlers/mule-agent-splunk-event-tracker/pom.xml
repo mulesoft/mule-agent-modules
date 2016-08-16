@@ -17,33 +17,53 @@
     </properties>
 
     <dependencies>
-
+        <!-- Mule Agent Dependencies -->
         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
+            <groupId>com.mulesoft.agent</groupId>
+            <artifactId>mule-agent-api</artifactId>
+            <classifier>mule-4.x</classifier>
         </dependency>
 
         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
+            <groupId>com.mulesoft.agent</groupId>
+            <artifactId>mule-agent-modules-common</artifactId>
+            <classifier>mule-4.x</classifier>
+            <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
 
+        <!-- Splunk Dependencies -->
         <dependency>
             <groupId>com.splunk</groupId>
             <artifactId>splunk</artifactId>
             <scope>compile</scope>
         </dependency>
 
+        <!-- Jackson Dependencies -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
 
-        <!-- Test Dependencies -->
+        <!-- Common Dependencies -->
         <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
         </dependency>
+
+        <!-- Logging Dependencies -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Test Dependencies -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

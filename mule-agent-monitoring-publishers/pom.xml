@@ -23,31 +23,4 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
-    <dependencies>
-        <dependency>
-            <groupId>com.mulesoft.agent</groupId>
-            <artifactId>mule-agent-api</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.mulesoft.agent</groupId>
-            <artifactId>mule-agent-internal-handlers</artifactId>
-        </dependency>
-
-        <!-- Test Dependencies -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-        </dependency>
-    </dependencies>
-
 </project>

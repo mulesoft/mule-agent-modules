@@ -25,16 +25,20 @@
     </repositories>
 
     <dependencies>
+        <!-- Mule Agent Dependencies -->
         <dependency>
             <groupId>com.mulesoft.agent</groupId>
             <artifactId>mule-agent-api</artifactId>
+            <classifier>mule-4.x</classifier>
         </dependency>
 
+        <!-- Spring Dependencies -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
         </dependency>
 
+        <!-- Common Dependencies -->
         <dependency>
             <groupId>commons-beanutils</groupId>
             <artifactId>commons-beanutils</artifactId>
@@ -45,6 +49,7 @@
             <artifactId>commons-lang</artifactId>
         </dependency>
 
+        <!-- Jackson Dependencies -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
@@ -54,6 +59,7 @@
             <artifactId>jackson-annotations</artifactId>
         </dependency>
 
+        <!-- Splunk Dependencies -->
         <dependency>
             <groupId>com.splunk</groupId>
             <artifactId>splunk</artifactId>
@@ -80,10 +86,12 @@
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

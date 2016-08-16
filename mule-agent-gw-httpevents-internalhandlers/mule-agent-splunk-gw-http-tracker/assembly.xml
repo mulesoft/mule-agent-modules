@@ -1,4 +1,5 @@
 <assembly>
+    <id>mule-4.x</id>
     <formats>
         <format>zip</format>
     </formats>

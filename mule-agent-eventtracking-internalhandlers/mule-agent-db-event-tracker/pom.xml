@@ -18,22 +18,23 @@
     </properties>
 
     <dependencies>
+
+        <!-- Mule Agent Dependencies -->
+        <dependency>
+            <groupId>com.mulesoft.agent</groupId>
+            <artifactId>mule-agent-api</artifactId>
+            <classifier>mule-4.x</classifier>
+        </dependency>
+
         <dependency>
             <groupId>com.mulesoft.agent</groupId>
             <artifactId>mule-agent-modules-common</artifactId>
+            <classifier>mule-4.x</classifier>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-        </dependency>
-
+        <!-- Common Dependencies -->
         <dependency>
             <groupId>com.fasterxml.uuid</groupId>
             <artifactId>java-uuid-generator</artifactId>
@@ -43,6 +44,27 @@
                     <artifactId>log4j</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <!-- Logging Dependencies -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+        </dependency>
+
+        <!-- Test Dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
         </dependency>
     </dependencies>
 

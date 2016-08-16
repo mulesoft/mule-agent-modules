@@ -17,7 +17,20 @@
     </properties>
 
     <dependencies>
+        <!-- Mule Agent Dependencies -->
+        <dependency>
+            <groupId>com.mulesoft.agent</groupId>
+            <artifactId>mule-agent-api</artifactId>
+            <classifier>mule-4.x</classifier>
+        </dependency>
 
+        <!-- Common Dependencies -->
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+        </dependency>
+
+        <!-- Logging Dependencies -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
@@ -27,6 +40,7 @@
             <artifactId>log4j-core</artifactId>
         </dependency>
 
+        <!-- AWS SDK Dependencies -->
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk</artifactId>
@@ -57,6 +71,17 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
+        <!-- Test Dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -65,6 +90,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
+                    <classifier>mule-4.x</classifier>
                     <descriptors>
                         <descriptor>assembly.xml</descriptor>
                     </descriptors>

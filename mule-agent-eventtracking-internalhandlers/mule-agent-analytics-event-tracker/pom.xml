@@ -16,21 +16,26 @@
     </properties>
 
     <dependencies>
+        <!-- Mule Agent Dependencies -->
         <dependency>
             <groupId>com.mulesoft.agent</groupId>
             <artifactId>mule-agent-api</artifactId>
+            <classifier>mule-4.x</classifier>
         </dependency>
 
         <dependency>
             <groupId>com.mulesoft.agent</groupId>
             <artifactId>mule-agent-internal-handlers</artifactId>
+            <classifier>mule-4.x</classifier>
         </dependency>
 
+        <!-- Jackson Dependencies -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
 
+        <!-- Jersey Dependencies -->
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
             <artifactId>jersey-client</artifactId>
@@ -41,11 +46,13 @@
             <artifactId>jersey-media-json-jackson</artifactId>
         </dependency>
 
+        <!-- AsyncHttpClient Dependencies -->
         <dependency>
             <groupId>com.ning</groupId>
             <artifactId>async-http-client</artifactId>
         </dependency>
 
+        <!-- Logging Dependencies -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>

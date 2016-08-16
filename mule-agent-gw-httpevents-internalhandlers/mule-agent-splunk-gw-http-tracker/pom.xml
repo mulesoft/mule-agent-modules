@@ -17,31 +17,69 @@
     </properties>
 
     <dependencies>
-
+        <!-- Mule Agent Dependencies -->
         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
+            <groupId>com.mulesoft.agent</groupId>
+            <artifactId>mule-agent-api</artifactId>
+            <classifier>mule-4.x</classifier>
         </dependency>
 
         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
+            <groupId>com.mulesoft.agent</groupId>
+            <artifactId>mule-agent-modules-common</artifactId>
+            <classifier>mule-4.x</classifier>
+            <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
 
+        <!-- GW Dependencies -->
+        <dependency>
+            <groupId>com.mulesoft.anypoint</groupId>
+            <artifactId>api-gateway-client</artifactId>
+            <version>${gw.version}</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- Common Dependencies -->
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+        </dependency>
+
+        <!-- Splunk Dependencies -->
         <dependency>
             <groupId>com.splunk</groupId>
             <artifactId>splunk</artifactId>
             <scope>compile</scope>
         </dependency>
 
-        <!-- Test Dependencies -->
+        <!-- Logging Dependencies -->
         <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Test Dependencies -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
         </dependency>
     </dependencies>
 

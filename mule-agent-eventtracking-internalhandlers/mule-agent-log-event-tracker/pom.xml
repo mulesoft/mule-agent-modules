@@ -18,9 +18,36 @@
     </properties>
 
     <dependencies>
+        <!-- Mule Agent Dependencies -->
+        <dependency>
+            <groupId>com.mulesoft.agent</groupId>
+            <artifactId>mule-agent-api</artifactId>
+            <classifier>mule-4.x</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>com.mulesoft.agent</groupId>
+            <artifactId>mule-agent-modules-common</artifactId>
+            <classifier>mule-4.x</classifier>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Jackson Dependencies -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
+        </dependency>
+
+        <!-- Test Dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
         </dependency>
     </dependencies>
 

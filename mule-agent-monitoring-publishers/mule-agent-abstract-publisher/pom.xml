@@ -17,6 +17,14 @@
     </properties>
 
     <dependencies>
+        <!-- Mule Agent Dependencies -->
+        <dependency>
+            <groupId>com.mulesoft.agent</groupId>
+            <artifactId>mule-agent-api</artifactId>
+            <classifier>mule-4.x</classifier>
+        </dependency>
+
+        <!-- Logging Dependencies -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>

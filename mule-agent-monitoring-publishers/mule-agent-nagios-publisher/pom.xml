@@ -17,11 +17,27 @@
   </properties>
 
   <dependencies>
+      <!-- Mule Agent Dependencies -->
+      <dependency>
+          <groupId>com.mulesoft.agent</groupId>
+          <artifactId>mule-agent-api</artifactId>
+          <classifier>mule-4.x</classifier>
+      </dependency>
+
+      <!-- Common Dependencies -->
+      <dependency>
+          <groupId>javax.validation</groupId>
+          <artifactId>validation-api</artifactId>
+      </dependency>
+
+      <!-- JSendNSCA Dependencies -->
       <dependency>
           <groupId>com.googlecode.jsendnsca</groupId>
           <artifactId>jsendnsca</artifactId>
           <version>2.0.1</version>
       </dependency>
+
+      <!-- Logging Dependencies -->
       <dependency>
           <groupId>org.apache.logging.log4j</groupId>
           <artifactId>log4j-api</artifactId>

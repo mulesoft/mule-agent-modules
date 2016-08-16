@@ -1,5 +1,5 @@
 <assembly>
-    <id>ingest</id>
+    <id>mule-4.x</id>
     <formats>
         <format>zip</format>
     </formats>
