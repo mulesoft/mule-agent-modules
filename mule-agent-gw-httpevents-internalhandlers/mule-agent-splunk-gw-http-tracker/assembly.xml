@@ -6,6 +6,9 @@
     <includeBaseDirectory>false</includeBaseDirectory>
     <dependencySets>
         <dependencySet>
+            <excludes>
+                <exclude>com.mulesoft.agent:mule-agent-splunk-gw-http-tracker:jar</exclude>
+            </excludes>
             <unpack>false</unpack>
             <scope>runtime</scope>
             <outputDirectory>/</outputDirectory>
