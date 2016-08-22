@@ -36,7 +36,7 @@ public class AnalyticsEventSerializer extends JsonSerializer<AgentTrackingNotifi
             AnalyticsEventType analyticsEventType = AnalyticsEventType.getAnalyticsEventType(value);
             jgen.writeStartObject();
             jgen.writeStringField("id", UUID.randomUUID().toString());
-            jgen.writeStringField("messageId", value.getRootMuleMessageId());
+            jgen.writeStringField("messageId", value.getCorrelationId());
             jgen.writeStringField("name", value.getNotificationType());
             jgen.writeStringField("type", analyticsEventType == null ? "" : analyticsEventType.name());
             jgen.writeNumberField("timestamp", value.getTimestamp());

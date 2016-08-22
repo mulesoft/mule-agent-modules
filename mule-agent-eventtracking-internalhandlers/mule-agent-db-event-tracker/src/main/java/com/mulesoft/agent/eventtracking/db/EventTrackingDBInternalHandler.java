@@ -1,14 +1,5 @@
 package com.mulesoft.agent.eventtracking.db;
 
-import com.fasterxml.uuid.Generators;
-import com.mulesoft.agent.common.internalhandler.AbstractDBInternalHandler;
-import com.mulesoft.agent.configuration.Configurable;
-import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import javax.inject.Named;
-import javax.inject.Singleton;
 import java.lang.annotation.Annotation;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -17,6 +8,16 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
+import com.fasterxml.uuid.Generators;
+import com.mulesoft.agent.common.internalhandler.AbstractDBInternalHandler;
+import com.mulesoft.agent.configuration.Configurable;
+import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * <p>
@@ -92,12 +93,11 @@ public class EventTrackingDBInternalHandler extends AbstractDBInternalHandler<Ag
         statement.setString(2, notification.getAction());
         statement.setString(3, notification.getApplication());
         statement.setString(4, notification.getMuleMessage());
-        statement.setString(5, notification.getMuleMessageId());
-        statement.setString(6, notification.getNotificationType());
-        statement.setString(7, notification.getPath());
-        statement.setString(8, notification.getResourceIdentifier());
-        statement.setLong(9, notification.getTimestamp());
-        statement.setString(10, notification.getSource());
+        statement.setString(5, notification.getNotificationType());
+        statement.setString(6, notification.getPath());
+        statement.setString(7, notification.getResourceIdentifier());
+        statement.setLong(8, notification.getTimestamp());
+        statement.setString(9, notification.getSource());
 
         statement.addBatch();
 
