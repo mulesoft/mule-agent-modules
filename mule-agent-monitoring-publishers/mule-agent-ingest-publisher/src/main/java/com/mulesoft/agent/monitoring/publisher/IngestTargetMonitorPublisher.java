@@ -13,7 +13,11 @@ import com.mulesoft.agent.domain.monitoring.Metric;
 import com.mulesoft.agent.monitoring.publisher.ingest.builder.IngestTargetMetricPostBodyBuilder;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestMetric;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestTargetMetricPostBody;
-import com.mulesoft.agent.monitoring.publisher.model.*;
+import com.mulesoft.agent.monitoring.publisher.model.CPUMetricSampleDecorator;
+import com.mulesoft.agent.monitoring.publisher.model.DefaultMetricSample;
+import com.mulesoft.agent.monitoring.publisher.model.MemoryMetricSampleDecorator;
+import com.mulesoft.agent.monitoring.publisher.model.MetricClassification;
+import com.ning.http.client.Response;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -94,17 +98,20 @@ public class IngestTargetMonitorPublisher extends IngestMonitorPublisher<List<Me
         try
         {
             IngestTargetMetricPostBody targetBody = this.processTargetMetrics(collection);
-            int responseCode = this.client.postTargetMetrics(targetBody);
-            boolean result = isSuccessStatusCode(responseCode) || (isClientErrorStatusCode(responseCode) && !SUPPORTED_RETRY_CLIENT_ERRORS.contains(responseCode));
-            if (result)
+            Response httpResponse = this.client.postTargetMetrics(targetBody);
+            boolean successful = isSuccessStatusCode(httpResponse.getStatusCode()) || (isClientErrorStatusCode(httpResponse.getStatusCode()) && !SUPPORTED_RETRY_CLIENT_ERRORS.contains(httpResponse.getStatusCode()));
+            if (successful)
             {
                 LOGGER.debug("Published target metrics to Ingest successfully");
             }
             else
             {
-                LOGGER.warn("Could not publish target metrics to Ingest");
+                LOGGER.warn("Could not publish target metrics to Ingest. Response HTTP Code: " + httpResponse.getStatusCode());
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("Response body: " + httpResponse.getResponseBody("UTF-8"));
+                }
             }
-            return result;
+            return successful;
         }
         catch (Exception e)
         {

@@ -17,6 +17,7 @@ import com.mulesoft.agent.monitoring.publisher.model.DefaultMetricSample;
 import com.mulesoft.agent.monitoring.publisher.model.IngestApplicationMetric;
 import com.mulesoft.agent.monitoring.publisher.model.MetricClassification;
 import com.mulesoft.agent.services.OnOffSwitch;
+import com.ning.http.client.Response;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -151,16 +152,19 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Gr
                     {
                         try
                         {
-                            int result = client.postApplicationMetrics(metric.getApplicationName(), metric.getBody());
-                            if (isSuccessStatusCode(result))
+                            Response httpResponse = client.postApplicationMetrics(metric.getApplicationName(), metric.getBody());
+                            if (isSuccessStatusCode(httpResponse.getStatusCode()))
                             {
                                 LOGGER.debug("successfully published application metrics for " + metric.getApplicationName());
                             }
                             else
                             {
-                                LOGGER.warn("could not publish application metrics for " + metric.getApplicationName());
+                                LOGGER.warn("Could not publish app metrics for " + metric.getApplicationName() + " to Ingest. Response HTTP Code: " + httpResponse.getStatusCode());
+                                if (LOGGER.isDebugEnabled()) {
+                                    LOGGER.debug("Response body: " + httpResponse.getResponseBody("UTF-8"));
+                                }
                             }
-                            statusCodes.add(result);
+                            statusCodes.add(httpResponse.getStatusCode());
                         }
                         catch (Exception e)
                         {
@@ -177,15 +181,15 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Gr
             }
             latch.await(applicationPublishTimeOut, applicationPublishTimeUnit);
 
-            boolean result = true;
+            boolean successful = true;
             for (int statusCode : statusCodes)
             {
                 if (!isSuccessStatusCode(statusCode) && (!isClientErrorStatusCode(statusCode) || SUPPORTED_RETRY_CLIENT_ERRORS.contains(statusCode)))
                 {
-                    result = false;
+                    successful = false;
                 }
             }
-            if (result)
+            if (successful)
             {
                 LOGGER.debug("Published app metrics to Ingest successfully");
             }
@@ -193,7 +197,7 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Gr
             {
                 LOGGER.warn("Some metrics for applications could not be published.");
             }
-            return result;
+            return successful;
         }
         catch (Exception e)
         {
