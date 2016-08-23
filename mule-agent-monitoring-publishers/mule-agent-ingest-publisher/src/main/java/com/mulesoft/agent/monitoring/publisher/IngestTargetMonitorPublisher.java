@@ -8,15 +8,17 @@
 
 package com.mulesoft.agent.monitoring.publisher;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.mulesoft.agent.domain.monitoring.Metric;
+import com.mulesoft.agent.domain.monitoring.SupportedJMXBean;
 import com.mulesoft.agent.monitoring.publisher.ingest.builder.IngestTargetMetricPostBodyBuilder;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestMetric;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestTargetMetricPostBody;
-import com.mulesoft.agent.monitoring.publisher.model.CPUMetricSampleDecorator;
 import com.mulesoft.agent.monitoring.publisher.model.DefaultMetricSample;
 import com.mulesoft.agent.monitoring.publisher.model.MemoryMetricSampleDecorator;
 import com.mulesoft.agent.monitoring.publisher.model.MetricClassification;
+import com.mulesoft.agent.monitoring.publisher.model.PercentageMetricSampleDecorator;
 import com.ning.http.client.Response;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -41,55 +43,49 @@ public class IngestTargetMonitorPublisher extends IngestMonitorPublisher<List<Me
 
     private final static Logger LOGGER = LogManager.getLogger(IngestTargetMonitorPublisher.class);
 
-    private static final String CPU_METRIC_NAME = "java.lang:type=OperatingSystem:CPU";
-    private static final String MEMORY_USAGE_METRIC_NAME = "java.lang:type=Memory:heap used";
-    private static final String MEMORY_TOTAL_METRIC_NAME = "java.lang:type=Memory:heap total";
-    private static List<String> keys = Arrays.asList(CPU_METRIC_NAME, MEMORY_TOTAL_METRIC_NAME, MEMORY_USAGE_METRIC_NAME);
-
     @Inject
     private IngestTargetMetricPostBodyBuilder targetMetricBuilder;
+
+    private void processPercentageMetric(Collection<IngestMetric> buffer, MetricClassification classification, SupportedJMXBean bean) {
+        List<Metric> metrics = classification.getMetrics(bean.getMetricName());
+        if (metrics != null && metrics.size() > 0) {
+            buffer.add(metricBuilder.build(new PercentageMetricSampleDecorator(new DefaultMetricSample(metrics))));
+        }
+    }
+
+    private void processMemoryMetric(Collection<IngestMetric> buffer, MetricClassification classification, SupportedJMXBean bean) {
+        List<Metric> metrics = classification.getMetrics(bean.getMetricName());
+        if (metrics != null && metrics.size() > 0) {
+            buffer.add(metricBuilder.build(new MemoryMetricSampleDecorator(new DefaultMetricSample(metrics))));
+        }
+    }
 
     private IngestTargetMetricPostBody processTargetMetrics(Collection<List<Metric>> collection)
     {
 
         Set<IngestMetric> cpuUsage = Sets.newHashSet();
-        Set<IngestMetric> memoryUsage = Sets.newHashSet();
-        Set<IngestMetric> memoryTotal = Sets.newHashSet();
+
+        Set<IngestMetric> heapUsage = Sets.newHashSet();
+        Set<IngestMetric> heapCommitted = Sets.newHashSet();
+        Set<IngestMetric> heapTotal = Sets.newHashSet();
 
         for (List<Metric> sample : collection)
         {
+            List<String> keys = Lists.newLinkedList();
+            for (SupportedJMXBean bean : Arrays.asList(SupportedJMXBean.values())) {
+                keys.add(bean.getMetricName());
+            }
+
             MetricClassification classification = new MetricClassification(keys, sample);
 
-            List<Metric> cpuMetrics = classification.getMetrics(CPU_METRIC_NAME);
-            List<Metric> memoryUsageMetrics = classification.getMetrics(MEMORY_USAGE_METRIC_NAME);
-            List<Metric> memoryTotalMetrics = classification.getMetrics(MEMORY_TOTAL_METRIC_NAME);
-            LOGGER.debug("found " + (cpuMetrics != null ? cpuMetrics.size() : 0) + " cpu metrics, " +
-                    (memoryUsageMetrics != null ? memoryUsageMetrics.size() : 0) + " memory usage metrics and " +
-                    (memoryTotalMetrics != null ? memoryTotalMetrics.size() : 0) + " memory total metrics");
+            this.processPercentageMetric(cpuUsage, classification, SupportedJMXBean.CPU_USAGE);
 
-            if (cpuMetrics != null && cpuMetrics.size() > 0)
-            {
-                cpuUsage.add(
-                        metricBuilder.build(new CPUMetricSampleDecorator(new DefaultMetricSample(cpuMetrics)))
-                );
-            }
-
-            if (memoryUsageMetrics != null && memoryUsageMetrics.size() > 0)
-            {
-                memoryUsage.add(
-                        metricBuilder.build(new MemoryMetricSampleDecorator(new DefaultMetricSample(memoryUsageMetrics)))
-                );
-            }
-
-            if (memoryTotalMetrics != null && memoryTotalMetrics.size() > 0)
-            {
-                memoryTotal.add(
-                        metricBuilder.build(new MemoryMetricSampleDecorator(new DefaultMetricSample(memoryTotalMetrics)))
-                );
-            }
+            this.processMemoryMetric(heapUsage, classification, SupportedJMXBean.HEAP_USAGE);
+            this.processMemoryMetric(heapCommitted, classification, SupportedJMXBean.HEAP_COMMITTED);
+            this.processMemoryMetric(heapTotal, classification, SupportedJMXBean.HEAP_TOTAL);
         }
 
-        return targetMetricBuilder.build(cpuUsage, memoryUsage, memoryTotal);
+        return targetMetricBuilder.build(cpuUsage, heapUsage, heapTotal);
     }
 
     protected boolean send(Collection<List<Metric>> collection)

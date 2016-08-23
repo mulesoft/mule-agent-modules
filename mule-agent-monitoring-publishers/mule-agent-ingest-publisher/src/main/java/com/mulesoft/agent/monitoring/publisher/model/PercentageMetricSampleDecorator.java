@@ -3,10 +3,10 @@ package com.mulesoft.agent.monitoring.publisher.model;
 /**
  * Created by svinci on 6/28/16.
  */
-public class CPUMetricSampleDecorator extends MetricSampleDecorator
+public class PercentageMetricSampleDecorator extends MetricSampleDecorator
 {
 
-    public CPUMetricSampleDecorator(MetricSample sample)
+    public PercentageMetricSampleDecorator(MetricSample sample)
     {
         super(sample);
     }
