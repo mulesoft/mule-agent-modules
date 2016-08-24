@@ -6,6 +6,7 @@ import com.google.common.collect.Maps;
 import com.mulesoft.agent.clients.AuthenticationProxyClient;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestApplicationMetricPostBody;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestTargetMetricPostBody;
+import com.ning.http.client.Response;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -38,34 +39,16 @@ public class AnypointMonitoringIngestAPIClient
         return new AnypointMonitoringIngestAPIClient(apiVersion, authProxyClient);
     }
 
-    public int postTargetMetrics(final IngestTargetMetricPostBody body)
+    public Response postTargetMetrics(final IngestTargetMetricPostBody body)
     {
-        try
-        {
-            return this.authProxyClient.post(this.targetMetricsPath, body).getStatusCode();
-        }
-        catch (Exception e)
-        {
-            LOGGER.warn("Could not publish target, cause: " + e.getMessage());
-            LOGGER.debug("ERROR: ", e);
-            return 500;
-        }
+        return this.authProxyClient.post(this.targetMetricsPath, body);
     }
 
-    public int postApplicationMetrics(final String applicationName, final IngestApplicationMetricPostBody body)
+    public Response postApplicationMetrics(final String applicationName, final IngestApplicationMetricPostBody body)
     {
         HashMap<String, Collection<String>> headers = Maps.newHashMap();
         headers.put(APPLICATION_NAME_HEADER, Lists.newArrayList(applicationName));
-        try
-        {
-            return this.authProxyClient.post(this.applicationMetricsPath, body, headers).getStatusCode();
-        }
-        catch (Exception e)
-        {
-            LOGGER.warn("Could not publish metrics for application " + applicationName + ", cause: " + e.getMessage());
-            LOGGER.debug("ERROR: ", e);
-            return 500;
-        }
+        return this.authProxyClient.post(this.applicationMetricsPath, body, headers);
     }
 
 }
