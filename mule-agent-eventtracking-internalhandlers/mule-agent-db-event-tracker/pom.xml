@@ -21,6 +21,7 @@
         <dependency>
             <groupId>com.mulesoft.agent</groupId>
             <artifactId>mule-agent-modules-common</artifactId>
+            <classifier>mule-3.x</classifier>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -64,6 +65,9 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

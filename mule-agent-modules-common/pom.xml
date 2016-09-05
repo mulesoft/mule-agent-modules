@@ -27,6 +27,7 @@
     <dependencies>
         <dependency>
             <groupId>com.mulesoft.agent</groupId>
+            <classifier>mule-3.x</classifier>
             <artifactId>mule-agent-api</artifactId>
         </dependency>
 
@@ -86,4 +87,12 @@
             <artifactId>log4j-core</artifactId>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 </project>
