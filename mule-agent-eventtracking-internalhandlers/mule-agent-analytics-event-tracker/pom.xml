@@ -19,13 +19,11 @@
         <dependency>
             <groupId>com.mulesoft.agent</groupId>
             <artifactId>mule-agent-api</artifactId>
-            <classifier>mule-3.x</classifier>
         </dependency>
 
         <dependency>
             <groupId>com.mulesoft.agent</groupId>
             <artifactId>mule-agent-internal-handlers</artifactId>
-            <classifier>mule-3.x</classifier>
         </dependency>
 
         <dependency>
@@ -76,9 +74,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
