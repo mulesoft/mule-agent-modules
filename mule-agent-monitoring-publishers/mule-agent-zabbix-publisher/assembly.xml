@@ -1,14 +1,11 @@
 <assembly>
-    <id>mule-3.x</id>
+    <id>zabbix</id>
     <formats>
         <format>zip</format>
     </formats>
     <includeBaseDirectory>false</includeBaseDirectory>
     <dependencySets>
         <dependencySet>
-            <excludes>
-                <exclude>com.mulesoft.agent:mule-agent-zabbix-publisher:jar</exclude>
-            </excludes>
             <unpack>false</unpack>
             <scope>runtime</scope>
             <outputDirectory>/</outputDirectory>
