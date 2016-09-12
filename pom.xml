@@ -100,6 +100,17 @@
                 <version>2.5.3</version>
             </plugin>
         </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.0.2</version>
+                    <configuration>
+                        <classifier>mule-3.x</classifier>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 
     <dependencyManagement>
@@ -109,6 +120,7 @@
             <dependency>
                 <groupId>com.mulesoft.agent</groupId>
                 <artifactId>mule-agent-api</artifactId>
+                <classifier>mule-3.x</classifier>
                 <version>${mule.agent.api.version}</version>
                 <scope>provided</scope>
             </dependency>
@@ -116,6 +128,7 @@
             <dependency>
                 <groupId>com.mulesoft.agent</groupId>
                 <artifactId>mule-agent-internal-handlers</artifactId>
+                <classifier>mule-3.x</classifier>
                 <version>${mule.agent.api.version}</version>
                 <scope>provided</scope>
             </dependency>
