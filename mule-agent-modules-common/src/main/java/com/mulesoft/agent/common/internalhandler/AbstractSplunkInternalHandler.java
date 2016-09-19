@@ -203,7 +203,7 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
             defaultBuffer.setType(BufferType.MEMORY);
             defaultBuffer.setRetryCount(3);
             defaultBuffer.setFlushFrequency(10000l);
-            defaultBuffer.setMaximumCapacity(5000);
+            defaultBuffer.setMaximumCapacity(1000);
             defaultBuffer.setDiscardMessagesOnFlushFailure(false);
             defaultBuffer.setWhenExhausted(BufferExhaustedAction.FLUSH);
             return defaultBuffer;
