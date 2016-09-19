@@ -2,7 +2,7 @@
 
     <groupId>com.mulesoft.agent</groupId>
     <artifactId>mule-agent-modules</artifactId>
-    <version>1.5.1</version>
+    <version>1.5.1-HF1</version>
     <packaging>pom</packaging>
 
     <modelVersion>4.0.0</modelVersion>
