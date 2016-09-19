@@ -10,7 +10,6 @@ package com.mulesoft.agent.common.internalhandler.splunk.transport;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mulesoft.agent.common.internalhandler.splunk.transport.config.TCPTransportConfig;
 import com.mulesoft.agent.handlers.exception.InitializationException;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,9 +71,7 @@ public class TCPTransport<T> extends AbstractTransport<T>
                 output = socket.getOutputStream();
                 for (T message : messages)
                 {
-                    String serialized = this.getObjectMapper().writeValueAsString(message) + LINE_BREAKER;
-                    output.write(serialized.getBytes(CHARSET));
-                    output.flush();
+                    serializeTo(message, output);
                 }
                 return true;
             }
