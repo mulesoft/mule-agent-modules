@@ -71,9 +71,7 @@ public class TCPTransport<T> extends AbstractTransport<T>
                 output = socket.getOutputStream();
                 for (T message : messages)
                 {
-                    String serialized = this.getObjectMapper().writeValueAsString(message) + LINE_BREAKER;
-                    output.write(serialized.getBytes(CHARSET));
-                    output.flush();
+                    serializeTo(message, output);
                 }
                 return true;
             }
