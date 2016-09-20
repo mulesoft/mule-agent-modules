@@ -9,8 +9,9 @@ package com.mulesoft.agent.common.internalhandler.splunk.transport;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.OutputStream;
 
@@ -20,7 +21,7 @@ import java.io.OutputStream;
  */
 public abstract class AbstractTransport<T> implements Transport<T>
 {
-    private final static Logger LOGGER = LoggerFactory.getLogger(AbstractTransport.class);
+    private final static Logger LOGGER = LogManager.getLogger(AbstractTransport.class);
     protected final static String CHARSET = "UTF-8";
     protected final static String LINE_BREAKER = "\r\n";
 
@@ -48,7 +49,8 @@ public abstract class AbstractTransport<T> implements Transport<T>
         catch (Throwable t)
         {
             // Return null so will be excluded from the batch
-            LOGGER.warn("Couldn't serialize the message: {}, discarding it. Error: {}", message, t.getMessage());
+            LOGGER.warn("Couldn't serialize the message, discarding it. Error: {}", ExceptionUtils.getRootCauseMessage(t));
+            LOGGER.debug("Message: {}", message);
             LOGGER.debug("Exception: ", t);
             return null;
         }
