@@ -3,7 +3,7 @@
     <parent>
         <artifactId>mule-agent-modules</artifactId>
         <groupId>com.mulesoft.agent</groupId>
-        <version>1.5.1-HF1</version>
+        <version>1.5.1-HF2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -79,6 +79,10 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
         </dependency>
 
         <!-- Logging Dependencies -->
