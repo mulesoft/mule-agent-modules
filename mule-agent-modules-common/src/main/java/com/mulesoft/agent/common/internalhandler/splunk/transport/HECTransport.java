@@ -140,7 +140,7 @@ public class HECTransport<T> extends AbstractTransport<T>
     {
     }
 
-    private class HECMessage<T>
+    static class HECMessage<T>
     {
         @JsonProperty("host")
         private String host;
@@ -160,6 +160,18 @@ public class HECTransport<T> extends AbstractTransport<T>
             this.sourceType = sourceType;
             this.index = index;
             this.host = host;
+        }
+
+        @Override
+        public String toString()
+        {
+            return "HECMessage{" +
+                    "host='" + host + '\'' +
+                    ", source='" + source + '\'' +
+                    ", sourceType='" + sourceType + '\'' +
+                    ", index='" + index + '\'' +
+                    ", event=" + event +
+                    '}';
         }
     }
 }
