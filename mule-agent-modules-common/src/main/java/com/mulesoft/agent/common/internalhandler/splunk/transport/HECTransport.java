@@ -13,11 +13,17 @@ import com.mulesoft.agent.common.internalhandler.splunk.transport.config.HECTran
 import com.mulesoft.agent.handlers.exception.InitializationException;
 import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.Response;
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.net.*;
+import java.net.HttpURLConnection;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 
@@ -90,8 +96,12 @@ public class HECTransport<T> extends AbstractTransport<T>
             {
                 HECMessage wrappedMessage = new HECMessage(message, this.config.getSource(),
                         this.config.getSourceType(), this.config.getIndex(), this.host);
-                String serialized = this.getObjectMapper().writeValueAsString(wrappedMessage) + LINE_BREAKER;
-                sb.append(serialized);
+                String serialized = serialize(wrappedMessage);
+
+                if (StringUtils.isNotBlank(serialized))
+                {
+                    sb.append(serialized);
+                }
             }
 
             // Use the Async library because it's already a dependency and manages the SSL Certificate validation
