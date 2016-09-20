@@ -21,11 +21,12 @@ import java.util.Collection;
 
 /**
  * <p>
- *     Transport which connects to the Splunk REST API for sending the events.
- *     @see <a href="http://dev.splunk.com/view/java-sdk/SP-CAAAEJ2#add2index">Splunk SDK - To add data directly to an index</a>
- * </p>
+ * Transport which connects to the Splunk REST API for sending the events.
+ *
  * @author Walter Poch
  *         created on 10/23/15
+ * @see <a href="http://dev.splunk.com/view/java-sdk/SP-CAAAEJ2#add2index">Splunk SDK - To add data directly to an index</a>
+ * </p>
  */
 public class RestTransport<T> extends AbstractTransport<T>
 {
@@ -129,9 +130,7 @@ public class RestTransport<T> extends AbstractTransport<T>
                 output = socket.getOutputStream();
                 for (T message : messages)
                 {
-                    String serializer = this.getObjectMapper().writeValueAsString(message) + LINE_BREAKER;
-                    output.write(serializer.getBytes(CHARSET));
-                    output.flush();
+                    serializeTo(message, output);
                 }
                 this.lastConnection = System.currentTimeMillis();
                 return true;
@@ -163,7 +162,8 @@ public class RestTransport<T> extends AbstractTransport<T>
     @Override
     public void dispose()
     {
-        if (service != null) {
+        if (service != null)
+        {
             service.logout();
         }
     }
