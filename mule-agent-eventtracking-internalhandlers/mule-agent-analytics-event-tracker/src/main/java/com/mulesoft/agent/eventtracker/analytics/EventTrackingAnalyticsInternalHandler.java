@@ -16,6 +16,7 @@ import com.mulesoft.agent.buffer.BufferType;
 import com.mulesoft.agent.buffer.BufferedHandler;
 import com.mulesoft.agent.clients.AuthenticationProxyClient;
 import com.mulesoft.agent.configuration.Configurable;
+import com.mulesoft.agent.configuration.NotAvailableOn;
 import com.mulesoft.agent.configuration.common.AuthenticationProxyConfiguration;
 import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
 import com.mulesoft.agent.handlers.exception.InitializationException;
@@ -28,6 +29,9 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.*;
 
+import static com.mulesoft.agent.domain.RuntimeEnvironment.ON_PREM;
+import static com.mulesoft.agent.domain.RuntimeEnvironment.STANDALONE;
+
 /**
  * <p>
  * Internal handler that pushes tracking event to the Analytics service via the Authentication
@@ -36,6 +40,7 @@ import java.util.*;
  */
 @Singleton
 @Named("mule.agent.tracking.handler.analytics")
+@NotAvailableOn(environment = {ON_PREM, STANDALONE})
 public class EventTrackingAnalyticsInternalHandler extends BufferedHandler<AgentTrackingNotification> {
 
     /**

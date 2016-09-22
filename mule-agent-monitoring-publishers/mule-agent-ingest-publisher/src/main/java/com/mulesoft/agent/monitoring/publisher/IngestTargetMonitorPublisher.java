@@ -9,6 +9,7 @@
 package com.mulesoft.agent.monitoring.publisher;
 
 import com.google.common.collect.Sets;
+import com.mulesoft.agent.configuration.NotAvailableOn;
 import com.mulesoft.agent.domain.monitoring.Metric;
 import com.mulesoft.agent.monitoring.publisher.ingest.builder.IngestTargetMetricPostBodyBuilder;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestMetric;
@@ -29,6 +30,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import static com.mulesoft.agent.domain.RuntimeEnvironment.ON_PREM;
+import static com.mulesoft.agent.domain.RuntimeEnvironment.STANDALONE;
+
 /**
  * <p>
  * Handler that publishes JMX information obtained from the Monitoring Service to a running Ingest API instance.
@@ -36,6 +40,7 @@ import java.util.Set;
  */
 @Singleton
 @Named("mule.agent.ingest.target.metrics.internal.handler")
+@NotAvailableOn(environment = {ON_PREM, STANDALONE})
 public class IngestTargetMonitorPublisher extends IngestMonitorPublisher<List<Metric>>
 {
 
