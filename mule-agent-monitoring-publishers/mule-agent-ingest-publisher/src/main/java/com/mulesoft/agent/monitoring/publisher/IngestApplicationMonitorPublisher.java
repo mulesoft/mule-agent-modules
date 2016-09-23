@@ -6,6 +6,7 @@ import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.mulesoft.agent.AgentEnableOperationException;
 import com.mulesoft.agent.configuration.Configurable;
+import com.mulesoft.agent.configuration.NotAvailableOn;
 import com.mulesoft.agent.configuration.PostConfigure;
 import com.mulesoft.agent.domain.monitoring.ApplicationMetrics;
 import com.mulesoft.agent.domain.monitoring.GroupedApplicationsMetrics;
@@ -27,6 +28,9 @@ import javax.inject.Singleton;
 import java.util.*;
 import java.util.concurrent.*;
 
+import static com.mulesoft.agent.domain.RuntimeEnvironment.ON_PREM;
+import static com.mulesoft.agent.domain.RuntimeEnvironment.STANDALONE;
+
 /**
  * <p>
  * Handler that publishes Application Information information obtained from the Monitoring Service to a running Ingest API instance.
@@ -34,6 +38,7 @@ import java.util.concurrent.*;
  */
 @Singleton
 @Named("mule.agent.ingest.application.metrics.internal.handler")
+@NotAvailableOn(environment = {ON_PREM, STANDALONE})
 public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<GroupedApplicationsMetrics>
 {
 
