@@ -6,7 +6,7 @@ import org.junit.Test;
 /**
  * Created by svinci on 6/28/16.
  */
-public class CPUMetricSampleDecoratorTest
+public class PercentageMetricSampleDecoratorTest
 {
 
     private MetricSampleTestCases testCases = new MetricSampleTestCases();
@@ -14,7 +14,7 @@ public class CPUMetricSampleDecoratorTest
     @Test
     public void complete()
     {
-        MetricSample sample = new CPUMetricSampleDecorator(new DefaultMetricSample(testCases.complete()));
+        MetricSample sample = new PercentageMetricSampleDecorator(new DefaultMetricSample(testCases.complete()));
         Assert.assertEquals(2000d, sample.getMax());
         Assert.assertEquals(200d, sample.getMin());
         Assert.assertEquals(883.3333333333334d, sample.getAvg());
@@ -25,7 +25,7 @@ public class CPUMetricSampleDecoratorTest
     @Test
     public void shouldNotThrowNPEWhenGivenACoupleOfNulls()
     {
-        MetricSample sample = new CPUMetricSampleDecorator(new DefaultMetricSample(testCases.aCoupleOfNulls()));
+        MetricSample sample = new PercentageMetricSampleDecorator(new DefaultMetricSample(testCases.aCoupleOfNulls()));
         Assert.assertEquals(2000d, sample.getMax());
         Assert.assertEquals(200d, sample.getMin());
         Assert.assertEquals(883.3333333333334d, sample.getAvg());
@@ -36,7 +36,7 @@ public class CPUMetricSampleDecoratorTest
     @Test
     public void shouldNotThrowNPEWhenGivenNull()
     {
-        MetricSample sample = new CPUMetricSampleDecorator(new DefaultMetricSample(null));
+        MetricSample sample = new PercentageMetricSampleDecorator(new DefaultMetricSample(null));
         Assert.assertEquals(null, sample.getMax());
         Assert.assertEquals(null, sample.getMin());
         Assert.assertEquals(0d, sample.getAvg());
