@@ -33,7 +33,7 @@
     <properties>
         <mule.agent.api.version>2.0.0-SNAPSHOT</mule.agent.api.version>
 
-        <async.http.client.version>1.8.14</async.http.client.version>
+        <async.http.client.version>1.9.39</async.http.client.version>
         <aws.sdk.version>1.6.0</aws.sdk.version>
         <common.beanutils.version>1.9.2</common.beanutils.version>
         <commons.lang.version>2.4</commons.lang.version>
