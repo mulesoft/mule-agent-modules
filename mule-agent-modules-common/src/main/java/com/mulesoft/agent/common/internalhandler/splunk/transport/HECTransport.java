@@ -7,17 +7,7 @@
 
 package com.mulesoft.agent.common.internalhandler.splunk.transport;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mulesoft.agent.common.internalhandler.splunk.transport.config.HECTransportConfig;
-import com.mulesoft.agent.handlers.exception.InitializationException;
-import com.ning.http.client.AsyncHttpClient;
-import com.ning.http.client.Response;
-import org.apache.commons.lang.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -26,6 +16,17 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.concurrent.ExecutionException;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mulesoft.agent.common.internalhandler.splunk.transport.config.HECTransportConfig;
+import com.mulesoft.agent.handlers.exception.InitializationException;
+import com.ning.http.client.AsyncHttpClient;
+import com.ning.http.client.Response;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * <p>
@@ -121,11 +122,6 @@ public class HECTransport<T> extends AbstractTransport<T>
             }
 
             return true;
-        }
-        catch (IOException e)
-        {
-            LOGGER.error("There was an error sending the events to the Splunk instance.", e);
-            return false;
         }
         catch (InterruptedException e)
         {
