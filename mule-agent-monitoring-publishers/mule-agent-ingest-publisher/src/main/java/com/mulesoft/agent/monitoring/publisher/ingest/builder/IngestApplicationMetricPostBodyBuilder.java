@@ -2,8 +2,10 @@ package com.mulesoft.agent.monitoring.publisher.ingest.builder;
 
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestApplicationMetricPostBody;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestMetric;
+import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestFlowMetrics;
 
 import javax.inject.Singleton;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -12,9 +14,9 @@ import java.util.Set;
 @Singleton
 public class IngestApplicationMetricPostBodyBuilder {
 
-    public IngestApplicationMetricPostBody build(Set<IngestMetric> messageCount, Set<IngestMetric> responseTime, Set<IngestMetric> errorCount)
+    public IngestApplicationMetricPostBody build(Set<IngestMetric> messageCount, Set<IngestMetric> responseTime, Set<IngestMetric> errorCount, Map<String, IngestFlowMetrics> flows)
     {
-        return new IngestApplicationMetricPostBody(messageCount, responseTime, errorCount);
+        return new IngestApplicationMetricPostBody(messageCount, responseTime, errorCount, flows);
     }
 
 }
