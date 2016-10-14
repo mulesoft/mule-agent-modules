@@ -1,4 +1,3 @@
-
 package com.mulesoft.agent.monitoring.publisher.ingest.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -10,13 +9,11 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import javax.annotation.Generated;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Set;
 
 /**
- * Represents the body of the post to publish application metrics to the monitoring ingest API.
+ * Represents the metrics of a Flow.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
@@ -25,7 +22,7 @@ import java.util.Set;
         "response-time",
         "error-count"
 })
-public class IngestApplicationMetricPostBody
+public class IngestFlowMetrics
 {
 
     @JsonProperty("message-count")
@@ -40,15 +37,11 @@ public class IngestApplicationMetricPostBody
     @JsonDeserialize(as = java.util.LinkedHashSet.class)
     private Set<IngestMetric> errorCount = new LinkedHashSet<IngestMetric>();
 
-    @JsonProperty("flows")
-    @JsonDeserialize(as = java.util.HashMap.class)
-    private Map<String, IngestFlowMetrics> flows = new HashMap<String, IngestFlowMetrics>();
-
     /**
      * No args constructor for use in serialization
      *
      */
-    public IngestApplicationMetricPostBody()
+    public IngestFlowMetrics()
     {
     }
 
@@ -58,15 +51,11 @@ public class IngestApplicationMetricPostBody
      * @param responseTime Samples for response time
      * @param errorCount Samples for error count
      */
-    public IngestApplicationMetricPostBody(Set<IngestMetric> messageCount,
-                                           Set<IngestMetric> responseTime,
-                                           Set<IngestMetric> errorCount,
-                                           Map<String, IngestFlowMetrics> flows)
+    public IngestFlowMetrics(Set<IngestMetric> messageCount, Set<IngestMetric> responseTime, Set<IngestMetric> errorCount)
     {
         this.messageCount = messageCount;
         this.responseTime = responseTime;
         this.errorCount = errorCount;
-        this.flows = flows;
     }
 
     @JsonProperty("message-count")
@@ -105,18 +94,6 @@ public class IngestApplicationMetricPostBody
         this.errorCount = errorCount;
     }
 
-    @JsonProperty("flows")
-    public Map<String, IngestFlowMetrics> getFlows()
-    {
-        return flows;
-    }
-
-    @JsonProperty("flows")
-    public void setFlows(Map<String, IngestFlowMetrics> flows)
-    {
-        this.flows = flows;
-    }
-
     @Override
     public String toString()
     {
@@ -126,7 +103,7 @@ public class IngestApplicationMetricPostBody
     @Override
     public int hashCode()
     {
-        return new HashCodeBuilder().append(messageCount).append(responseTime).append(errorCount).append(flows).toHashCode();
+        return new HashCodeBuilder().append(messageCount).append(responseTime).append(errorCount).toHashCode();
     }
 
     @Override
@@ -136,13 +113,12 @@ public class IngestApplicationMetricPostBody
         {
             return true;
         }
-        if ((other instanceof IngestApplicationMetricPostBody) == false)
+        if ((other instanceof IngestFlowMetrics) == false)
         {
             return false;
         }
-        IngestApplicationMetricPostBody rhs = ((IngestApplicationMetricPostBody) other);
-        return new EqualsBuilder().append(messageCount, rhs.messageCount).append(responseTime, rhs.responseTime)
-                .append(errorCount, rhs.errorCount).append(flows, rhs.flows).isEquals();
+        IngestFlowMetrics rhs = ((IngestFlowMetrics) other);
+        return new EqualsBuilder().append(messageCount, rhs.messageCount).append(responseTime, rhs.responseTime).append(errorCount, rhs.errorCount).isEquals();
     }
 
 }
