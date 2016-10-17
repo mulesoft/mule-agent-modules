@@ -48,9 +48,19 @@ public class IngestTargetMonitorPublisher extends IngestMonitorPublisher<List<Me
 
     private final static Logger LOGGER = LogManager.getLogger(IngestTargetMonitorPublisher.class);
 
+    /**
+     * Ingest target post body builder.
+     */
     @Inject
     private IngestTargetMetricPostBodyBuilder targetMetricBuilder;
 
+    /**
+     * Extract a metric from the given classification with the given supported jmx bean, wrap it in a percentage metric decorator and add it to the buffer.
+     *
+     * @param buffer Collection to which add the processed metric.
+     * @param classification Classification from which to extract the metric to process.
+     * @param bean Supported jmx bean which name is used to extract the metric from the classification.
+     */
     private void processPercentageMetric(Collection<IngestMetric> buffer, MetricClassification classification, SupportedJMXBean bean) {
         List<Metric> metrics = classification.getMetrics(bean.getMetricName());
         if (metrics != null && metrics.size() > 0) {
@@ -58,6 +68,13 @@ public class IngestTargetMonitorPublisher extends IngestMonitorPublisher<List<Me
         }
     }
 
+    /**
+     * Extract a metric from the given classification with the given supported jmx bean, wrap it in a memory metric decorator and add it to the buffer.
+     *
+     * @param buffer Collection to which add the processed metric.
+     * @param classification Classification from which to extract the metric to process.
+     * @param bean Supported jmx bean which name is used to extract the metric from the classification.
+     */
     private void processMemoryMetric(Collection<IngestMetric> buffer, MetricClassification classification, SupportedJMXBean bean) {
         List<Metric> metrics = classification.getMetrics(bean.getMetricName());
         if (metrics != null && metrics.size() > 0) {
@@ -65,6 +82,12 @@ public class IngestTargetMonitorPublisher extends IngestMonitorPublisher<List<Me
         }
     }
 
+    /**
+     * Process the buffer's contents and build the bodies to be posted to Ingest API.
+     *
+     * @param collection Buffer contents.
+     * @return Processed target metrics ready to be sent to ingest API.
+     */
     private IngestTargetMetricPostBody processTargetMetrics(Collection<List<Metric>> collection)
     {
 
@@ -93,6 +116,12 @@ public class IngestTargetMonitorPublisher extends IngestMonitorPublisher<List<Me
         return targetMetricBuilder.build(cpuUsage, heapUsage, heapTotal);
     }
 
+    /**
+     * Grab and process the contents of the buffer and send them to Ingest API.
+     *
+     * @param collection Buffer contents.
+     * @return Whether the run was successful or not.
+     */
     protected boolean send(Collection<List<Metric>> collection)
     {
         LOGGER.debug("publishing target metrics to ingest api.");
@@ -100,17 +129,14 @@ public class IngestTargetMonitorPublisher extends IngestMonitorPublisher<List<Me
         {
             IngestTargetMetricPostBody targetBody = this.processTargetMetrics(collection);
             Response httpResponse = this.client.postTargetMetrics(targetBody);
-            boolean successful = isSuccessStatusCode(httpResponse.getStatusCode()) || (isClientErrorStatusCode(httpResponse.getStatusCode()) && !SUPPORTED_RETRY_CLIENT_ERRORS.contains(httpResponse.getStatusCode()));
+            boolean successful = isSuccessStatusCode(httpResponse.getStatusCode());
             if (successful)
             {
                 LOGGER.debug("Published target metrics to Ingest successfully");
             }
             else
             {
-                LOGGER.warn("Could not publish target metrics to Ingest. Response HTTP Code: " + httpResponse.getStatusCode());
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("Response body: " + httpResponse.getResponseBody("UTF-8"));
-                }
+                LOGGER.warn("Could not publish target metrics to Ingest.");
             }
             return successful;
         }

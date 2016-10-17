@@ -32,14 +32,7 @@ import java.util.List;
  */
 public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
 {
-    
-    /**
-     * <p>
-     * A list of HTTP client errors for which an attempt should be made to resend the messages. Any
-     * other client errors would result in discarding the messages.
-     * </p>
-     */
-    protected static final List<Integer> SUPPORTED_RETRY_CLIENT_ERRORS = Lists.newArrayList(408, 429);
+
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SZ";
 
     /**
@@ -77,7 +70,9 @@ public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
     protected OnOffSwitch enabledSwitch;
 
     /**
-     * {@inheritDoc}
+     * Manually set this publisher as enabled/disabled.
+     *
+     * @throws AgentEnableOperationException when an exception is thrown while trying to enable the publisher.
      */
     @Override
     public void enable(boolean state)
@@ -87,7 +82,8 @@ public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
     }
 
     /**
-     * {@inheritDoc}
+     *
+     * @return Whether this publisher is enabled or not.
      */
     @Override
     public boolean isEnabled()
@@ -97,7 +93,7 @@ public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
 
     /**
      * Initialization code to be run after configuration.
-     * @throws AgentEnableOperationException
+     * @throws AgentEnableOperationException when an exception is thrown while trying to enable the publisher.
      */
     @PostConfigure
     public void postConfigurable() throws AgentEnableOperationException
@@ -110,7 +106,7 @@ public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
 
     /**
      * Initialization process.
-     * @throws InitializationException
+     * @throws InitializationException when configuration is invalid.
      */
     @Override
     public void initialize() throws InitializationException
@@ -131,6 +127,11 @@ public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
         super.initialize();
     }
 
+    /**
+     * Lazily initialize buffer configuration.
+     *
+     * @return buffer configuration.
+     */
     @Override
     public BufferConfiguration getBuffer()
     {
@@ -141,6 +142,11 @@ public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
         return this.buffer;
     }
 
+    /**
+     * Publisher configuration validation.
+     *
+     * @return whether the configuration is valid or not.
+     */
     private boolean checkConfiguration()
     {
         return this.authenticationProxy != null &&
@@ -153,14 +159,27 @@ public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
                 this.authenticationProxy.getEndpoint() != null;
     }
 
+    /**
+     *
+     * @param collection Buffer contents.
+     * @return Whether the process ended successfully or not.
+     */
     protected abstract boolean send(Collection<T> collection);
 
+    /**
+     * @return true.
+     */
     @Override
     protected boolean canHandle(T metrics)
     {
         return true;
     }
 
+    /**
+     *
+     * @param collection Buffer contents.
+     * @return Whether the process ended successfully or not.
+     */
     @Override
     protected boolean flush(Collection<T> collection)
     {
@@ -177,17 +196,5 @@ public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
     protected boolean isSuccessStatusCode(int statusCode)
     {
         return statusCode >= 200 && statusCode < 300;
-    }
-
-    /**
-     * <p>
-     * Checks whether the provided HTTP status code belongs to the Client Error family.
-     * </p>
-     * @param statusCode The status code to check.
-     * @return true if the error code is between 400 and 500.
-     */
-    protected boolean isClientErrorStatusCode(int statusCode)
-    {
-        return statusCode >= 400 && statusCode < 500;
     }
 }
