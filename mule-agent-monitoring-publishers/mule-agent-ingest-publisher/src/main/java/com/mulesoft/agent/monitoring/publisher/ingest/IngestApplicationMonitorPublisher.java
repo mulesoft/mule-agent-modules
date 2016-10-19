@@ -176,7 +176,7 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Gr
                 String applicationName = appMetrics.getApplicationName();
                 List<Metric> applicationMetrics = appMetrics.getMetrics();
 
-                LOGGER.debug("processing " + applicationMetrics.size()  + " metrics for " + applicationName);
+                LOGGER.debug("Processing " + applicationMetrics.size()  + " metrics for " + applicationName);
 
                 MetricClassification classification = new MetricClassification(keys, applicationMetrics);
 
@@ -251,7 +251,7 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Gr
     @Override
     protected boolean send(Collection<GroupedApplicationsMetrics> collection)
     {
-        LOGGER.debug("publishing application metrics to ingest api.");
+        LOGGER.debug("Publishing application metrics to ingest api.");
         try
         {
             Map<String, IngestApplicationMetricPostBody> metrics = this.processApplicationMetrics(collection);
@@ -273,7 +273,7 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Gr
                             Response httpResponse = client.postApplicationMetrics(applicationName, body);
                             if (isSuccessStatusCode(httpResponse.getStatusCode()))
                             {
-                                LOGGER.debug("successfully published application metrics for " + applicationName);
+                                LOGGER.debug("Successfully published application metrics for " + applicationName);
                             }
                             else
                             {
@@ -283,7 +283,7 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Gr
                         }
                         catch (Exception e)
                         {
-                            LOGGER.warn(String.format("could not publish application metrics for %s, cause: %s", applicationName, e.getMessage()));
+                            LOGGER.warn(String.format("Could not publish application metrics for %s, cause: %s", applicationName, e.getMessage()));
                             LOGGER.debug("Error: ", e);
                             statusCodes.add(500);
                         }

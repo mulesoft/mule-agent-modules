@@ -15,11 +15,11 @@ import java.util.List;
 /**
  * IngestMetric factory that returns an IngestMetric with its values converted to percentages. (0.9 -> 90).
  */
-@Named("factory.ingest.metric.percentage")
+@Named("ingest.percentage.metric.factory")
 public class PercentageMetricFactory extends TargetMetricFactory
 {
 
-    private static final ArrayList<SupportedJMXBean> SUPPORTED_METRICS = Lists.newArrayList(SupportedJMXBean.CPU_USAGE);
+    private static final List<SupportedJMXBean> SUPPORTED_METRICS = Lists.newArrayList(SupportedJMXBean.CPU_USAGE);
 
     /**
      * {@inheritDoc}

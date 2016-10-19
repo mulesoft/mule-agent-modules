@@ -1,6 +1,8 @@
 package com.mulesoft.agent.monitoring.publisher.ingest.model;
 
+import com.google.common.base.Preconditions;
 import com.mulesoft.agent.domain.monitoring.SupportedJMXBean;
+import org.apache.commons.lang.NotImplementedException;
 
 /**
  * Mapping JMX Bean -> Ingest API field name.
@@ -85,10 +87,7 @@ public enum JMXMetricFieldMapping
      */
     public static JMXMetricFieldMapping forSupportedJMXBean(SupportedJMXBean bean)
     {
-        if (bean == null)
-        {
-            return null;
-        }
+        Preconditions.checkArgument(bean != null);
         for (JMXMetricFieldMapping value : values())
         {
             if (value.getJmxBean() == bean)
@@ -96,7 +95,7 @@ public enum JMXMetricFieldMapping
                 return value;
             }
         }
-        return null;
+        throw new NotImplementedException("Bean " + bean.name() + " does not have a mapping implemented.");
     }
 
 }

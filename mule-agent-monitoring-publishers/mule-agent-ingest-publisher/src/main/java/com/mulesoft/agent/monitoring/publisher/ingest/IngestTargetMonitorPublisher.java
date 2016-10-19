@@ -25,6 +25,7 @@ import com.mulesoft.agent.monitoring.publisher.ingest.model.MetricClassification
 import com.mulesoft.agent.monitoring.publisher.ingest.model.api.IngestMetric;
 import com.mulesoft.agent.services.OnOffSwitch;
 import com.ning.http.client.Response;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -105,8 +106,8 @@ public class IngestTargetMonitorPublisher extends IngestMonitorPublisher<List<Me
                 }
                 if (applicableFactory == null)
                 {
-                    LOGGER.debug("no factory found for bean " + bean.name() + " in array of " + targetMetricFactories.size() + " factories.");
-                    return null;
+                    LOGGER.debug("No factory found for bean " + bean.name() + " in array of " + targetMetricFactories.size() + " factories.");
+                    continue;
                 }
 
                 IngestMetric metric = applicableFactory.apply(classification, bean);
@@ -138,20 +139,17 @@ public class IngestTargetMonitorPublisher extends IngestMonitorPublisher<List<Me
      */
     protected boolean send(Collection<List<Metric>> collection)
     {
-        LOGGER.info("publishing target metrics to ingest api.");
+        LOGGER.debug("Publishing target metrics to ingest api.");
         try
         {
             Map<String, Set<IngestMetric>> targetBody = this.processTargetMetrics(collection);
-            if (targetBody != null)
-            {
-                LOGGER.debug(targetBody.toString());
-            }
+            LOGGER.debug(targetBody);
 
             Response httpResponse = this.client.postTargetMetrics(targetBody);
             boolean successful = isSuccessStatusCode(httpResponse.getStatusCode());
             if (successful)
             {
-                LOGGER.info("Published target metrics to Ingest successfully");
+                LOGGER.debug("Published target metrics to Ingest successfully");
             }
             else
             {
@@ -161,7 +159,7 @@ public class IngestTargetMonitorPublisher extends IngestMonitorPublisher<List<Me
         }
         catch (Exception e)
         {
-            LOGGER.warn("Could not publish target metrics to Ingest, cause: " + e.getMessage());
+            LOGGER.warn("Could not publish target metrics to Ingest, cause: " + ExceptionUtils.getRootCauseMessage(e));
             LOGGER.debug("Error: ", e);
             return false;
         }

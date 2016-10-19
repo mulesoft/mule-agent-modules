@@ -23,7 +23,6 @@ public class MetricClassification
 
     public MetricClassification(List<String> keys, List<Metric> sample)
     {
-        super();
         classify(keys, sample);
     }
 
@@ -33,7 +32,7 @@ public class MetricClassification
         {
             return;
         }
-        LOGGER.debug("classifying {} metrics for {} keys.", sample.size(), keys.size());
+        LOGGER.debug("Classifying {} metrics for {} keys.", sample.size(), keys.size());
         for (Metric metric : sample)
         {
             if (metric == null || metric.getValue() == null || StringUtils.isBlank(metric.getName()))
@@ -58,14 +57,14 @@ public class MetricClassification
                 break;
             }
         }
-        LOGGER.debug("classification map ended up with {} pairs", classification.size());
+        LOGGER.debug("Classification map ended up with {} pairs", classification.size());
         List<String> absentKeys = Lists.newLinkedList();
         for (String key : keys) {
             if (!classification.keySet().contains(key)) {
                 absentKeys.add(key);
             }
         }
-        LOGGER.debug("absent keys: " + absentKeys.toString());
+        LOGGER.debug("Absent keys: " + absentKeys.toString());
     }
 
     public Map<String, List<Metric>> getClassification()

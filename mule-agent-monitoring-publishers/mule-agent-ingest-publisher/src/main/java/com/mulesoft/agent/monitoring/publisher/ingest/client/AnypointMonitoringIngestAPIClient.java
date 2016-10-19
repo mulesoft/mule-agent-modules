@@ -7,6 +7,7 @@ import com.mulesoft.agent.clients.AuthenticationProxyClient;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.api.IngestApplicationMetricPostBody;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.api.IngestMetric;
 import com.ning.http.client.Response;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -81,17 +82,17 @@ public class AnypointMonitoringIngestAPIClient
 
         if (httpResponse.getStatusCode() >= 300 )
         {
-            LOGGER.warn("post of target metrics failed with status " + httpResponse.getStatusCode());
+            LOGGER.warn("Post of target metrics failed with status " + httpResponse.getStatusCode());
             if (LOGGER.isDebugEnabled())
             {
                 try
                 {
-                    LOGGER.debug("post of target metrics failed with status " + httpResponse.getStatusCode() + ", response body: " + httpResponse.getResponseBody("UTF-8"));
+                    LOGGER.debug("Post of target metrics failed with status " + httpResponse.getStatusCode() + ", response body: " + httpResponse.getResponseBody("UTF-8"));
                 }
-                catch (IOException e)
+                catch (Throwable e)
                 {
-                    LOGGER.warn("could not read response body. cause: " + e.getClass().getSimpleName() + " - " + e.getMessage());
-                    LOGGER.debug("could not read response body from post target metrics response.", e);
+                    LOGGER.warn(String.format("Could not read response body. cause: %s - %s", e.getClass().getSimpleName(), ExceptionUtils.getRootCauseMessage(e)));
+                    LOGGER.debug("Could not read response body from post target metrics response.", e);
                 }
             }
         }
@@ -113,16 +114,16 @@ public class AnypointMonitoringIngestAPIClient
 
         if (httpResponse.getStatusCode() >= 300 )
         {
-            LOGGER.warn(String.format("post of application metrics for %s failed with status %d", applicationName, httpResponse.getStatusCode()));
+            LOGGER.warn(String.format("Post of application metrics for %s failed with status %d", applicationName, httpResponse.getStatusCode()));
             if (LOGGER.isDebugEnabled()) {
                 try
                 {
-                    LOGGER.debug(String.format("post of application metrics for %s failed with status %d, response body: %s", applicationName, httpResponse.getStatusCode(), httpResponse.getResponseBody("UTF-8")));
+                    LOGGER.debug(String.format("Post of application metrics for %s failed with status %d, response body: %s", applicationName, httpResponse.getStatusCode(), httpResponse.getResponseBody("UTF-8")));
                 }
-                catch (IOException e)
+                catch (Throwable e)
                 {
-                    LOGGER.warn(String.format("could not read response body. cause: %s - %s", e.getClass().getSimpleName(), e.getMessage()));
-                    LOGGER.debug(String.format("could not read response body from post application metrics for %s response.", applicationName), e);
+                    LOGGER.warn(String.format("Could not read response body. cause: %s - %s", e.getClass().getSimpleName(), ExceptionUtils.getRootCauseMessage(e)));
+                    LOGGER.debug(String.format("Could not read response body from post application metrics for %s response.", applicationName), e);
                 }
             }
         }

@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * IngestMetric factory that returns an IngestMetric without any conversion to its values.
  */
-@Named("factory.ingest.metric.raw")
+@Named("ingest.raw.metric.factory")
 public class RawMetricFactory extends TargetMetricFactory
 {
 

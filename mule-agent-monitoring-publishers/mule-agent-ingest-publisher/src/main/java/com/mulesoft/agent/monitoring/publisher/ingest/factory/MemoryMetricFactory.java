@@ -14,11 +14,11 @@ import java.util.List;
 /**
  * IngestMetric factory that returns an IngestMetric with its values converted from bytes to mega bytes.
  */
-@Named("factory.ingest.metric.memory")
+@Named("ingest.memory.metric.factory")
 public class MemoryMetricFactory extends TargetMetricFactory
 {
 
-    private static final java.util.ArrayList<SupportedJMXBean> SUPPORTED_METRICS = Lists.newArrayList(
+    private static final List<SupportedJMXBean> SUPPORTED_METRICS = Lists.newArrayList(
         SupportedJMXBean.CODE_CACHE_COMMITTED, SupportedJMXBean.CODE_CACHE_TOTAL, SupportedJMXBean.CODE_CACHE_USAGE,
         SupportedJMXBean.COMPRESSED_CLASS_SPACE_COMMITTED, SupportedJMXBean.COMPRESSED_CLASS_SPACE_TOTAL,
         SupportedJMXBean.COMPRESSED_CLASS_SPACE_USAGE, SupportedJMXBean.EDEN_COMMITTED, SupportedJMXBean.EDEN_TOTAL,
