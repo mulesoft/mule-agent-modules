@@ -21,7 +21,8 @@ public class MetricClassification
     private static final Logger LOGGER = LoggerFactory.getLogger(MetricClassification.class);
     private final Map<String, List<Metric>> classification = Maps.newHashMap();
 
-    public MetricClassification(List<String> keys, List<Metric> sample) {
+    public MetricClassification(List<String> keys, List<Metric> sample)
+    {
         super();
         classify(keys, sample);
     }
@@ -32,7 +33,7 @@ public class MetricClassification
         {
             return;
         }
-        LOGGER.info("classifying {} metrics for {} keys.", sample.size(), keys.size());
+        LOGGER.debug("classifying {} metrics for {} keys.", sample.size(), keys.size());
         for (Metric metric : sample)
         {
             if (metric == null || metric.getValue() == null || StringUtils.isBlank(metric.getName()))
@@ -57,14 +58,14 @@ public class MetricClassification
                 break;
             }
         }
-        LOGGER.info("classification map ended up with {} pairs", classification.size());
+        LOGGER.debug("classification map ended up with {} pairs", classification.size());
         List<String> absentKeys = Lists.newLinkedList();
         for (String key : keys) {
             if (!classification.keySet().contains(key)) {
                 absentKeys.add(key);
             }
         }
-        LOGGER.warn("absent keys: " + absentKeys.toString());
+        LOGGER.debug("absent keys: " + absentKeys.toString());
     }
 
     public Map<String, List<Metric>> getClassification()

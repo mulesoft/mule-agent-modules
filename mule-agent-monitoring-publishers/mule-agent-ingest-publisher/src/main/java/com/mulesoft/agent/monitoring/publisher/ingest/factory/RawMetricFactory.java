@@ -14,7 +14,8 @@ import java.util.List;
  * IngestMetric factory that returns an IngestMetric without any conversion to its values.
  */
 @Named("factory.ingest.metric.raw")
-public class RawMetricFactory extends TargetMetricFactory {
+public class RawMetricFactory extends TargetMetricFactory
+{
 
     private static final java.util.ArrayList<SupportedJMXBean> SUPPORTED_METRICS = Lists.newArrayList(
         SupportedJMXBean.AVAILABLE_PROCESSORS, SupportedJMXBean.CLASS_LOADING_LOADED,
@@ -27,7 +28,8 @@ public class RawMetricFactory extends TargetMetricFactory {
      * {@inheritDoc}
      */
     @Override
-    List<SupportedJMXBean> getSupportedMetrics() {
+    List<SupportedJMXBean> getSupportedMetrics()
+    {
         return SUPPORTED_METRICS;
     }
 
@@ -35,7 +37,8 @@ public class RawMetricFactory extends TargetMetricFactory {
      * {@inheritDoc}
      */
     @Override
-    MetricSample doApply(MetricClassification classification, SupportedJMXBean bean) {
+    MetricSample doApply(MetricClassification classification, SupportedJMXBean bean)
+    {
         List<Metric> metrics = classification.getMetrics(bean.getMetricName());
         return new DefaultMetricSample(metrics);
     }

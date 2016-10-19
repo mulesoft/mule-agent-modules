@@ -16,7 +16,8 @@ import java.util.List;
  * IngestMetric factory that returns an IngestMetric with its values converted to percentages. (0.9 -> 90).
  */
 @Named("factory.ingest.metric.percentage")
-public class PercentageMetricFactory extends TargetMetricFactory {
+public class PercentageMetricFactory extends TargetMetricFactory
+{
 
     private static final ArrayList<SupportedJMXBean> SUPPORTED_METRICS = Lists.newArrayList(SupportedJMXBean.CPU_USAGE);
 
@@ -24,7 +25,8 @@ public class PercentageMetricFactory extends TargetMetricFactory {
      * {@inheritDoc}
      */
     @Override
-    List<SupportedJMXBean> getSupportedMetrics() {
+    List<SupportedJMXBean> getSupportedMetrics()
+    {
         return SUPPORTED_METRICS;
     }
 
@@ -32,7 +34,8 @@ public class PercentageMetricFactory extends TargetMetricFactory {
      * {@inheritDoc}
      */
     @Override
-    MetricSample doApply(MetricClassification classification, SupportedJMXBean bean) {
+    MetricSample doApply(MetricClassification classification, SupportedJMXBean bean)
+    {
         List<Metric> metrics = classification.getMetrics(bean.getMetricName());
         return new PercentageMetricSampleDecorator(new DefaultMetricSample(metrics));
     }

@@ -5,7 +5,8 @@ import java.util.Date;
 /**
  * Interface of a MetricSample that gives us the possibility to implement decorators.
  */
-public interface MetricSample {
+public interface MetricSample
+{
 
     Date getDate();
 

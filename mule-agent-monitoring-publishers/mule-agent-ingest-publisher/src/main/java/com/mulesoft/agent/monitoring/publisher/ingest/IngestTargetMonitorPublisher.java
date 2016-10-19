@@ -65,7 +65,8 @@ public class IngestTargetMonitorPublisher extends IngestMonitorPublisher<List<Me
     public void initialize() throws InitializationException
     {
         super.initialize();
-        if (targetMetricFactories == null) {
+        if (targetMetricFactories == null)
+        {
             throw new InitializationException("Target metric factories weren't injected!");
         }
     }
@@ -84,32 +85,41 @@ public class IngestTargetMonitorPublisher extends IngestMonitorPublisher<List<Me
         for (List<Metric> sample : collection)
         {
             List<String> keys = Lists.newLinkedList();
-            for (SupportedJMXBean bean : SupportedJMXBean.values()) {
+            for (SupportedJMXBean bean : SupportedJMXBean.values())
+            {
                 keys.add(bean.getMetricName());
             }
 
             MetricClassification classification = new MetricClassification(keys, sample);
 
-            for (SupportedJMXBean bean : SupportedJMXBean.values()) {
+            for (SupportedJMXBean bean : SupportedJMXBean.values())
+            {
 
                 TargetMetricFactory applicableFactory = null;
-                for (TargetMetricFactory factory : targetMetricFactories) {
-                    if (factory.appliesForMetric(bean)) {
+                for (TargetMetricFactory factory : targetMetricFactories)
+                {
+                    if (factory.appliesForMetric(bean))
+                    {
                         applicableFactory = factory;
                     }
                 }
-                if (applicableFactory == null) {
-                    LOGGER.warn("no factory found for bean " + bean.name() + " in array of " + targetMetricFactories.size() + " factories.");
+                if (applicableFactory == null)
+                {
+                    LOGGER.debug("no factory found for bean " + bean.name() + " in array of " + targetMetricFactories.size() + " factories.");
                     return null;
                 }
 
                 IngestMetric metric = applicableFactory.apply(classification, bean);
-                if (metric != null && metric.getCount() > 0) {
+                if (metric != null && metric.getCount() > 0)
+                {
                     JMXMetricFieldMapping mapping = JMXMetricFieldMapping.forSupportedJMXBean(bean);
                     Set<IngestMetric> existentMetrics = result.get(mapping.getFieldName());
-                    if (existentMetrics != null) {
+                    if (existentMetrics != null)
+                    {
                         existentMetrics.add(metric);
-                    } else {
+                    }
+                    else
+                    {
                         result.put(mapping.getFieldName(), Sets.newHashSet(metric));
                     }
                 }
@@ -132,7 +142,11 @@ public class IngestTargetMonitorPublisher extends IngestMonitorPublisher<List<Me
         try
         {
             Map<String, Set<IngestMetric>> targetBody = this.processTargetMetrics(collection);
-            LOGGER.info(new ObjectMapper().writeValueAsString(targetBody));
+            if (targetBody != null)
+            {
+                LOGGER.debug(targetBody.toString());
+            }
+
             Response httpResponse = this.client.postTargetMetrics(targetBody);
             boolean successful = isSuccessStatusCode(httpResponse.getStatusCode());
             if (successful)

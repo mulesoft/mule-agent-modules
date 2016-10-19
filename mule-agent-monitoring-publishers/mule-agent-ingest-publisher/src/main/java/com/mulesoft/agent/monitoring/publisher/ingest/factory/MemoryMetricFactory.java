@@ -15,7 +15,8 @@ import java.util.List;
  * IngestMetric factory that returns an IngestMetric with its values converted from bytes to mega bytes.
  */
 @Named("factory.ingest.metric.memory")
-public class MemoryMetricFactory extends TargetMetricFactory {
+public class MemoryMetricFactory extends TargetMetricFactory
+{
 
     private static final java.util.ArrayList<SupportedJMXBean> SUPPORTED_METRICS = Lists.newArrayList(
         SupportedJMXBean.CODE_CACHE_COMMITTED, SupportedJMXBean.CODE_CACHE_TOTAL, SupportedJMXBean.CODE_CACHE_USAGE,
@@ -31,7 +32,8 @@ public class MemoryMetricFactory extends TargetMetricFactory {
      * {@inheritDoc}
      */
     @Override
-    List<SupportedJMXBean> getSupportedMetrics() {
+    List<SupportedJMXBean> getSupportedMetrics()
+    {
         return SUPPORTED_METRICS;
     }
 
@@ -39,13 +41,15 @@ public class MemoryMetricFactory extends TargetMetricFactory {
      * {@inheritDoc}
      */
     @Override
-    MetricSample doApply(MetricClassification classification, SupportedJMXBean bean) {
+    MetricSample doApply(MetricClassification classification, SupportedJMXBean bean)
+    {
         List<Metric> metrics = classification.getMetrics(bean.getMetricName());
         MemoryMetricSampleDecorator sample = new MemoryMetricSampleDecorator(new DefaultMetricSample(metrics));
         // Java 8 included meta space as a new native memory location, which max value, by default, is set to the
         // total physical memory of the host.
         // Anyway, in that case, JMX reports that value as -1, so this case here checks if -1 was reported to call a fallback.
-        if (bean == SupportedJMXBean.METASPACE_TOTAL && sample.getAvg() < 0) {
+        if (bean == SupportedJMXBean.METASPACE_TOTAL && sample.getAvg() < 0)
+        {
             return metaspaceFallback(classification);
         }
         return sample;
@@ -56,7 +60,8 @@ public class MemoryMetricFactory extends TargetMetricFactory {
      * @param classification MetricClassification from which to extract the total physical memory metrics.
      * @return MetricSample resolved from total physical memory.
      */
-    private MetricSample metaspaceFallback(MetricClassification classification) {
+    private MetricSample metaspaceFallback(MetricClassification classification)
+    {
         List<Metric> metrics = classification.getMetrics(SupportedJMXBean.TOTAL_PHYSICAL_MEMORY.getMetricName());
         return new MemoryMetricSampleDecorator(new DefaultMetricSample(metrics));
     }

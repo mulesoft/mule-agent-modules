@@ -5,7 +5,8 @@ import com.mulesoft.agent.domain.monitoring.SupportedJMXBean;
 /**
  * Mapping JMX Bean -> Ingest API field name.
  */
-public enum JMXMetricFieldMapping {
+public enum JMXMetricFieldMapping
+{
 
     HEAP_USAGE(SupportedJMXBean.HEAP_USAGE, "memory-usage"),
     HEAP_COMMITTED(SupportedJMXBean.HEAP_COMMITTED, "memory-committed"),
@@ -61,16 +62,19 @@ public enum JMXMetricFieldMapping {
      */
     private final String fieldName;
 
-    JMXMetricFieldMapping(SupportedJMXBean jmxBean, String fieldName) {
+    JMXMetricFieldMapping(SupportedJMXBean jmxBean, String fieldName)
+    {
         this.jmxBean = jmxBean;
         this.fieldName = fieldName;
     }
 
-    public SupportedJMXBean getJmxBean() {
+    public SupportedJMXBean getJmxBean()
+    {
         return jmxBean;
     }
 
-    public String getFieldName() {
+    public String getFieldName()
+    {
         return fieldName;
     }
 
@@ -79,12 +83,16 @@ public enum JMXMetricFieldMapping {
      * @param bean jmx bean to resolve from.
      * @return Corresponding field mapping.
      */
-    public static JMXMetricFieldMapping forSupportedJMXBean(SupportedJMXBean bean) {
-        if (bean == null) {
+    public static JMXMetricFieldMapping forSupportedJMXBean(SupportedJMXBean bean)
+    {
+        if (bean == null)
+        {
             return null;
         }
-        for (JMXMetricFieldMapping value : values()) {
-            if (value.getJmxBean() == bean) {
+        for (JMXMetricFieldMapping value : values())
+        {
+            if (value.getJmxBean() == bean)
+            {
                 return value;
             }
         }

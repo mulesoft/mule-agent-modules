@@ -79,12 +79,17 @@ public class AnypointMonitoringIngestAPIClient
     {
         Response httpResponse = this.authProxyClient.post(this.targetMetricsPath, body);
 
-        if (httpResponse.getStatusCode() >= 300 ) {
+        if (httpResponse.getStatusCode() >= 300 )
+        {
             LOGGER.warn("post of target metrics failed with status " + httpResponse.getStatusCode());
-            if (LOGGER.isDebugEnabled()) {
-                try {
+            if (LOGGER.isDebugEnabled())
+            {
+                try
+                {
                     LOGGER.debug("post of target metrics failed with status " + httpResponse.getStatusCode() + ", response body: " + httpResponse.getResponseBody("UTF-8"));
-                } catch (IOException e) {
+                }
+                catch (IOException e)
+                {
                     LOGGER.warn("could not read response body. cause: " + e.getClass().getSimpleName() + " - " + e.getMessage());
                     LOGGER.debug("could not read response body from post target metrics response.", e);
                 }
@@ -106,12 +111,16 @@ public class AnypointMonitoringIngestAPIClient
         headers.put(APPLICATION_NAME_HEADER, Lists.newArrayList(applicationName));
         Response httpResponse = this.authProxyClient.post(this.applicationMetricsPath, body, headers);
 
-        if (httpResponse.getStatusCode() >= 300 ) {
+        if (httpResponse.getStatusCode() >= 300 )
+        {
             LOGGER.warn(String.format("post of application metrics for %s failed with status %d", applicationName, httpResponse.getStatusCode()));
             if (LOGGER.isDebugEnabled()) {
-                try {
+                try
+                {
                     LOGGER.debug(String.format("post of application metrics for %s failed with status %d, response body: %s", applicationName, httpResponse.getStatusCode(), httpResponse.getResponseBody("UTF-8")));
-                } catch (IOException e) {
+                }
+                catch (IOException e)
+                {
                     LOGGER.warn(String.format("could not read response body. cause: %s - %s", e.getClass().getSimpleName(), e.getMessage()));
                     LOGGER.debug(String.format("could not read response body from post application metrics for %s response.", applicationName), e);
                 }
