@@ -1,7 +1,9 @@
-package com.mulesoft.agent.monitoring.publisher.model;
+package com.mulesoft.agent.monitoring.publisher.ingest.decorator;
+
+import com.mulesoft.agent.monitoring.publisher.ingest.model.DefaultMetricSample;
 
 /**
- * Created by svinci on 6/28/16.
+ * MetricSample decorator that converts the values of a sample from bytes to megabytes.
  */
 public class MemoryMetricSampleDecorator extends MetricSampleDecorator
 {
@@ -11,6 +13,9 @@ public class MemoryMetricSampleDecorator extends MetricSampleDecorator
         super(sample);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected Double processValue(Double value)
     {

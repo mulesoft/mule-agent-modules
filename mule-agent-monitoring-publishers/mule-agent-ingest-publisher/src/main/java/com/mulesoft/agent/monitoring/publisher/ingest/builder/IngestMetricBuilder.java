@@ -1,17 +1,19 @@
 package com.mulesoft.agent.monitoring.publisher.ingest.builder;
 
-import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestMetric;
-import com.mulesoft.agent.monitoring.publisher.model.MetricSample;
+import com.mulesoft.agent.monitoring.publisher.ingest.model.api.IngestMetric;
+import com.mulesoft.agent.monitoring.publisher.ingest.model.MetricSample;
 
 import javax.inject.Singleton;
 
 /**
- * Builds an IngesMetric from a DefaultMetricSample.
+ * Builds an IngesMetric from a MetricSample.
  */
 @Singleton
-public class IngestMetricBuilder {
+public class IngestMetricBuilder
+{
 
-    public IngestMetric build(MetricSample sample) {
+    public IngestMetric build(MetricSample sample)
+    {
         return new IngestMetric()
                 .withTime(sample.getDate())
                 .withMax(sample.getMax())

@@ -1,5 +1,8 @@
 package com.mulesoft.agent.monitoring.publisher.model;
 
+import com.mulesoft.agent.monitoring.publisher.ingest.model.DefaultMetricSample;
+import com.mulesoft.agent.monitoring.publisher.ingest.model.MetricSample;
+import com.mulesoft.agent.monitoring.publisher.ingest.decorator.PercentageMetricSampleDecorator;
 import junit.framework.Assert;
 import org.junit.Test;
 
