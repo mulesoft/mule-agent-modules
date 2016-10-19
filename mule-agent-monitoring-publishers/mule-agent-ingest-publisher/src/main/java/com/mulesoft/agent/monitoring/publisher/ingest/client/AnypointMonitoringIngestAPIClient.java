@@ -1,11 +1,11 @@
 
-package com.mulesoft.agent.monitoring.publisher.ingest;
+package com.mulesoft.agent.monitoring.publisher.ingest.client;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mulesoft.agent.clients.AuthenticationProxyClient;
-import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestApplicationMetricPostBody;
-import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestTargetMetricPostBody;
+import com.mulesoft.agent.monitoring.publisher.ingest.model.api.IngestApplicationMetricPostBody;
+import com.mulesoft.agent.monitoring.publisher.ingest.model.api.IngestMetric;
 import com.ning.http.client.Response;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,6 +13,8 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Monitoring Ingest API Client
@@ -73,7 +75,7 @@ public class AnypointMonitoringIngestAPIClient
      * @param body Request body.
      * @return http response.
      */
-    public Response postTargetMetrics(final IngestTargetMetricPostBody body)
+    public Response postTargetMetrics(final Map<String, Set<IngestMetric>> body)
     {
         Response httpResponse = this.authProxyClient.post(this.targetMetricsPath, body);
 

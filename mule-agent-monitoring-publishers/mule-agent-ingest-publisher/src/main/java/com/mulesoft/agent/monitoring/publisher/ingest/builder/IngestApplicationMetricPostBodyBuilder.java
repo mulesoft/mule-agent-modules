@@ -1,8 +1,8 @@
 package com.mulesoft.agent.monitoring.publisher.ingest.builder;
 
-import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestApplicationMetricPostBody;
-import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestMetric;
-import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestFlowMetrics;
+import com.mulesoft.agent.monitoring.publisher.ingest.model.api.IngestApplicationMetricPostBody;
+import com.mulesoft.agent.monitoring.publisher.ingest.model.api.IngestMetric;
+import com.mulesoft.agent.monitoring.publisher.ingest.model.api.IngestFlowMetrics;
 
 import javax.inject.Singleton;
 import java.util.Map;

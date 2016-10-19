@@ -1,9 +1,11 @@
-package com.mulesoft.agent.monitoring.publisher.model;
+package com.mulesoft.agent.monitoring.publisher.ingest.decorator;
+
+import com.mulesoft.agent.monitoring.publisher.ingest.model.MetricSample;
 
 import java.util.Date;
 
 /**
- * Created by svinci on 6/28/16.
+ * Basic metric sample decorator meant to be extended to convert the values of a MetricSample from one unit to another.
  */
 public abstract class MetricSampleDecorator implements MetricSample
 {
@@ -15,6 +17,12 @@ public abstract class MetricSampleDecorator implements MetricSample
         this.sample = sample;
     }
 
+    /**
+     * Custom function that will convert the given value to the wanted unit.
+     *
+     * @param value Value to be converted.
+     * @return Converted value.
+     */
     protected abstract Double processValue(Double value);
 
     @Override

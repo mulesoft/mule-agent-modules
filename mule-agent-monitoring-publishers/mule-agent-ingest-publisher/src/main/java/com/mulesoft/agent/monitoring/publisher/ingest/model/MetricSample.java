@@ -1,9 +1,9 @@
-package com.mulesoft.agent.monitoring.publisher.model;
+package com.mulesoft.agent.monitoring.publisher.ingest.model;
 
 import java.util.Date;
 
 /**
- * Created by svinci on 6/28/16.
+ * Interface of a MetricSample that gives us the possibility to implement decorators.
  */
 public interface MetricSample {
 

@@ -1,5 +1,5 @@
 
-package com.mulesoft.agent.monitoring.publisher.ingest.model;
+package com.mulesoft.agent.monitoring.publisher.ingest.model.api;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;

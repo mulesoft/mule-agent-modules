@@ -1,4 +1,4 @@
-package com.mulesoft.agent.monitoring.publisher;
+package com.mulesoft.agent.monitoring.publisher.ingest;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -13,12 +13,12 @@ import com.mulesoft.agent.domain.monitoring.FlowMetrics;
 import com.mulesoft.agent.domain.monitoring.GroupedApplicationsMetrics;
 import com.mulesoft.agent.domain.monitoring.Metric;
 import com.mulesoft.agent.monitoring.publisher.ingest.builder.IngestApplicationMetricPostBodyBuilder;
-import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestApplicationMetricPostBody;
-import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestMetric;
-import com.mulesoft.agent.monitoring.publisher.model.DefaultMetricSample;
-import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestFlowMetrics;
-import com.mulesoft.agent.monitoring.publisher.model.IngestApplicationMetric;
-import com.mulesoft.agent.monitoring.publisher.model.MetricClassification;
+import com.mulesoft.agent.monitoring.publisher.ingest.builder.IngestMetricBuilder;
+import com.mulesoft.agent.monitoring.publisher.ingest.model.DefaultMetricSample;
+import com.mulesoft.agent.monitoring.publisher.ingest.model.MetricClassification;
+import com.mulesoft.agent.monitoring.publisher.ingest.model.api.IngestApplicationMetricPostBody;
+import com.mulesoft.agent.monitoring.publisher.ingest.model.api.IngestFlowMetrics;
+import com.mulesoft.agent.monitoring.publisher.ingest.model.api.IngestMetric;
 import com.mulesoft.agent.services.OnOffSwitch;
 import com.ning.http.client.Response;
 import org.apache.logging.log4j.LogManager;
@@ -91,6 +91,12 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Gr
     private IngestApplicationMetricPostBodyBuilder appMetricBuilder;
 
     /**
+     * Ingest metric builder.
+     */
+    @Inject
+    private IngestMetricBuilder metricBuilder;
+
+    /**
      * Executor to send application metrics in parallel.
      */
     private ExecutorService executor;
@@ -159,9 +165,9 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Gr
      * @param collection Buffer contents.
      * @return Processed application metrics ready to be sent to ingest API.
      */
-    private Collection<IngestApplicationMetric> processApplicationMetrics(Collection<GroupedApplicationsMetrics> collection)
+    private Map<String, IngestApplicationMetricPostBody> processApplicationMetrics(Collection<GroupedApplicationsMetrics> collection)
     {
-        Map<String, IngestApplicationMetric> bodyByApplicationName = Maps.newHashMap();
+        Map<String, IngestApplicationMetricPostBody> bodyByApplicationName = Maps.newHashMap();
 
         for (GroupedApplicationsMetrics metrics : collection)
         {
@@ -199,11 +205,11 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Gr
                 if (bodyByApplicationName.get(applicationName) == null)
                 {
                     IngestApplicationMetricPostBody body = appMetricBuilder.build(messageCount, responseTime, errorCount, flows);
-                    bodyByApplicationName.put(applicationName, new IngestApplicationMetric(applicationName, body));
+                    bodyByApplicationName.put(applicationName, body);
                 }
                 else
                 {
-                    IngestApplicationMetricPostBody body = bodyByApplicationName.get(applicationName).getBody();
+                    IngestApplicationMetricPostBody body = bodyByApplicationName.get(applicationName);
                     body.getMessageCount().addAll(messageCount);
                     body.getResponseTime().addAll(responseTime);
                     body.getErrorCount().addAll(errorCount);
@@ -233,7 +239,7 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Gr
             }
         }
 
-        return bodyByApplicationName.values();
+        return bodyByApplicationName;
     }
 
     /**
@@ -248,12 +254,15 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Gr
         LOGGER.debug("publishing application metrics to ingest api.");
         try
         {
-            Collection<IngestApplicationMetric> metrics = this.processApplicationMetrics(collection);
+            Map<String, IngestApplicationMetricPostBody> metrics = this.processApplicationMetrics(collection);
             final CountDownLatch latch = new CountDownLatch(metrics.size());
 
             final List<Integer> statusCodes = Collections.synchronizedList(Lists.<Integer>newLinkedList());
-            for (final IngestApplicationMetric metric : metrics)
+            for (final Map.Entry<String, IngestApplicationMetricPostBody> entry : metrics.entrySet())
             {
+                final String applicationName = entry.getKey();
+                final IngestApplicationMetricPostBody body = entry.getValue();
+
                 this.executor.submit(new Runnable()
                 {
                     @Override
@@ -261,20 +270,20 @@ public class IngestApplicationMonitorPublisher extends IngestMonitorPublisher<Gr
                     {
                         try
                         {
-                            Response httpResponse = client.postApplicationMetrics(metric.getApplicationName(), metric.getBody());
+                            Response httpResponse = client.postApplicationMetrics(applicationName, body);
                             if (isSuccessStatusCode(httpResponse.getStatusCode()))
                             {
-                                LOGGER.debug("successfully published application metrics for " + metric.getApplicationName());
+                                LOGGER.debug("successfully published application metrics for " + applicationName);
                             }
                             else
                             {
-                                LOGGER.warn("Could not publish app metrics for " + metric.getApplicationName() + " to Ingest.");
+                                LOGGER.warn("Could not publish app metrics for " + applicationName + " to Ingest.");
                             }
                             statusCodes.add(httpResponse.getStatusCode());
                         }
                         catch (Exception e)
                         {
-                            LOGGER.warn(String.format("could not publish application metrics for %s, cause: %s", metric.getApplicationName(), e.getMessage()));
+                            LOGGER.warn(String.format("could not publish application metrics for %s, cause: %s", applicationName, e.getMessage()));
                             LOGGER.debug("Error: ", e);
                             statusCodes.add(500);
                         }

@@ -1,4 +1,4 @@
-package com.mulesoft.agent.monitoring.publisher.model;
+package com.mulesoft.agent.monitoring.publisher.ingest.model;
 
 import com.mulesoft.agent.domain.monitoring.Metric;
 
