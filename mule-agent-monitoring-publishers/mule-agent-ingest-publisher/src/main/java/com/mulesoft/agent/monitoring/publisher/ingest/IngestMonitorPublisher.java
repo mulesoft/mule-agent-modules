@@ -1,8 +1,7 @@
-package com.mulesoft.agent.monitoring.publisher;
+package com.mulesoft.agent.monitoring.publisher.ingest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.google.common.collect.Lists;
 import com.mulesoft.agent.AgentEnableOperationException;
 import com.mulesoft.agent.buffer.BufferConfiguration;
 import com.mulesoft.agent.buffer.BufferType;
@@ -11,19 +10,15 @@ import com.mulesoft.agent.clients.AuthenticationProxyClient;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.PostConfigure;
 import com.mulesoft.agent.configuration.common.AuthenticationProxyConfiguration;
-import com.mulesoft.agent.configuration.common.ProxyConfiguration;
 import com.mulesoft.agent.handlers.exception.InitializationException;
 import com.mulesoft.agent.handlers.internal.buffer.DiscardingMessageBufferConfigurationFactory;
 import com.mulesoft.agent.handlers.internal.client.DefaultAuthenticationProxyClient;
-import com.mulesoft.agent.monitoring.publisher.ingest.AnypointMonitoringIngestAPIClient;
-import com.mulesoft.agent.monitoring.publisher.ingest.builder.IngestMetricBuilder;
+import com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient;
 import com.mulesoft.agent.services.OnOffSwitch;
 import org.apache.commons.lang.StringUtils;
 
-import javax.inject.Inject;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * <p>
@@ -52,12 +47,6 @@ public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
      */
     @Configurable("true")
     private Boolean enabled;
-
-    /**
-     * Ingest metric builder.
-     */
-    @Inject
-    protected IngestMetricBuilder metricBuilder;
 
     /**
      * Monitoring Ingest Client

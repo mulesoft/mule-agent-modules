@@ -2,6 +2,7 @@ package com.mulesoft.agent.monitoring.publisher.model;
 
 import com.google.common.collect.Lists;
 import com.mulesoft.agent.domain.monitoring.Metric;
+import com.mulesoft.agent.monitoring.publisher.ingest.model.MetricClassification;
 import org.junit.Assert;
 import org.junit.Test;
 
