@@ -57,6 +57,7 @@ public class IngestApplicationMetricPostBody
      * @param messageCount Samples for message count
      * @param responseTime Samples for response time
      * @param errorCount Samples for error count
+     * @param flows Flow metrics
      */
     public IngestApplicationMetricPostBody(Set<IngestMetric> messageCount,
                                            Set<IngestMetric> responseTime,
