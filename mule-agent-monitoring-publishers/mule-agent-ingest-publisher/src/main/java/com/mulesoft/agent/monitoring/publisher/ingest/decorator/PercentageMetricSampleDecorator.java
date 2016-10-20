@@ -1,7 +1,9 @@
-package com.mulesoft.agent.monitoring.publisher.model;
+package com.mulesoft.agent.monitoring.publisher.ingest.decorator;
+
+import com.mulesoft.agent.monitoring.publisher.ingest.model.MetricSample;
 
 /**
- * Created by svinci on 6/28/16.
+ * MetricSample decorator that converts the values of a sample to percentages (0.9 -> 90).
  */
 public class PercentageMetricSampleDecorator extends MetricSampleDecorator
 {
