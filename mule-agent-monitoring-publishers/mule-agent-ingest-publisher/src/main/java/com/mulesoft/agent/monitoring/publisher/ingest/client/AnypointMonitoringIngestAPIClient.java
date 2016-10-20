@@ -103,6 +103,7 @@ public class AnypointMonitoringIngestAPIClient
     /**
      * Publish application metrics to Ingest API.
      *
+     * @param applicationName Name of the application.
      * @param body Request body.
      * @return http response.
      */
