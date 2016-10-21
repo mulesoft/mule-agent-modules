@@ -9,11 +9,10 @@ import com.mulesoft.agent.monitoring.publisher.ingest.model.MetricClassification
 import com.mulesoft.agent.monitoring.publisher.ingest.model.MetricSample;
 
 import javax.inject.Named;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * IngestMetric factory that returns an IngestMetric with its values converted to percentages. (0.9 -> 90).
+ * IngestMetric factory that returns an IngestMetric with its values converted to percentages. (0.9 to 90).
  */
 @Named("ingest.percentage.metric.factory")
 public class PercentageMetricFactory extends TargetMetricFactory
