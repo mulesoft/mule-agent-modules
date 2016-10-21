@@ -3,7 +3,7 @@
     <parent>
         <artifactId>mule-agent-gw-httpevents-internalhandlers</artifactId>
         <groupId>com.mulesoft.agent</groupId>
-        <version>2.0.0-SNAPSHOT</version>
+        <version>1.6.0-mule-4.x-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -22,13 +22,11 @@
         <dependency>
             <groupId>com.mulesoft.agent</groupId>
             <artifactId>mule-agent-api</artifactId>
-            <classifier>mule-4.x</classifier>
         </dependency>
 
         <dependency>
             <groupId>com.mulesoft.agent</groupId>
             <artifactId>mule-agent-modules-common</artifactId>
-            <classifier>mule-4.x</classifier>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -104,15 +102,13 @@
     <build>
         <plugins>
             <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
                     <descriptors>
                         <descriptor>assembly.xml</descriptor>
                     </descriptors>
+                    <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
                 <executions>
                     <execution>

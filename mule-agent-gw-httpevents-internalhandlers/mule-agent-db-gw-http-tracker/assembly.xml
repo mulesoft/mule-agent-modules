@@ -6,7 +6,7 @@
   -->
 
 <assembly>
-    <id>mule-4.x</id>
+    <id>db</id>
     <formats>
         <format>zip</format>
     </formats>
