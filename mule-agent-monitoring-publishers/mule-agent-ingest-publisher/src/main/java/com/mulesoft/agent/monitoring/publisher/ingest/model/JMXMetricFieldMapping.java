@@ -5,7 +5,7 @@ import com.mulesoft.agent.domain.monitoring.SupportedJMXBean;
 import org.apache.commons.lang.NotImplementedException;
 
 /**
- * Mapping JMX Bean -> Ingest API field name.
+ * Mapping JMX Bean to Ingest API field name.
  */
 public enum JMXMetricFieldMapping
 {
