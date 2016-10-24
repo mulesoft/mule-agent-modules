@@ -6,7 +6,7 @@
   -->
 
 <assembly>
-    <id>mule-3.x</id>
+    <id>mule-agent-db-gw-http-tracker</id>
     <formats>
         <format>zip</format>
     </formats>

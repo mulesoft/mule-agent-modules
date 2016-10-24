@@ -2,7 +2,7 @@
     <parent>
         <artifactId>mule-agent-modules</artifactId>
         <groupId>com.mulesoft.agent</groupId>
-        <version>2.0.0-SNAPSHOT</version>
+        <version>1.6.0-mule-3.x-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -28,13 +28,11 @@
         <dependency>
             <groupId>com.mulesoft.agent</groupId>
             <artifactId>mule-agent-api</artifactId>
-            <classifier>mule-3.x</classifier>
         </dependency>
 
         <dependency>
             <groupId>com.mulesoft.agent</groupId>
             <artifactId>mule-agent-internal-handlers</artifactId>
-            <classifier>mule-3.x</classifier>
         </dependency>
 
         <!-- Test Dependencies -->
