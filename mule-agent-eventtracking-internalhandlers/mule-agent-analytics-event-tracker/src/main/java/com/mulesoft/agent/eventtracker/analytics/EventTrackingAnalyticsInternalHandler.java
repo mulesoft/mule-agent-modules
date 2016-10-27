@@ -15,19 +15,24 @@ import com.mulesoft.agent.buffer.BufferConfiguration;
 import com.mulesoft.agent.buffer.BufferType;
 import com.mulesoft.agent.buffer.BufferedHandler;
 import com.mulesoft.agent.clients.AuthenticationProxyClient;
+import com.mulesoft.agent.clients.AuthenticationProxyFactory;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.NotAvailableOn;
 import com.mulesoft.agent.configuration.common.AuthenticationProxyConfiguration;
 import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
 import com.mulesoft.agent.handlers.exception.InitializationException;
 import com.mulesoft.agent.handlers.internal.buffer.DiscardingMessageBufferConfigurationFactory;
-import com.mulesoft.agent.handlers.internal.client.DefaultAuthenticationProxyClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import static com.mulesoft.agent.domain.RuntimeEnvironment.ON_PREM;
 import static com.mulesoft.agent.domain.RuntimeEnvironment.STANDALONE;
@@ -41,7 +46,8 @@ import static com.mulesoft.agent.domain.RuntimeEnvironment.STANDALONE;
 @Singleton
 @Named("mule.agent.tracking.handler.analytics")
 @NotAvailableOn(environment = {ON_PREM, STANDALONE})
-public class EventTrackingAnalyticsInternalHandler extends BufferedHandler<AgentTrackingNotification> {
+public class EventTrackingAnalyticsInternalHandler extends BufferedHandler<AgentTrackingNotification>
+{
 
     /**
      * <p>
@@ -56,6 +62,12 @@ public class EventTrackingAnalyticsInternalHandler extends BufferedHandler<Agent
      * </p>
      */
     private ObjectMapper objectMapper;
+
+    /**
+     * Factory to create the {@link AuthenticationProxyClient}.
+     */
+    @Inject
+    private AuthenticationProxyFactory authenticationProxyFactory;
 
     /**
      * <p>
@@ -81,9 +93,10 @@ public class EventTrackingAnalyticsInternalHandler extends BufferedHandler<Agent
     private AuthenticationProxyClient authProxyClient;
 
     @Override
-    public void initialize() throws InitializationException {
+    public void initialize() throws InitializationException
+    {
         super.initialize();
-        authProxyClient = DefaultAuthenticationProxyClient.create(authenticationProxy, getMapper());
+        authProxyClient = authenticationProxyFactory.create(authenticationProxy, getMapper());
     }
 
     @Override
@@ -99,7 +112,8 @@ public class EventTrackingAnalyticsInternalHandler extends BufferedHandler<Agent
         {
             boolean fullSuccess = true;
             Collection<List<AgentTrackingNotification>> groupedNotifications = groupByApplication(notifications);
-            for (List<AgentTrackingNotification> applicationNotifications : groupedNotifications) {
+            for (List<AgentTrackingNotification> applicationNotifications : groupedNotifications)
+            {
                 String applicationName = applicationNotifications.get(0).getApplication();
                 Map<String, Collection<String>> headers = new HashMap<>();
                 headers.put("X-APPLICATION-NAME", Lists.newArrayList(applicationName));
@@ -138,13 +152,17 @@ public class EventTrackingAnalyticsInternalHandler extends BufferedHandler<Agent
      * <p>
      * Groups events by the application that triggered them.
      * </p>
+     *
      * @param events The list of triggered events.
      * @return A collection of lists of events. Each list contains all events for one application.
      */
-    private Collection<List<AgentTrackingNotification>> groupByApplication(Collection<AgentTrackingNotification> events) {
+    private Collection<List<AgentTrackingNotification>> groupByApplication(Collection<AgentTrackingNotification> events)
+    {
         Map<String, List<AgentTrackingNotification>> groupedEvents = new HashMap<>();
-        for (AgentTrackingNotification event : events) {
-            if (!groupedEvents.containsKey(event.getApplication())) {
+        for (AgentTrackingNotification event : events)
+        {
+            if (!groupedEvents.containsKey(event.getApplication()))
+            {
                 groupedEvents.put(event.getApplication(), new LinkedList<AgentTrackingNotification>());
             }
             groupedEvents.get(event.getApplication()).add(event);
@@ -158,11 +176,13 @@ public class EventTrackingAnalyticsInternalHandler extends BufferedHandler<Agent
      * the Analytics service.
      * The mapper is created only once and the same one is retrieved when it is requested multiple times.
      * </p>
+     *
      * @return The initialized mapper.
      */
     private ObjectMapper getMapper()
     {
-        if (objectMapper == null) {
+        if (objectMapper == null)
+        {
             objectMapper = new ObjectMapper();
 
             SimpleModule serializationModule = new SimpleModule("SerializationModule", new Version(1, 0, 0, null, null, null));

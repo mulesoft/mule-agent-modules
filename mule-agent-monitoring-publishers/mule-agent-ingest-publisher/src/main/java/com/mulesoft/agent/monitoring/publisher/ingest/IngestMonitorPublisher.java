@@ -7,16 +7,17 @@ import com.mulesoft.agent.buffer.BufferConfiguration;
 import com.mulesoft.agent.buffer.BufferType;
 import com.mulesoft.agent.buffer.BufferedHandler;
 import com.mulesoft.agent.clients.AuthenticationProxyClient;
+import com.mulesoft.agent.clients.AuthenticationProxyFactory;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.PostConfigure;
 import com.mulesoft.agent.configuration.common.AuthenticationProxyConfiguration;
 import com.mulesoft.agent.handlers.exception.InitializationException;
 import com.mulesoft.agent.handlers.internal.buffer.DiscardingMessageBufferConfigurationFactory;
-import com.mulesoft.agent.handlers.internal.client.DefaultAuthenticationProxyClient;
 import com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient;
 import com.mulesoft.agent.services.OnOffSwitch;
 import org.apache.commons.lang.StringUtils;
 
+import javax.inject.Inject;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 
@@ -29,6 +30,12 @@ public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
 {
 
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SZ";
+
+    /**
+     * Factory to create the {@link AuthenticationProxyClient}.
+     */
+    @Inject
+    private AuthenticationProxyFactory authenticationProxyFactory;
 
     /**
      * Authentication proxy configuration.
@@ -71,7 +78,6 @@ public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
     }
 
     /**
-     *
      * @return Whether this publisher is enabled or not.
      */
     @Override
@@ -82,6 +88,7 @@ public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
 
     /**
      * Initialization code to be run after configuration.
+     *
      * @throws AgentEnableOperationException when an exception is thrown while trying to enable the publisher.
      */
     @PostConfigure
@@ -95,12 +102,14 @@ public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
 
     /**
      * Initialization process.
+     *
      * @throws InitializationException when configuration is invalid.
      */
     @Override
     public void initialize() throws InitializationException
     {
-        if (!this.checkConfiguration()) {
+        if (!this.checkConfiguration())
+        {
             throw new InitializationException("Could not initialize ingest monitor publisher. Its configuration is invalid.");
         }
 
@@ -111,7 +120,7 @@ public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
                 .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
                 .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-        AuthenticationProxyClient authProxyClient = DefaultAuthenticationProxyClient.create(authenticationProxy, objectMapper);
+        AuthenticationProxyClient authProxyClient = authenticationProxyFactory.create(authenticationProxy, objectMapper);
         this.client = AnypointMonitoringIngestAPIClient.create(apiVersion, authProxyClient);
         super.initialize();
     }
@@ -149,7 +158,6 @@ public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
     }
 
     /**
-     *
      * @param collection Buffer contents.
      * @return Whether the process ended successfully or not.
      */
@@ -165,7 +173,6 @@ public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
     }
 
     /**
-     *
      * @param collection Buffer contents.
      * @return Whether the process ended successfully or not.
      */
@@ -179,6 +186,7 @@ public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
      * <p>
      * Checks whether the provided HTTP status code belongs to the Success family.
      * </p>
+     *
      * @param statusCode The status code to check.
      * @return true if the error code is between 200 and 300.
      */
