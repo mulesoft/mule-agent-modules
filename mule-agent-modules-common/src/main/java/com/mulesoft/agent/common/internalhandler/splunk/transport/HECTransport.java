@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mulesoft.agent.common.internalhandler.splunk.transport.config.HECTransportConfig;
 import com.mulesoft.agent.handlers.exception.InitializationException;
 import com.ning.http.client.AsyncHttpClient;
+import com.ning.http.client.AsyncHttpClientConfig;
 import com.ning.http.client.Response;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -100,7 +101,11 @@ public class HECTransport<T> extends AbstractTransport<T>
             }
 
             // Use the Async library because it's already a dependency and manages the SSL Certificate validation
-            AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
+
+            AsyncHttpClientConfig httpClientConfig = new AsyncHttpClientConfig.Builder()
+                    .setAcceptAnyCertificate(this.config.getAcceptAnyCertificate())
+                    .build();
+            AsyncHttpClient asyncHttpClient = new AsyncHttpClient(httpClientConfig);
             Response response = asyncHttpClient.preparePost(url.toString())
                     .addHeader("Authorization", "Splunk " + this.config.getToken())
                     .setBody(sb.toString())
@@ -116,11 +121,6 @@ public class HECTransport<T> extends AbstractTransport<T>
             }
 
             return true;
-        }
-        catch (IOException e)
-        {
-            LOGGER.error("There was an error sending the events to the Splunk instance.", e);
-            return false;
         }
         catch (InterruptedException e)
         {
