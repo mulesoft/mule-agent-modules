@@ -62,6 +62,7 @@ public class DefaultTransportFactoryTest
         internalHandler.splunkIndexName = "main";
         internalHandler.splunkSource = "mule";
         internalHandler.splunkSourceType = "mule";
+        internalHandler.acceptAnyCertificate = true;
 
         Transport transport = new DefaultTransportFactory(internalHandler).create();
 

@@ -45,10 +45,8 @@ public class HECTransportConfig extends HttpBasedSplunkConfig
     {
         private HECTransportConfig config = new HECTransportConfig();
 
-        public Builder(AbstractSplunkInternalHandler internalHandler) throws AgentConfigurationException
-        {
-            try
-            {
+        public Builder(AbstractSplunkInternalHandler internalHandler) throws AgentConfigurationException {
+            try {
                 config.setToken(internalHandler.token);
                 config.setHost(internalHandler.host);
                 config.setPort(internalHandler.port);
@@ -57,9 +55,8 @@ public class HECTransportConfig extends HttpBasedSplunkConfig
                 config.setIndex(internalHandler.splunkIndexName);
                 config.setSource(internalHandler.splunkSource);
                 config.setSourceType(internalHandler.splunkSourceType);
-            }
-            catch (Exception ex)
-            {
+                config.setAcceptAnyCertificate(internalHandler.acceptAnyCertificate);
+            } catch (Exception ex) {
                 throw new AgentConfigurationException("There was an error reading the Splunk Configuration.", ex);
             }
 
@@ -69,8 +66,8 @@ public class HECTransportConfig extends HttpBasedSplunkConfig
                     || this.config.getPort() < 1
                     || StringUtils.isEmpty(this.config.getIndex())
                     || StringUtils.isEmpty(this.config.getSource())
-                    || StringUtils.isEmpty(this.config.getSourceType()))
-            {
+                    || this.config.getAcceptAnyCertificate() == null
+                    || StringUtils.isEmpty(this.config.getSourceType())) {
                 throw new AgentConfigurationException("Please review configuration; " +
                         "you must configure the following properties: token and host.");
             }
