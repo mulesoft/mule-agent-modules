@@ -125,6 +125,16 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
     @Configurable(value = "yyyy-MM-dd'T'HH:mm:ss.SZ", type = Type.DYNAMIC)
     public String dateFormatPattern;
 
+    /**
+     * <p>
+     * Determines if the Splunk internal handlers will accept connections
+     * to any Splunk server by ignoring the SSL certificate.
+     * It is enabled by default just to support backward compatibility.
+     * </p>
+     */
+    @Configurable(value = "true", type = Type.DYNAMIC)
+    public Boolean acceptAnyCertificate;
+
     @Override
     protected boolean canHandle(T message)
     {
