@@ -33,6 +33,7 @@ public class HECTransportConfigTest
         internalHandler.splunkIndexName = "main";
         internalHandler.splunkSource = "mule";
         internalHandler.splunkSourceType = "mule";
+        internalHandler.acceptAnyCertificate = true;
 
         HECTransportConfig config = new HECTransportConfig.Builder(internalHandler).build();
 
@@ -44,6 +45,7 @@ public class HECTransportConfigTest
         assertEquals(internalHandler.splunkIndexName, config.getIndex());
         assertEquals(internalHandler.splunkSource, config.getSource());
         assertEquals(internalHandler.splunkSourceType, config.getSourceType());
+        assertEquals(internalHandler.acceptAnyCertificate, config.getAcceptAnyCertificate());
     }
 
     @Test(expected = AgentConfigurationException.class)

@@ -27,6 +27,9 @@ public abstract class HttpBasedSplunkConfig extends AbstractSplunkConfig
     private String source;
     @Configurable(value = "mule", type = Type.DYNAMIC)
     private String sourceType;
+    @Configurable(value = "true", type = Type.DYNAMIC)
+    private Boolean acceptAnyCertificate;
+
 
     public HttpScheme getScheme()
     {
@@ -76,6 +79,14 @@ public abstract class HttpBasedSplunkConfig extends AbstractSplunkConfig
     public void setSourceType(String sourceType)
     {
         this.sourceType = sourceType;
+    }
+
+    public void setAcceptAnyCertificate(Boolean acceptAnyCertificate) {
+        this.acceptAnyCertificate = acceptAnyCertificate;
+    }
+
+    public Boolean getAcceptAnyCertificate() {
+        return acceptAnyCertificate;
     }
 
     @Override
