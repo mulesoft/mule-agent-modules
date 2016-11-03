@@ -20,6 +20,15 @@ public class DefaultMetricSample implements MetricSample
     private final Double avg;
     private final Double count;
 
+    public DefaultMetricSample(Date date, Double min, Double max, Double sum, Double avg, Double count) {
+        this.date = date;
+        this.min = min;
+        this.max = max;
+        this.sum = sum;
+        this.avg = avg;
+        this.count = count;
+    }
+
     public DefaultMetricSample(List<Metric> sample)
     {
         Double min = null;

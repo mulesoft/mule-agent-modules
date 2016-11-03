@@ -26,9 +26,9 @@ public enum JMXMetricFieldMapping
     SURVIVOR_COMMITTED(SupportedJMXBean.SURVIVOR_COMMITTED, "survivor-committed"),
     SURVIVOR_TOTAL(SupportedJMXBean.SURVIVOR_TOTAL, "survivor-total"),
 
-    OLD_GEN_USAGE(SupportedJMXBean.OLD_GEN_USAGE, "old-gen-usage"),
-    OLD_GEN_COMMITTED(SupportedJMXBean.OLD_GEN_COMMITTED, "old-gen-committed"),
-    OLD_GEN_TOTAL(SupportedJMXBean.OLD_GEN_TOTAL, "old-gen-total"),
+    TENURED_GEN_USAGE(SupportedJMXBean.TENURED_GEN_USAGE, "tenured-gen-usage"),
+    TENURED_GEN_COMMITTED(SupportedJMXBean.TENURED_GEN_COMMITTED, "tenured-gen-committed"),
+    TENURED_GEN_TOTAL(SupportedJMXBean.TENURED_GEN_TOTAL, "tenured-gen-total"),
 
     CODE_CACHE_USAGE(SupportedJMXBean.CODE_CACHE_USAGE, "code-cache-usage"),
     CODE_CACHE_COMMITTED(SupportedJMXBean.CODE_CACHE_COMMITTED, "code-cache-committed"),
@@ -51,8 +51,8 @@ public enum JMXMetricFieldMapping
     GC_MARK_SWEEP_TIME(SupportedJMXBean.GC_MARK_SWEEP_TIME, "gc-mark-sweep-time"),
     GC_MARK_SWEEP_COUNT(SupportedJMXBean.GC_MARK_SWEEP_COUNT, "gc-mark-sweep-count"),
 
-    GC_SCAVENGE_TIME(SupportedJMXBean.GC_SCAVENGE_TIME, "gc-scavenge-time"),
-    GC_SCAVENGE_COUNT(SupportedJMXBean.GC_SCAVENGE_COUNT, "gc-scavenge-count");
+    GC_PAR_NEW_TIME(SupportedJMXBean.GC_PAR_NEW_TIME, "gc-par-new-time"),
+    GC_PAR_NEW_COUNT(SupportedJMXBean.GC_PAR_NEW_COUNT, "gc-par-new-count");
 
     /**
      * JMX Bean to be reported to ingest with the field name.
