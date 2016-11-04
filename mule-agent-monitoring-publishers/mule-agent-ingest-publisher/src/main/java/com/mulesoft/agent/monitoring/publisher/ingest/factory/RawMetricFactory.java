@@ -20,8 +20,8 @@ public class RawMetricFactory extends TargetMetricFactory
     private static final java.util.ArrayList<SupportedJMXBean> SUPPORTED_METRICS = Lists.newArrayList(
         SupportedJMXBean.AVAILABLE_PROCESSORS, SupportedJMXBean.CLASS_LOADING_LOADED,
         SupportedJMXBean.CLASS_LOADING_TOTAL, SupportedJMXBean.CLASS_LOADING_UNLOADED,
-        SupportedJMXBean.GC_MARK_SWEEP_COUNT, SupportedJMXBean.GC_MARK_SWEEP_TIME, SupportedJMXBean.GC_SCAVENGE_COUNT,
-        SupportedJMXBean.GC_SCAVENGE_TIME, SupportedJMXBean.LOAD_AVERAGE, SupportedJMXBean.THREADING_COUNT
+        SupportedJMXBean.GC_MARK_SWEEP_COUNT, SupportedJMXBean.GC_PAR_NEW_COUNT,
+        SupportedJMXBean.LOAD_AVERAGE, SupportedJMXBean.THREADING_COUNT
     );
 
     /**

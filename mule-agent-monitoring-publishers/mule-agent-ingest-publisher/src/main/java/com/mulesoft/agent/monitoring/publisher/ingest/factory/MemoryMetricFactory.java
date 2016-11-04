@@ -23,8 +23,8 @@ public class MemoryMetricFactory extends TargetMetricFactory
         SupportedJMXBean.COMPRESSED_CLASS_SPACE_COMMITTED, SupportedJMXBean.COMPRESSED_CLASS_SPACE_TOTAL,
         SupportedJMXBean.COMPRESSED_CLASS_SPACE_USAGE, SupportedJMXBean.EDEN_COMMITTED, SupportedJMXBean.EDEN_TOTAL,
         SupportedJMXBean.EDEN_USAGE, SupportedJMXBean.HEAP_COMMITTED, SupportedJMXBean.HEAP_TOTAL, SupportedJMXBean.HEAP_USAGE,
-        SupportedJMXBean.METASPACE_COMMITTED, SupportedJMXBean.METASPACE_USAGE, SupportedJMXBean.OLD_GEN_COMMITTED,
-        SupportedJMXBean.OLD_GEN_TOTAL, SupportedJMXBean.OLD_GEN_USAGE, SupportedJMXBean.SURVIVOR_COMMITTED,
+        SupportedJMXBean.METASPACE_COMMITTED, SupportedJMXBean.METASPACE_USAGE, SupportedJMXBean.TENURED_GEN_COMMITTED,
+        SupportedJMXBean.TENURED_GEN_TOTAL, SupportedJMXBean.TENURED_GEN_USAGE, SupportedJMXBean.SURVIVOR_COMMITTED,
         SupportedJMXBean.SURVIVOR_TOTAL, SupportedJMXBean.SURVIVOR_USAGE, SupportedJMXBean.METASPACE_TOTAL
     );
 
