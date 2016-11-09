@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
+ *
+ * The software in this package is published under the terms of the CPAL v1.0
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
+ *
+ */
+
 package com.mulesoft.agent.monitoring.publisher.ingest.factory;
 
 import com.google.common.collect.Lists;
@@ -20,7 +29,6 @@ public class RawMetricFactory extends TargetMetricFactory
     private static final java.util.ArrayList<SupportedJMXBean> SUPPORTED_METRICS = Lists.newArrayList(
         SupportedJMXBean.AVAILABLE_PROCESSORS, SupportedJMXBean.CLASS_LOADING_LOADED,
         SupportedJMXBean.CLASS_LOADING_TOTAL, SupportedJMXBean.CLASS_LOADING_UNLOADED,
-        SupportedJMXBean.GC_MARK_SWEEP_COUNT, SupportedJMXBean.GC_PAR_NEW_COUNT,
         SupportedJMXBean.LOAD_AVERAGE, SupportedJMXBean.THREADING_COUNT
     );
 
