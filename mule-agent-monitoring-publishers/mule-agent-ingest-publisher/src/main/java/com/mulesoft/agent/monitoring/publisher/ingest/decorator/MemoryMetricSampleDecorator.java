@@ -22,4 +22,10 @@ public class MemoryMetricSampleDecorator extends MetricSampleDecorator
         return value / (1024 * 1024);
     }
 
+    @Override
+    public String toString()
+    {
+        return "MemoryMetricSampleDecorator{} " + super.toString();
+    }
+
 }
