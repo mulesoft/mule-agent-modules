@@ -100,4 +100,16 @@ public class DefaultMetricSample implements MetricSample
         return count;
     }
 
+    @Override
+    public String toString()
+    {
+        return "DefaultMetricSample{" +
+                "date=" + date +
+                ", min=" + min +
+                ", max=" + max +
+                ", sum=" + sum +
+                ", avg=" + avg +
+                ", count=" + count +
+                '}';
+    }
 }

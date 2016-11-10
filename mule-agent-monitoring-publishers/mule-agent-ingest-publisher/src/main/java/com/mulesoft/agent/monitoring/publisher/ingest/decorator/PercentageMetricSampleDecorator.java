@@ -19,4 +19,10 @@ public class PercentageMetricSampleDecorator extends MetricSampleDecorator
         return value * 100;
     }
 
+    @Override
+    public String toString()
+    {
+        return "PercentageMetricSampleDecorator{} " + super.toString();
+    }
+
 }
