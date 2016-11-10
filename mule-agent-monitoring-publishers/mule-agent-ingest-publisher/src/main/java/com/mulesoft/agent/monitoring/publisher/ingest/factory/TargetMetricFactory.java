@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
+ *
+ * The software in this package is published under the terms of the CPAL v1.0
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
+ *
+ */
+
 package com.mulesoft.agent.monitoring.publisher.ingest.factory;
 
 import com.google.common.base.Preconditions;
@@ -6,6 +15,8 @@ import com.mulesoft.agent.monitoring.publisher.ingest.builder.IngestMetricBuilde
 import com.mulesoft.agent.monitoring.publisher.ingest.model.MetricClassification;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.MetricSample;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.api.IngestMetric;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -15,6 +26,8 @@ import java.util.List;
  */
 public abstract class TargetMetricFactory
 {
+
+    private static final Logger LOGGER = LogManager.getLogger(TargetMetricFactory.class);
 
     /**
      * Ingest metric builder.
@@ -45,6 +58,11 @@ public abstract class TargetMetricFactory
         if (classification != null)
         {
             MetricSample sample = doApply(classification, bean);
+            if (sample.getCount() <= 0 || sample.getAvg() < 0 || sample.getSum() < 0 || sample.getMax() < 0 || sample.getMin() < 0)
+            {
+                LOGGER.debug("Metric sample for bean {} returned with invalid values. {}", bean.name(), sample);
+                return null;
+            }
             return metricBuilder.build(sample);
         }
         return null;

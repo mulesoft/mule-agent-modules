@@ -62,4 +62,13 @@ public abstract class MetricSampleDecorator implements MetricSample
     public Double getCount() {
         return this.sample.getCount();
     }
+
+    @Override
+    public String toString()
+    {
+        return "MetricSampleDecorator{" +
+                "sample=" + sample +
+                '}';
+    }
+
 }
