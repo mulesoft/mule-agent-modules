@@ -31,7 +31,7 @@
     </modules>
 
     <properties>
-        <mule.agent.api.version>1.6.0-mule-3.x</mule.agent.api.version>
+        <mule.agent.api.version>1.6.1-mule-3.x-SNAPSHOT</mule.agent.api.version>
 
         <async.http.client.version>1.8.14</async.http.client.version>
         <aws.sdk.version>1.6.0</aws.sdk.version>
