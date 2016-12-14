@@ -2,7 +2,7 @@
     <parent>
         <artifactId>mule-agent-modules</artifactId>
         <groupId>com.mulesoft.agent</groupId>
-        <version>1.3.1</version>
+        <version>1.3.2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
