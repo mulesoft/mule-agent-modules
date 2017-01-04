@@ -2,7 +2,7 @@
 
     <groupId>com.mulesoft.agent</groupId>
     <artifactId>mule-agent-modules</artifactId>
-    <version>1.6.2-mule-4.x-SNAPSHOT</version>
+    <version>1.6.1-mule-4.x</version>
     <packaging>pom</packaging>
 
     <modelVersion>4.0.0</modelVersion>
@@ -286,6 +286,6 @@
         <url>https://github.com/mulesoft/mule-agent-modules</url>
         <connection>scm:git:git://github.com/mulesoft/mule-agent-modules.git</connection>
         <developerConnection>scm:git:git@github.com:mulesoft/mule-agent-modules.git</developerConnection>
-      <tag>HEAD</tag>
+      <tag>mule-agent-modules-1.6.1-mule-4.x</tag>
   </scm>
 </project>
