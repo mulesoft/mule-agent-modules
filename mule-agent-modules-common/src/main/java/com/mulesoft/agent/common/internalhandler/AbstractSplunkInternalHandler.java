@@ -1,5 +1,7 @@
 package com.mulesoft.agent.common.internalhandler;
 
+import java.util.Collection;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mulesoft.agent.AgentConfigurationException;
 import com.mulesoft.agent.buffer.BufferConfiguration;
@@ -14,10 +16,9 @@ import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.Password;
 import com.mulesoft.agent.configuration.Type;
 import com.mulesoft.agent.handlers.exception.InitializationException;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.Collection;
 
 public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T>
 {
@@ -170,6 +171,8 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
     public void initialize() throws InitializationException
     {
         LOGGER.debug("Configuring the Splunk Internal Handler with values: " + this.toString());
+
+        acceptAnyCertificate = acceptAnyCertificate == null ? true : acceptAnyCertificate;
 
         if (this.transport != null)
         {
