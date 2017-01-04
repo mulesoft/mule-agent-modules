@@ -3,7 +3,7 @@
     <parent>
         <artifactId>mule-agent-gw-httpevents-internalhandlers</artifactId>
         <groupId>com.mulesoft.agent</groupId>
-        <version>1.6.1-mule-4.x</version>
+        <version>1.6.2-mule-4.x-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
