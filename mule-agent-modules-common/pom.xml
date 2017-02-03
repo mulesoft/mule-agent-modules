@@ -80,7 +80,6 @@
             <artifactId>mockito-all</artifactId>
         </dependency>
 
-
         <!-- Logging Dependencies -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
