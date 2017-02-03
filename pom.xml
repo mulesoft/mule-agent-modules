@@ -28,6 +28,7 @@
         <module>mule-agent-monitoring-publishers</module>
         <module>mule-agent-eventtracking-internalhandlers</module>
         <module>mule-agent-gw-httpevents-internalhandlers</module>
+        <module>mule-agent-monitoring-publishers/mule-agent-cloudhub-publisher</module>
     </modules>
 
     <properties>
