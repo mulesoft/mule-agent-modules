@@ -1,0 +1,26 @@
+<assembly>
+    <id>cloudhub</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <dependencySets>
+        <dependencySet>
+            <excludes>
+                <exclude>com.mulesoft.agent:mule-agent-cloudhub-publisher:jar</exclude>
+            </excludes>
+            <unpack>false</unpack>
+            <scope>runtime</scope>
+            <outputDirectory></outputDirectory>
+        </dependencySet>
+    </dependencySets>
+    <fileSets>
+        <fileSet>
+            <directory>target</directory>
+            <outputDirectory></outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+</assembly>

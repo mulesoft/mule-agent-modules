@@ -79,8 +79,9 @@ public class CloudhubMemoryPublisher extends BufferedHandler<List<Metric>> {
             logger.info("memoryUsed: " + memoryUsed);
 
             MemorySnapshot ms = new MemorySnapshot(memoryMax, memoryUsed, timestamp);
-            logger.info("memorySnapshot created - " + ms);
-            sendToPlatform(ms);
+            logger.info("memorySnapshot created");
+
+//            sendToPlatform(ms);
         }
         return true;
     }
@@ -104,7 +105,10 @@ public class CloudhubMemoryPublisher extends BufferedHandler<List<Metric>> {
         req.setEntity(entity);
 
         try (CloseableHttpResponse res = client.execute(req)) {
-            // do stuff
+            if (res.getStatusLine().getStatusCode() != 200) {
+                logger.error("Error sending metrics to platform, got status code {}",
+                        res.getStatusLine().getStatusCode());
+            }
 
             EntityUtils.consumeQuietly(res.getEntity());
         } catch (IOException e) {
@@ -113,7 +117,7 @@ public class CloudhubMemoryPublisher extends BufferedHandler<List<Metric>> {
     }
 
 
-    private static class MemorySnapshot {
+    protected static class MemorySnapshot {
         private final long timestamp;
         private final String instanceId;
         private final long memoryTotalMaxBytes;
@@ -122,10 +126,15 @@ public class CloudhubMemoryPublisher extends BufferedHandler<List<Metric>> {
 
         MemorySnapshot(long memoryTotalMaxBytes, long memoryTotalUsedBytes, long timestamp) {
             this.timestamp = timestamp;
+            // include aws-java-sdk dependency
             this.instanceId = EC2MetadataUtils.getInstanceId();
             this.memoryTotalMaxBytes = memoryTotalMaxBytes;
             this.memoryTotalUsedBytes = memoryTotalUsedBytes;
             this.memoryPercentUsed = ((double) memoryTotalUsedBytes / memoryTotalMaxBytes) * 100D;
+        }
+
+        protected double getMemoryPercentUsed() {
+            return memoryPercentUsed;
         }
     }
 }
