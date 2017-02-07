@@ -9,7 +9,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -35,19 +34,24 @@ import com.mulesoft.agent.services.OnOffSwitch;
 public class CloudhubMemoryPublisher extends BufferedHandler<List<Metric>> {
 
     private CloseableHttpClient client;
+    private String instanceId;
+    protected MemorySnapshot lastSnapshot;
 
+    private static final String PLATFORM_SERVICES_HOST_KEY = "platform.services.endpoint";
     private static final ObjectMapper mapper = new ObjectMapper();
     private static final Logger logger = LogManager.getLogger(CloudhubMemoryPublisher.class);
 
     @Inject
     public CloudhubMemoryPublisher() {
         super();
-        this.client = HttpClients.createDefault();
     }
 
     public CloudhubMemoryPublisher(OnOffSwitch enabledSwitch) {
         super();
         this.enabledSwitch = enabledSwitch;
+        this.client = HttpClients.createDefault();
+        // check aws-java-sdk dependency
+        this.instanceId = EC2MetadataUtils.getInstanceId();
     }
 
     @Override
@@ -69,25 +73,28 @@ public class CloudhubMemoryPublisher extends BufferedHandler<List<Metric>> {
                                            .findAny().get();
             long memoryMax = memoryMaxMetric.getValue().longValue();
             long timestamp = memoryMaxMetric.getTimestamp();
-            logger.info("memoryMax: " + memoryMax);
-            logger.info("timestamp: " + timestamp);
+            logger.debug("memoryMax: " + memoryMax);
+            logger.debug("timestamp: " + timestamp);
 
             long memoryUsed = sample.stream()
                                     .filter(m -> SupportedJMXBean.HEAP_USAGE.getMetricName().equals(m.getName()))
                                     .findAny().get()
                                     .getValue().longValue();
-            logger.info("memoryUsed: " + memoryUsed);
+            logger.debug("memoryUsed: " + memoryUsed);
 
-            MemorySnapshot ms = new MemorySnapshot(memoryMax, memoryUsed, timestamp);
-            logger.info("memorySnapshot created");
-
-//            sendToPlatform(ms);
+            lastSnapshot = new MemorySnapshot(memoryMax, memoryUsed, timestamp);
+//            send(lastSnapshot);
         }
         return true;
     }
 
-    private void sendToPlatform(MemorySnapshot ms) {
-        HttpPost req = new HttpPost("https://platformhost.com");
+    private void send(MemorySnapshot ms) {
+        // broken
+        String host = PLATFORM_SERVICES_HOST_KEY;
+        String endpoint = String.format("%s/agentstats/memory/%s",
+                host,
+                instanceId);
+        HttpPost req = new HttpPost(endpoint);
 
         String json = "";
         try {
@@ -118,23 +125,16 @@ public class CloudhubMemoryPublisher extends BufferedHandler<List<Metric>> {
 
 
     protected static class MemorySnapshot {
-        private final long timestamp;
-        private final String instanceId;
-        private final long memoryTotalMaxBytes;
-        private final long memoryTotalUsedBytes;
-        private final double memoryPercentUsed;
+        final long memoryTotalMaxBytes;
+        final long memoryTotalUsedBytes;
+        final double memoryPercentUsed;
+        final long timestamp;
 
         MemorySnapshot(long memoryTotalMaxBytes, long memoryTotalUsedBytes, long timestamp) {
-            this.timestamp = timestamp;
-            // include aws-java-sdk dependency
-            this.instanceId = EC2MetadataUtils.getInstanceId();
             this.memoryTotalMaxBytes = memoryTotalMaxBytes;
             this.memoryTotalUsedBytes = memoryTotalUsedBytes;
             this.memoryPercentUsed = ((double) memoryTotalUsedBytes / memoryTotalMaxBytes) * 100D;
-        }
-
-        protected double getMemoryPercentUsed() {
-            return memoryPercentUsed;
+            this.timestamp = timestamp;
         }
     }
 }
