@@ -24,29 +24,6 @@
             <artifactId>agent-setup</artifactId>
             <version>1.6.2-mule-4.x-SNAPSHOT</version>
         </dependency>
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-databind</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-annotations</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.5.2</version>
-        </dependency>
 
         <dependency>
             <groupId>junit</groupId>
@@ -55,9 +32,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <scope>test</scope>
+            <groupId>com.mulesoft.agent</groupId>
+            <artifactId>mule-agent-modules-common</artifactId>
+            <version>1.6.2-mule-4.x-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
