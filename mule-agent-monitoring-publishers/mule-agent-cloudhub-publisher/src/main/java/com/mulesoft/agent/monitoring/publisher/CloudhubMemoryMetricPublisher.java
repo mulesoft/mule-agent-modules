@@ -23,19 +23,19 @@ import com.mulesoft.agent.services.OnOffSwitch;
  */
 @Named("mule.agent.cloudhub.memory.internal.handler")
 @Singleton
-public class CloudhubMemoryPublisher extends BufferedHandler<List<Metric>> {
+public class CloudhubMemoryMetricPublisher extends BufferedHandler<List<Metric>> {
 
     protected MemorySnapshot lastSnapshot;
 
     private static final ObjectMapper mapper = new ObjectMapper();
-    private static final Logger logger = LogManager.getLogger(CloudhubMemoryPublisher.class);
+    private static final Logger logger = LogManager.getLogger(CloudhubMemoryMetricPublisher.class);
 
     @Inject
-    public CloudhubMemoryPublisher() {
+    public CloudhubMemoryMetricPublisher() {
         super();
     }
 
-    public CloudhubMemoryPublisher(OnOffSwitch enabledSwitch) {
+    public CloudhubMemoryMetricPublisher(OnOffSwitch enabledSwitch) {
         super();
         this.enabledSwitch = enabledSwitch;
     }
@@ -53,14 +53,11 @@ public class CloudhubMemoryPublisher extends BufferedHandler<List<Metric>> {
                                            .findAny().get();
             long memoryMax = memoryMaxMetric.getValue().longValue();
             long timestamp = memoryMaxMetric.getTimestamp();
-            logger.debug("memoryMax: " + memoryMax);
-            logger.debug("timestamp: " + timestamp);
 
             long memoryUsed = sample.stream()
                                     .filter(m -> SupportedJMXBean.HEAP_USAGE.getMetricName().equals(m.getName()))
                                     .findAny().get()
                                     .getValue().longValue();
-            logger.debug("memoryUsed: " + memoryUsed);
 
             lastSnapshot = new MemorySnapshot(memoryMax, memoryUsed, timestamp);
             send(lastSnapshot);

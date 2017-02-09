@@ -1,7 +1,7 @@
 package com.mulesoft.agent.common.internalhandler.cloudhub;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import javax.inject.Singleton;
 
@@ -15,17 +15,21 @@ import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.amazonaws.util.EC2MetadataUtils;
 import com.google.common.base.Preconditions;
 
+/**
+ * Simple HTTP client for talking to Cloudhub Platform services.
+ */
 @Singleton
 public class CloudhubPlatformClient {
 
-    private final String instanceId;
     private final CloseableHttpClient httpClient;
 
+    // these properties are set by CloudhubPropertiesCoreExtension when mule starts on a worker
     private static final String PLATFORM_HOST = System.getProperty("platform.services.endpoint");
     private static final String CH_API_TOKEN = System.getProperty("ion.api.token");
+    private static final String AWS_INSTANCE_ID = System.getProperty("server.id");
+
     private static final String STATS_MEMORY_PATH = "%s/agentstats/memory/%s";
     private static final String STATS_MESSAGES_PATH = "%s/agentstats/messages/%s";
     private static final int CONNECTION_TIMEOUT_MILLI = 5000;
@@ -42,21 +46,9 @@ public class CloudhubPlatformClient {
         this.httpClient = HttpClients.custom()
                                      .setDefaultRequestConfig(requestConfig)
                                      .build();
-
-        // check aws-java-sdk dependency
-        this.instanceId = EC2MetadataUtils.getInstanceId();
         Preconditions.checkNotNull(PLATFORM_HOST);
         Preconditions.checkNotNull(CH_API_TOKEN);
-    }
-
-    private static CloseableHttpClient initClient() {
-        RequestConfig requestConfig = RequestConfig.custom()
-                                                   .setConnectTimeout(CONNECTION_TIMEOUT_MILLI)
-                                                   .setSocketTimeout(SOCKET_TIMEOUT_MILLI)
-                                                   .build();
-        return HttpClients.custom()
-                          .setDefaultRequestConfig(requestConfig)
-                          .build();
+        Preconditions.checkNotNull(AWS_INSTANCE_ID);
     }
 
     public static CloudhubPlatformClient getClient() {
@@ -74,14 +66,9 @@ public class CloudhubPlatformClient {
     private void doPost(String rawEntity, String path) {
         String endpoint = String.format(path,
                 PLATFORM_HOST,
-                instanceId);
+                AWS_INSTANCE_ID);
         HttpPost req = new HttpPost(endpoint);
-
-        StringEntity entity = null;
-        try {
-            entity = new StringEntity(rawEntity);
-        } catch (UnsupportedEncodingException e) { // ignore
-        }
+        StringEntity entity = new StringEntity(rawEntity, StandardCharsets.UTF_8);
 
         req.setHeader("Content-type", "application/json");
         req.setHeader("X-ION-Authenticate", CH_API_TOKEN);
@@ -89,13 +76,12 @@ public class CloudhubPlatformClient {
 
         try (CloseableHttpResponse res = httpClient.execute(req)) {
             if (res.getStatusLine().getStatusCode() != 200) {
-                logger.error("Error sending metrics to platform, got status code {}",
+                logger.warn("Error sending metrics to platform, got status code {}",
                         res.getStatusLine().getStatusCode());
             }
-
             EntityUtils.consumeQuietly(res.getEntity());
         } catch (IOException e) {
-            logger.error("Exception trying to call platform", e);
+            logger.warn("Could not send request to CloudHub Platform service", e);
         }
     }
 }

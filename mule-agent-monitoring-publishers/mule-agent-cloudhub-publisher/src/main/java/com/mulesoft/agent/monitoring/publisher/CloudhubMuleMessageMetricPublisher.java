@@ -23,19 +23,20 @@ import com.mulesoft.agent.services.OnOffSwitch;
 /**
  * Handler that publishes Mule messages count to CloudHub.
  */
-@Named("mule.agent.cloudhub.messages.internal.handler")
+@Named("mule.agent.cloudhub.mulemessages.internal.handler")
 @Singleton
-public class CloudhubMessagePublisher extends BufferedHandler<GroupedApplicationsMetrics> {
+public class CloudhubMuleMessageMetricPublisher extends BufferedHandler<GroupedApplicationsMetrics> {
 
+    private static final String MULE_MESSAGES_METRIC_NAME = "messageCount";
     private static final ObjectMapper mapper = new ObjectMapper();
-    private static final Logger logger = LogManager.getLogger(CloudhubMessagePublisher.class);
+    private static final Logger logger = LogManager.getLogger(CloudhubMuleMessageMetricPublisher.class);
 
     @Inject
-    public CloudhubMessagePublisher() {
+    public CloudhubMuleMessageMetricPublisher() {
         super();
     }
 
-    public CloudhubMessagePublisher(OnOffSwitch enabledSwitch) {
+    public CloudhubMuleMessageMetricPublisher(OnOffSwitch enabledSwitch) {
         super();
         this.enabledSwitch = enabledSwitch;
     }
@@ -48,20 +49,22 @@ public class CloudhubMessagePublisher extends BufferedHandler<GroupedApplication
     @Override
     protected boolean flush(Collection<GroupedApplicationsMetrics> messages) {
         for (GroupedApplicationsMetrics gam : messages) {
-            Map<String, ApplicationMetrics> metrics = gam.getMetricsByApplicationName();
-
-            for (Map.Entry<String, ApplicationMetrics> entry : metrics.entrySet()) {
-                List<Metric> appMetrics = entry.getValue().getMetrics();
-                Metric msgCountMetric = appMetrics.stream()
-                                                  .filter(m -> "messageCount".equals(m.getName()))
-                                                  .findAny().get();
-                long messageCount = msgCountMetric.getValue().longValue();
-                long timestamp = msgCountMetric.getTimestamp();
-                logger.info("got messageCount: " + messageCount + " - " + timestamp);
-
-                MuleMessageSnapshot mms = new MuleMessageSnapshot(messageCount, timestamp);
-                send(mms);
+            Map<String, ApplicationMetrics> appsWithMetrics = gam.getMetricsByApplicationName();
+            if (appsWithMetrics.size() > 1) {
+                logger.error("There is more than one app running: {}", appsWithMetrics.size());
             }
+            // there should be a single app only
+            List<Metric> appMetrics = appsWithMetrics.entrySet().stream()
+                                                     .findFirst().get()
+                                                     .getValue().getMetrics();
+
+            Metric msgCountMetric = appMetrics.stream()
+                                              .filter(m -> MULE_MESSAGES_METRIC_NAME.equals(m.getName()))
+                                              .findAny().get();
+            long messageCount = msgCountMetric.getValue().longValue();
+            long timestamp = msgCountMetric.getTimestamp();
+            MuleMessageSnapshot mms = new MuleMessageSnapshot(messageCount, timestamp);
+            send(mms);
         }
         return true;
     }
