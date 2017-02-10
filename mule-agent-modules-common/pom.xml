@@ -70,6 +70,11 @@
             <groupId>com.ning</groupId>
             <artifactId>async-http-client</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${httpclient.version}</version>
+        </dependency>
 
         <!-- Test Dependencies -->
         <dependency>
@@ -84,7 +89,6 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
         </dependency>
-
 
         <!-- Logging Dependencies -->
         <dependency>
