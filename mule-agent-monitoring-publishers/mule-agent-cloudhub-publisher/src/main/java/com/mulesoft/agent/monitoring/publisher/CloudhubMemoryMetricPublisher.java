@@ -10,10 +10,14 @@ import javax.inject.Singleton;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mulesoft.agent.buffer.BufferConfiguration;
 import com.mulesoft.agent.buffer.BufferedHandler;
 import com.mulesoft.agent.common.internalhandler.cloudhub.CloudhubPlatformClient;
+import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.domain.monitoring.Metric;
 import com.mulesoft.agent.domain.monitoring.SupportedJMXBean;
 import com.mulesoft.agent.services.OnOffSwitch;
@@ -23,12 +27,23 @@ import com.mulesoft.agent.services.OnOffSwitch;
  */
 @Named("mule.agent.cloudhub.memory.internal.handler")
 @Singleton
-public class CloudhubMemoryMetricPublisher extends BufferedHandler<List<Metric>> {
+public class CloudhubMemoryMetricPublisher
+        extends BufferedHandler<List<Metric>> {
 
-    protected MemorySnapshot lastSnapshot;
+    @Inject
+    private CloudhubPlatformClient client;
 
-    private static final ObjectMapper mapper = new ObjectMapper();
-    private static final Logger logger = LogManager.getLogger(CloudhubMemoryMetricPublisher.class);
+    private MemorySnapshot lastSnapshot;
+
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final Logger LOGGER = LogManager.getLogger(
+            CloudhubMemoryMetricPublisher.class);
+
+    @Configurable("false")
+    private boolean enabled;
+
+    @Configurable
+    private BufferConfiguration buffer;
 
     @Inject
     public CloudhubMemoryMetricPublisher() {
@@ -40,6 +55,11 @@ public class CloudhubMemoryMetricPublisher extends BufferedHandler<List<Metric>>
         this.enabledSwitch = enabledSwitch;
     }
 
+    protected CloudhubMemoryMetricPublisher(CloudhubPlatformClient client) {
+        super();
+        this.client = client;
+    }
+
     @Override
     protected boolean canHandle(List<Metric> metrics) {
         return true;
@@ -49,43 +69,53 @@ public class CloudhubMemoryMetricPublisher extends BufferedHandler<List<Metric>>
     protected boolean flush(Collection<List<Metric>> collection) {
         for (List<Metric> sample : collection) {
             Metric memoryMaxMetric = sample.stream()
-                                           .filter(m -> SupportedJMXBean.HEAP_TOTAL.getMetricName().equals(m.getName()))
+                                           .filter(m ->
+                                                   SupportedJMXBean.HEAP_TOTAL.getMetricName().equals(m.getName()))
                                            .findAny().get();
             long memoryMax = memoryMaxMetric.getValue().longValue();
             long timestamp = memoryMaxMetric.getTimestamp();
 
             long memoryUsed = sample.stream()
-                                    .filter(m -> SupportedJMXBean.HEAP_USAGE.getMetricName().equals(m.getName()))
+                                    .filter(m ->
+                                            SupportedJMXBean.HEAP_USAGE.getMetricName().equals(m.getName()))
                                     .findAny().get()
                                     .getValue().longValue();
 
-            lastSnapshot = new MemorySnapshot(memoryMax, memoryUsed, timestamp);
+            lastSnapshot = new MemorySnapshot(memoryMax, memoryUsed,
+                    timestamp);
             send(lastSnapshot);
         }
         return true;
     }
 
     private void send(MemorySnapshot ms) {
-        String json = "";
+        String json;
         try {
-            json = mapper.writeValueAsString(ms);
+            json = MAPPER.writeValueAsString(ms);
         } catch (JsonProcessingException e) {
-            logger.error("Error converting to json", e);
+            LOGGER.error("Error converting to json", e);
+            throw new RuntimeException(e);
         }
-        CloudhubPlatformClient.getClient().sendMemoryStats(json);
+        client.sendMemoryStats(json);
+    }
+
+    protected MemorySnapshot getLastSnapshot() {
+        return lastSnapshot;
     }
 
 
     protected static class MemorySnapshot {
-        final long memoryTotalMaxBytes;
-        final long memoryTotalUsedBytes;
-        final double memoryPercentUsed;
-        final long timestamp;
+        public final long memoryTotalMaxBytes;
+        public final long memoryTotalUsedBytes;
+        public final double memoryPercentUsed;
+        public final long timestamp;
 
-        MemorySnapshot(long memoryTotalMaxBytes, long memoryTotalUsedBytes, long timestamp) {
+        MemorySnapshot(long memoryTotalMaxBytes, long memoryTotalUsedBytes,
+                       long timestamp) {
             this.memoryTotalMaxBytes = memoryTotalMaxBytes;
             this.memoryTotalUsedBytes = memoryTotalUsedBytes;
-            this.memoryPercentUsed = ((double) memoryTotalUsedBytes / memoryTotalMaxBytes) * 100D;
+            this.memoryPercentUsed =
+                    ((double) memoryTotalUsedBytes / memoryTotalMaxBytes) * 100D;
             this.timestamp = timestamp;
         }
     }

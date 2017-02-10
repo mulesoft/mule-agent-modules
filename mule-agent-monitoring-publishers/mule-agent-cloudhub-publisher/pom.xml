@@ -36,6 +36,12 @@
             <artifactId>mule-agent-modules-common</artifactId>
             <version>1.6.2-mule-4.x-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>1.10.19</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

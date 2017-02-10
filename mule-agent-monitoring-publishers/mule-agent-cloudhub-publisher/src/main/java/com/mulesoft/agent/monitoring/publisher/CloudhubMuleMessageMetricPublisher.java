@@ -13,8 +13,10 @@ import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mulesoft.agent.buffer.BufferConfiguration;
 import com.mulesoft.agent.buffer.BufferedHandler;
 import com.mulesoft.agent.common.internalhandler.cloudhub.CloudhubPlatformClient;
+import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.domain.monitoring.ApplicationMetrics;
 import com.mulesoft.agent.domain.monitoring.GroupedApplicationsMetrics;
 import com.mulesoft.agent.domain.monitoring.Metric;
@@ -25,11 +27,24 @@ import com.mulesoft.agent.services.OnOffSwitch;
  */
 @Named("mule.agent.cloudhub.mulemessages.internal.handler")
 @Singleton
-public class CloudhubMuleMessageMetricPublisher extends BufferedHandler<GroupedApplicationsMetrics> {
+public class CloudhubMuleMessageMetricPublisher
+        extends BufferedHandler<GroupedApplicationsMetrics> {
+
+    @Inject
+    private CloudhubPlatformClient client;
+
+    private MuleMessageSnapshot lastSnapshot;
 
     private static final String MULE_MESSAGES_METRIC_NAME = "messageCount";
-    private static final ObjectMapper mapper = new ObjectMapper();
-    private static final Logger logger = LogManager.getLogger(CloudhubMuleMessageMetricPublisher.class);
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final Logger LOGGER = LogManager.getLogger(
+            CloudhubMuleMessageMetricPublisher.class);
+
+    @Configurable("false")
+    private boolean enabled;
+
+    @Configurable
+    private BufferConfiguration buffer;
 
     @Inject
     public CloudhubMuleMessageMetricPublisher() {
@@ -41,6 +56,12 @@ public class CloudhubMuleMessageMetricPublisher extends BufferedHandler<GroupedA
         this.enabledSwitch = enabledSwitch;
     }
 
+    protected CloudhubMuleMessageMetricPublisher(
+            CloudhubPlatformClient client) {
+        super();
+        this.client = client;
+    }
+
     @Override
     protected boolean canHandle(GroupedApplicationsMetrics message) {
         return true;
@@ -49,9 +70,11 @@ public class CloudhubMuleMessageMetricPublisher extends BufferedHandler<GroupedA
     @Override
     protected boolean flush(Collection<GroupedApplicationsMetrics> messages) {
         for (GroupedApplicationsMetrics gam : messages) {
-            Map<String, ApplicationMetrics> appsWithMetrics = gam.getMetricsByApplicationName();
+            Map<String, ApplicationMetrics> appsWithMetrics =
+                    gam.getMetricsByApplicationName();
             if (appsWithMetrics.size() > 1) {
-                logger.error("There is more than one app running: {}", appsWithMetrics.size());
+                LOGGER.error("There is more than one app running: {}",
+                        appsWithMetrics.size());
             }
             // there should be a single app only
             List<Metric> appMetrics = appsWithMetrics.entrySet().stream()
@@ -59,30 +82,36 @@ public class CloudhubMuleMessageMetricPublisher extends BufferedHandler<GroupedA
                                                      .getValue().getMetrics();
 
             Metric msgCountMetric = appMetrics.stream()
-                                              .filter(m -> MULE_MESSAGES_METRIC_NAME.equals(m.getName()))
+                                              .filter(m ->
+                                                      MULE_MESSAGES_METRIC_NAME.equals(m.getName()))
                                               .findAny().get();
             long messageCount = msgCountMetric.getValue().longValue();
             long timestamp = msgCountMetric.getTimestamp();
-            MuleMessageSnapshot mms = new MuleMessageSnapshot(messageCount, timestamp);
-            send(mms);
+            lastSnapshot = new MuleMessageSnapshot(messageCount, timestamp);
+            send(lastSnapshot);
         }
         return true;
     }
 
     private void send(MuleMessageSnapshot ms) {
-        String json = "";
+        String json;
         try {
-            json = mapper.writeValueAsString(ms);
+            json = MAPPER.writeValueAsString(ms);
         } catch (JsonProcessingException e) {
-            logger.error("Error converting to json", e);
+            LOGGER.error("Error converting to json", e);
+            throw new RuntimeException(e);
         }
-        CloudhubPlatformClient.getClient().sendMessagesStats(json);
+        client.sendMessagesStats(json);
+    }
+
+    protected MuleMessageSnapshot getLastSnapshot() {
+        return lastSnapshot;
     }
 
 
     protected static class MuleMessageSnapshot {
-        final long messageCount;
-        final long timestamp;
+        public final long messageCount;
+        public final long timestamp;
 
         MuleMessageSnapshot(long messageCount, long timestamp) {
             this.messageCount = messageCount;
