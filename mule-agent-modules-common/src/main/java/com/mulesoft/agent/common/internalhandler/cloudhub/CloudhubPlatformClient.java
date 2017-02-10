@@ -57,20 +57,28 @@ public class CloudhubPlatformClient {
         Preconditions.checkNotNull(AWS_INSTANCE_ID);
     }
 
-    public void sendMemoryStats(String rawEntity) {
-        doPost(rawEntity, STATS_MEMORY_PATH);
+    /**
+     * Triggers a POST that sends over memory statistics.
+     * @param body the request entity, must be in JSON format
+     */
+    public void sendMemoryStats(String body) {
+        doPost(body, STATS_MEMORY_PATH);
     }
 
-    public void sendMessagesStats(String rawEntity) {
-        doPost(rawEntity, STATS_MESSAGES_PATH);
+    /**
+     * Triggers a POST that sends over Mule messages statistics.
+     * @param body the request entity, must be in JSON format
+     */
+    public void sendMessagesStats(String body) {
+        doPost(body, STATS_MESSAGES_PATH);
     }
 
-    private void doPost(String rawEntity, String path) {
+    private void doPost(String body, String path) {
         String endpoint = String.format(path,
                 PLATFORM_HOST,
                 AWS_INSTANCE_ID);
         HttpPost req = new HttpPost(endpoint);
-        StringEntity entity = new StringEntity(rawEntity,
+        StringEntity entity = new StringEntity(body,
                 StandardCharsets.UTF_8);
 
         req.setHeader("Content-type", "application/json");
