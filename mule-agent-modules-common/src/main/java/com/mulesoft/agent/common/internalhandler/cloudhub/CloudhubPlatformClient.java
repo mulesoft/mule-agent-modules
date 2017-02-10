@@ -3,7 +3,8 @@ package com.mulesoft.agent.common.internalhandler.cloudhub;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.http.client.config.RequestConfig;
@@ -21,6 +22,7 @@ import com.google.common.base.Preconditions;
 /**
  * Simple HTTP client for talking to Cloudhub Platform services.
  */
+@Named
 @Singleton
 public class CloudhubPlatformClient {
 
@@ -43,7 +45,7 @@ public class CloudhubPlatformClient {
     private static final Logger LOGGER = LogManager.getLogger(
             CloudhubPlatformClient.class);
 
-    @PostConstruct
+    @Inject
     public void init() {
         RequestConfig requestConfig = RequestConfig.custom()
                                                    .setConnectTimeout(CONNECTION_TIMEOUT_MILLI)
