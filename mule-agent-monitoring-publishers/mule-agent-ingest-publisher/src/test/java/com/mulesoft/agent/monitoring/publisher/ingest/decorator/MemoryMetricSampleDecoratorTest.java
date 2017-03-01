@@ -1,8 +1,8 @@
-package com.mulesoft.agent.monitoring.publisher.model;
+package com.mulesoft.agent.monitoring.publisher.ingest.decorator;
 
 import com.mulesoft.agent.monitoring.publisher.ingest.model.DefaultMetricSample;
-import com.mulesoft.agent.monitoring.publisher.ingest.decorator.MemoryMetricSampleDecorator;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.MetricSample;
+import com.mulesoft.agent.monitoring.publisher.ingest.MetricSampleTestCases;
 import junit.framework.Assert;
 import org.junit.Test;
 
