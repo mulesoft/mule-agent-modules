@@ -1,4 +1,4 @@
-package com.mulesoft.agent.monitoring.publisher.model;
+package com.mulesoft.agent.monitoring.publisher.ingest;
 
 import com.google.common.collect.Lists;
 import com.mulesoft.agent.domain.monitoring.Metric;
@@ -6,16 +6,16 @@ import com.mulesoft.agent.domain.monitoring.Metric;
 import java.util.Date;
 import java.util.List;
 
-class MetricSampleTestCases {
+public class MetricSampleTestCases {
 
-    List<Metric> aCoupleOfNulls()
+    public List<Metric> aCoupleOfNulls()
     {
         return Lists.newArrayList(
                 metric(2d), null, metric(4.5d), metric(20d), metric(null)
         );
     }
 
-    List<Metric> complete()
+    public List<Metric> complete()
     {
         return Lists.newArrayList(
                 metric(2d), metric(4.5d), metric(20d)
