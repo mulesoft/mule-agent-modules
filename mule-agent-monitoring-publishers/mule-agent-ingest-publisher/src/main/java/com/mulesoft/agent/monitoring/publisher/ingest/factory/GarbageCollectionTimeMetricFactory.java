@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mulesoft.agent.domain.monitoring.Metric;
 import com.mulesoft.agent.domain.monitoring.SupportedJMXBean;
+import com.mulesoft.agent.monitoring.publisher.ingest.builder.IngestMetricBuilder;
 import com.mulesoft.agent.monitoring.publisher.ingest.decorator.PercentageMetricSampleDecorator;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.DefaultMetricSample;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.MetricClassification;
@@ -31,6 +32,15 @@ public class GarbageCollectionTimeMetricFactory extends TargetMetricFactory
      * Container of uptime last reads as jvm uptime is an accumulated metric. Thread safe.
      */
     private Map<SupportedJMXBean, Double> lastReadUptimeContainer = Maps.newConcurrentMap();
+
+    public GarbageCollectionTimeMetricFactory()
+    {
+    }
+
+    public GarbageCollectionTimeMetricFactory(IngestMetricBuilder metricBuilder)
+    {
+        super(metricBuilder);
+    }
 
     /**
      * {@inheritDoc}
