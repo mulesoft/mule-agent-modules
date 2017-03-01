@@ -1,6 +1,6 @@
-package com.mulesoft.agent.monitoring.publisher.model;
+package com.mulesoft.agent.monitoring.publisher.ingest.model;
 
-import com.mulesoft.agent.monitoring.publisher.ingest.model.DefaultMetricSample;
+import com.mulesoft.agent.monitoring.publisher.ingest.MetricSampleTestCases;
 import junit.framework.Assert;
 import org.junit.Test;
 
