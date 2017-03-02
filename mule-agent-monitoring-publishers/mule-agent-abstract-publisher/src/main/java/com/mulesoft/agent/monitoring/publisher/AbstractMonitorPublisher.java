@@ -17,12 +17,16 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 
+/**
+ * Abstract monitor publisher.
+ * @param <M> Message type.
+ */
 public abstract class AbstractMonitorPublisher<M> implements InternalMessageHandler<M>
 {
-    private final static Logger LOGGER = LogManager.getLogger(AbstractMonitorPublisher.class);
+    private static final Logger LOGGER = LogManager.getLogger(AbstractMonitorPublisher.class);
 
     @Configurable("true")
-    protected boolean enabled;
+    boolean enabled;
 
     @PostConfigure
     public void createSwitcher()
@@ -42,7 +46,7 @@ public abstract class AbstractMonitorPublisher<M> implements InternalMessageHand
         return enabledSwitch.isEnabled();
     }
 
-    protected OnOffSwitch enabledSwitch;
+    OnOffSwitch enabledSwitch;
 
     @Override
     public boolean handle(M metrics)

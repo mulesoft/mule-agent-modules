@@ -20,19 +20,23 @@ import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
 /**
  * <p>
  * Serializer that converts an {@link AgentTrackingNotification} to the JSON format supported by
- * the Analytics service
+ * the Analytics service.
  * </p>
  */
-public class AnalyticsEventSerializer extends JsonSerializer<AgentTrackingNotification> {
+public class AnalyticsEventSerializer extends JsonSerializer<AgentTrackingNotification>
+{
 
     @Override
-    public Class<AgentTrackingNotification> handledType() {
+    public Class<AgentTrackingNotification> handledType()
+    {
         return AgentTrackingNotification.class;
     }
 
     @Override
-    public void serialize(AgentTrackingNotification value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
-        try {
+    public void serialize(AgentTrackingNotification value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException
+    {
+        try
+        {
             AnalyticsEventType analyticsEventType = AnalyticsEventType.getAnalyticsEventType(value);
             jgen.writeStartObject();
             jgen.writeStringField("id", UUID.randomUUID().toString());
@@ -44,29 +48,37 @@ public class AnalyticsEventSerializer extends JsonSerializer<AgentTrackingNotifi
             jgen.writeStringField("path", value.getPath());
             jgen.writeFieldName("customProperties");
             jgen.writeStartObject();
-            if (value.getCustomEventProperties() != null) {
-                for (Map.Entry<String, String> property : value.getCustomEventProperties().entrySet()) {
+            if (value.getCustomEventProperties() != null)
+            {
+                for (Map.Entry<String, String> property : value.getCustomEventProperties().entrySet())
+                {
                     jgen.writeStringField(property.getKey(), property.getValue());
                 }
             }
             jgen.writeEndObject();
             jgen.writeFieldName("systemProperties");
             jgen.writeStartObject();
-            if (value.getNotificationType().equals("ExceptionNotification")) {
+            if (value.getNotificationType().equals("ExceptionNotification"))
+            {
                 jgen.writeStringField("EXCEPTION_DETAILS", value.getSource());
             }
-            if (value.getNotificationType().equals("ComponentNotification")) {
+            if (value.getNotificationType().equals("ComponentNotification"))
+            {
                 jgen.writeStringField("COMPONENT_CLASS", value.getSource());
             }
-            if (value.getCorrelationId() != null) {
+            if (value.getCorrelationId() != null)
+            {
                 jgen.writeStringField("MESSAGE_CORRELATION_ID", value.getCorrelationId());
             }
-            if (value.getTransactionId() != null) {
+            if (value.getTransactionId() != null)
+            {
                 jgen.writeStringField("CUSTOM_TRANSACTION_ID", value.getTransactionId());
             }
             jgen.writeEndObject();
             jgen.writeEndObject();
-        } catch (IOException e) {
+        }
+        catch (IOException e)
+        {
         }
     }
 }

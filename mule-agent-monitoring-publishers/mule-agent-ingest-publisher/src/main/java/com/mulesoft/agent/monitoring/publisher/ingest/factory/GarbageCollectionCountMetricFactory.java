@@ -1,5 +1,9 @@
 package com.mulesoft.agent.monitoring.publisher.ingest.factory;
 
+import java.util.List;
+import java.util.Map;
+import javax.inject.Named;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mulesoft.agent.domain.monitoring.Metric;
@@ -7,10 +11,6 @@ import com.mulesoft.agent.domain.monitoring.SupportedJMXBean;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.DefaultMetricSample;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.MetricClassification;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.MetricSample;
-
-import javax.inject.Named;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Factory that calculates the amount of times garbage collection was executed since last read.
@@ -72,5 +72,4 @@ public class GarbageCollectionCountMetricFactory extends TargetMetricFactory
     {
         return lastReadMetricContainer.get(bean);
     }
-
 }

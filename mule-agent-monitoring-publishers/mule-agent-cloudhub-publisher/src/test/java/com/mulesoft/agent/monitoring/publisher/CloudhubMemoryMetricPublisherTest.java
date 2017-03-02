@@ -1,20 +1,20 @@
 package com.mulesoft.agent.monitoring.publisher;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.junit.Test;
-import org.mockito.Mockito;
-
 import com.mulesoft.agent.domain.monitoring.Metric;
 import com.mulesoft.agent.domain.monitoring.SupportedJMXBean;
 import com.mulesoft.agent.monitoring.publisher.client.DefaultCloudhubPlatformClient;
 import com.mulesoft.agent.monitoring.publisher.factory.MemorySnapshotFactory;
+
+import org.junit.Test;
+import org.mockito.Mockito;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class CloudhubMemoryMetricPublisherTest {
 
@@ -25,18 +25,18 @@ public class CloudhubMemoryMetricPublisherTest {
     @Test
     public void testSendStats() {
         Mockito.doReturn(true)
-               .when(client).sendMemoryStats(Mockito.any());
+               .when(client).sendMemoryStats(Mockito.any(MemorySnapshotFactory.MemorySnapshot.class));
         Collection<List<Metric>> input = setup();
 
         assertTrue("Flush should complete", publisher.flush(input));
-        Mockito.verify(client).sendMemoryStats(Mockito.any());
+        Mockito.verify(client).sendMemoryStats(Mockito.any(MemorySnapshotFactory.MemorySnapshot.class));
     }
 
     @Test
     public void testSendStatsException() {
         Collection<List<Metric>> input = setup();
         Mockito.doThrow(new RuntimeException())
-               .when(client).sendMemoryStats(Mockito.any());
+               .when(client).sendMemoryStats(Mockito.any(MemorySnapshotFactory.MemorySnapshot.class));
 
         assertFalse("Flush should fail", publisher.flush(input));
     }

@@ -24,6 +24,9 @@ public class TCPTransportConfig extends AbstractSplunkConfig
         return "TCPTransportConfig{} " + super.toString();
     }
 
+    /**
+     * TCPTransportConfig builder.
+     */
     public static class Builder
     {
         private TCPTransportConfig config = new TCPTransportConfig();
@@ -32,8 +35,8 @@ public class TCPTransportConfig extends AbstractSplunkConfig
         {
             try
             {
-                config.setHost(internalHandler.host);
-                config.setPort(internalHandler.port);
+                config.setHost(internalHandler.getHost());
+                config.setPort(internalHandler.getPort());
             }
             catch (Exception ex)
             {

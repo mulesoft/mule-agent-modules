@@ -8,6 +8,8 @@ import com.mulesoft.agent.monitoring.publisher.ingest.model.MetricSample;
 public class PercentageMetricSampleDecorator extends MetricSampleDecorator
 {
 
+    private static final int PERCENTAGE = 100;
+
     public PercentageMetricSampleDecorator(MetricSample sample)
     {
         super(sample);
@@ -16,7 +18,7 @@ public class PercentageMetricSampleDecorator extends MetricSampleDecorator
     @Override
     protected Double processValue(Double value)
     {
-        return value * 100;
+        return value * PERCENTAGE;
     }
 
     @Override

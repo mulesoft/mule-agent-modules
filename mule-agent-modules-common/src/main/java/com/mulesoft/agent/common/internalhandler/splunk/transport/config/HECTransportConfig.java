@@ -36,27 +36,34 @@ public class HECTransportConfig extends HttpBasedSplunkConfig
     @Override
     public String toString()
     {
-        return "HECTransportConfig{" +
-                "token='" + token + '\'' +
-                "} " + super.toString();
+        return "HECTransportConfig{"
+                + "token='" + token + '\''
+                + "} " + super.toString();
     }
 
+    /**
+     * HecTransportConfig builder.
+     */
     public static class Builder
     {
         private HECTransportConfig config = new HECTransportConfig();
 
-        public Builder(AbstractSplunkInternalHandler internalHandler) throws AgentConfigurationException {
-            try {
-                config.setToken(internalHandler.token);
-                config.setHost(internalHandler.host);
-                config.setPort(internalHandler.port);
-                config.setScheme(HttpScheme.valueOf(internalHandler.scheme.toUpperCase()));
-                config.setSslSecurityProtocol(SSLSecurityProtocol.valueOf(internalHandler.sslSecurityProtocol));
-                config.setIndex(internalHandler.splunkIndexName);
-                config.setSource(internalHandler.splunkSource);
-                config.setSourceType(internalHandler.splunkSourceType);
-                config.setAcceptAnyCertificate(internalHandler.acceptAnyCertificate);
-            } catch (Exception ex) {
+        public Builder(AbstractSplunkInternalHandler internalHandler) throws AgentConfigurationException
+        {
+            try
+            {
+                config.setToken(internalHandler.getToken());
+                config.setHost(internalHandler.getHost());
+                config.setPort(internalHandler.getPort());
+                config.setScheme(HttpScheme.valueOf(internalHandler.getScheme().toUpperCase()));
+                config.setSslSecurityProtocol(SSLSecurityProtocol.valueOf(internalHandler.getSslSecurityProtocol()));
+                config.setIndex(internalHandler.getSplunkIndexName());
+                config.setSource(internalHandler.getSplunkSource());
+                config.setSourceType(internalHandler.getSplunkSourceType());
+                config.setAcceptAnyCertificate(internalHandler.getAcceptAnyCertificate());
+            }
+            catch (Exception ex)
+            {
                 throw new AgentConfigurationException("There was an error reading the Splunk Configuration.", ex);
             }
 
@@ -67,9 +74,10 @@ public class HECTransportConfig extends HttpBasedSplunkConfig
                     || StringUtils.isEmpty(this.config.getIndex())
                     || StringUtils.isEmpty(this.config.getSource())
                     || this.config.getAcceptAnyCertificate() == null
-                    || StringUtils.isEmpty(this.config.getSourceType())) {
-                throw new AgentConfigurationException("Please review configuration; " +
-                        "you must configure the following properties: token and host.");
+                    || StringUtils.isEmpty(this.config.getSourceType()))
+            {
+                throw new AgentConfigurationException("Please review configuration; "
+                        + "you must configure the following properties: token and host.");
             }
         }
 

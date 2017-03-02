@@ -7,18 +7,6 @@
 
 package com.mulesoft.agent.common.internalhandler.splunk.transport;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mulesoft.agent.common.internalhandler.splunk.transport.config.HECTransportConfig;
-import com.mulesoft.agent.handlers.exception.InitializationException;
-import com.ning.http.client.AsyncHttpClient;
-import com.ning.http.client.AsyncHttpClientConfig;
-import com.ning.http.client.Response;
-import org.apache.commons.lang.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -28,6 +16,18 @@ import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mulesoft.agent.common.internalhandler.splunk.transport.config.HECTransportConfig;
+import com.mulesoft.agent.handlers.exception.InitializationException;
+import com.ning.http.client.AsyncHttpClient;
+import com.ning.http.client.AsyncHttpClientConfig;
+import com.ning.http.client.Response;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * <p>
  * Transport which connects to Splunk using HTTP Event Collector for sending the events.
@@ -36,12 +36,13 @@ import java.util.concurrent.ExecutionException;
  *         created on 10/23/15
  * @see <a href="http://dev.splunk.com/view/event-collector/SP-CAAAE6M">Introduction to Splunk HTTP Event Collector</a>
  * </p>
+ * @param <T> Message type.
  */
 public class HECTransport<T> extends AbstractTransport<T>
 {
-    private final static Logger LOGGER = LogManager.getLogger(HECTransport.class);
-    private final static int CONNECTION_TIMEOUT = 10 * 1000; //10 sec of timeout
-    private final static String HEC_PATH = "/services/collector";
+    private static final Logger LOGGER = LogManager.getLogger(HECTransport.class);
+    private static final int CONNECTION_TIMEOUT = 10 * 1000; //10 sec of timeout
+    private static final String HEC_PATH = "/services/collector";
 
     private HECTransportConfig config;
     private String host;
@@ -144,6 +145,10 @@ public class HECTransport<T> extends AbstractTransport<T>
     {
     }
 
+    /**
+     * HEC Message definition.
+     * @param <T> Event type.
+     */
     static class HECMessage<T>
     {
         @JsonProperty("host")
@@ -157,7 +162,7 @@ public class HECTransport<T> extends AbstractTransport<T>
         @JsonProperty("event")
         private T event;
 
-        public HECMessage(T event, String source, String sourceType, String index, String host)
+        HECMessage(T event, String source, String sourceType, String index, String host)
         {
             this.event = event;
             this.source = source;
@@ -169,13 +174,13 @@ public class HECTransport<T> extends AbstractTransport<T>
         @Override
         public String toString()
         {
-            return "HECMessage{" +
-                    "host='" + host + '\'' +
-                    ", source='" + source + '\'' +
-                    ", sourceType='" + sourceType + '\'' +
-                    ", index='" + index + '\'' +
-                    ", event=" + event +
-                    '}';
+            return "HECMessage{"
+                    + "host='" + host + '\''
+                    + ", source='" + source + '\''
+                    + ", sourceType='" + sourceType + '\''
+                    + ", index='" + index + '\''
+                    + ", event=" + event
+                    + '}';
         }
     }
 }

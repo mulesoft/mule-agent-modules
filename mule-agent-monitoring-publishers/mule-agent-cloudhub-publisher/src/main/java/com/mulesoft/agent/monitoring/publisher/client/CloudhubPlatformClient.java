@@ -6,7 +6,8 @@ import com.mulesoft.agent.monitoring.publisher.factory.MuleMessageSnapshotFactor
 /**
  * HTTP client for talking to Cloudhub Platform services.
  */
-public interface CloudhubPlatformClient {
+public interface CloudhubPlatformClient
+{
 
     /**
      * Triggers a POST that sends over memory statistics.

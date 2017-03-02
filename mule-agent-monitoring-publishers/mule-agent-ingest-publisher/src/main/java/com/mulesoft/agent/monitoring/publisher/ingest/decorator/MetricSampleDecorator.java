@@ -1,8 +1,8 @@
 package com.mulesoft.agent.monitoring.publisher.ingest.decorator;
 
-import com.mulesoft.agent.monitoring.publisher.ingest.model.MetricSample;
-
 import java.util.Date;
+
+import com.mulesoft.agent.monitoring.publisher.ingest.model.MetricSample;
 
 /**
  * Basic metric sample decorator meant to be extended to convert the values of a MetricSample from one unit to another.
@@ -54,21 +54,24 @@ public abstract class MetricSampleDecorator implements MetricSample
     }
 
     @Override
-    public Date getDate() {
+    public Date getDate()
+    {
         return this.sample.getDate();
     }
 
     @Override
-    public Double getCount() {
+    public Double getCount()
+    {
         return this.sample.getCount();
     }
 
     @Override
     public String toString()
     {
-        return "MetricSampleDecorator{" +
-                "sample=" + sample +
-                '}';
+        return "MetricSampleDecorator{"
+                + "sample="
+                + sample
+                + '}';
     }
 
 }

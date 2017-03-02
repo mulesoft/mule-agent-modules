@@ -1,13 +1,14 @@
 package com.mulesoft.agent.eventtracking.log;
 
-import com.mulesoft.agent.AgentEnableOperationException;
-import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
-import org.junit.Ignore;
-import org.junit.Test;
-
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.mulesoft.agent.AgentEnableOperationException;
+import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
+
+import org.junit.Ignore;
+import org.junit.Test;
 
 @Ignore
 public class EventTrackingLogInternalHandlerTest
@@ -19,12 +20,12 @@ public class EventTrackingLogInternalHandlerTest
         EventTrackingLogInternalHandler handler = new EventTrackingLogInternalHandler();
         handler.fileName = System.getProperty("fileName");
         handler.filePattern = System.getProperty("filePattern");
-        handler.bufferSize = Integer.parseInt(System.getProperty("bufferSize"));
-        handler.immediateFlush = Boolean.parseBoolean(System.getProperty("immediateFlush"));
-        handler.daysTrigger = Integer.parseInt(System.getProperty("daysTrigger"));
-        handler.mbTrigger = Integer.parseInt(System.getProperty("mbTrigger"));
-        handler.enabled = Boolean.parseBoolean(System.getProperty("enabled"));
-        handler.dateFormatPattern = System.getProperty("dateFormatPattern");
+        handler.setBufferSize(Integer.parseInt(System.getProperty("bufferSize")));
+        handler.setImmediateFlush(Boolean.parseBoolean(System.getProperty("immediateFlush")));
+        handler.setDaysTrigger(Integer.parseInt(System.getProperty("daysTrigger")));
+        handler.setMbTrigger(Integer.parseInt(System.getProperty("mbTrigger")));
+        handler.setEnabled(Boolean.parseBoolean(System.getProperty("enabled")));
+        handler.setDateFormatPattern(System.getProperty("dateFormatPattern"));
         handler.postConfigurable();
 
         for (AgentTrackingNotification notification : createNotifications())

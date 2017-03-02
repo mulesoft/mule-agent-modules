@@ -7,15 +7,24 @@
 
 package com.mulesoft.agent.gw.http.db;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.mulesoft.agent.AgentEnableOperationException;
-import com.mulesoft.module.client.model.*;
+import com.mulesoft.module.client.model.HttpEvent;
+import com.mulesoft.module.client.model.HttpEventBuilder;
+import com.mulesoft.module.client.model.PolicyViolation;
+import com.mulesoft.module.client.model.PolicyViolationOutcome;
+import com.mulesoft.module.client.model.RequestDisposition;
+
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Ignore
 public class GatewayHttpEventsDBInternalHandlerTest
@@ -26,10 +35,10 @@ public class GatewayHttpEventsDBInternalHandlerTest
             throws SQLException, ClassNotFoundException, AgentEnableOperationException
     {
         GatewayHttpEventsDBInternalHandler handler = new GatewayHttpEventsDBInternalHandler();
-        handler.driver = System.getProperty("rdbms.mysql.driver");
-        handler.jdbcUrl = System.getProperty("rdbms.mysql.jdbcUrl");
-        handler.user = System.getProperty("rdbms.mysql.user");
-        handler.pass = System.getProperty("rdbms.mysql.pass");
+        handler.setDriver(System.getProperty("rdbms.mysql.driver"));
+        handler.setJdbcUrl(System.getProperty("rdbms.mysql.jdbcUrl"));
+        handler.setUser(System.getProperty("rdbms.mysql.user"));
+        handler.setPass(System.getProperty("rdbms.mysql.pass"));
         handler.apiAnalyticsTable = System.getProperty("rdbms.mysql.apiAnalyticsTable");
         handler.postConfigurable();
         handler.enable(true);
@@ -52,10 +61,10 @@ public class GatewayHttpEventsDBInternalHandlerTest
             throws SQLException, ClassNotFoundException, AgentEnableOperationException
     {
         GatewayHttpEventsDBInternalHandler handler = new GatewayHttpEventsDBInternalHandler();
-        handler.driver = System.getProperty("rdbms.oracle.driver");
-        handler.jdbcUrl = System.getProperty("rdbms.oracle.jdbcUrl");
-        handler.user = System.getProperty("rdbms.oracle.user");
-        handler.pass = System.getProperty("rdbms.oracle.pass");
+        handler.setDriver(System.getProperty("rdbms.oracle.driver"));
+        handler.setJdbcUrl(System.getProperty("rdbms.oracle.jdbcUrl"));
+        handler.setUser(System.getProperty("rdbms.oracle.user"));
+        handler.setPass(System.getProperty("rdbms.oracle.pass"));
         handler.apiAnalyticsTable = System.getProperty("rdbms.oracle.apiAnalyticsTable");
         handler.postConfigurable();
         handler.enable(true);
@@ -96,8 +105,8 @@ public class GatewayHttpEventsDBInternalHandlerTest
     private Connection getConnection(GatewayHttpEventsDBInternalHandler agent)
             throws ClassNotFoundException, SQLException
     {
-        Class.forName(agent.driver);
-        return DriverManager.getConnection(agent.jdbcUrl, agent.user, agent.pass);
+        Class.forName(agent.getDriver());
+        return DriverManager.getConnection(agent.getJdbcUrl(), agent.getUser(), agent.getPass());
     }
 
     private List<HttpEvent> createNotifications()

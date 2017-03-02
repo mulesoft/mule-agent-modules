@@ -12,6 +12,7 @@ import com.mulesoft.agent.AgentConfigurationException;
 /**
  * @author Walter Poch
  *         created on 10/28/15
+ * @param <T> Message type.
  */
 public interface TransportFactory<T>
 {

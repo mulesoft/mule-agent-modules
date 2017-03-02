@@ -14,7 +14,8 @@ import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
  * Representation of the event types supported by the Analytics service.
  * </p>
  */
-public enum AnalyticsEventType {
+public enum AnalyticsEventType
+{
 
     PROCESS_ASYNC_SCHEDULED("AsyncMessageNotification", "async process scheduled"),
     PROCESS_ASYNC_COMPLETE("AsyncMessageNotification", "async process complete"),
@@ -73,7 +74,8 @@ public enum AnalyticsEventType {
      * @param notificationType The type of notification represented by an event.
      * @param action The action represented by an event.
      */
-    AnalyticsEventType(String notificationType, String action) {
+    AnalyticsEventType(String notificationType, String action)
+    {
         this.notificationType = notificationType;
         this.action = action;
     }
@@ -85,12 +87,15 @@ public enum AnalyticsEventType {
      * @param notification The notfication to retrieve the type for.
      * @return The Analytics event type for the provided notification.
      */
-    public static AnalyticsEventType getAnalyticsEventType(AgentTrackingNotification notification) {
+    public static AnalyticsEventType getAnalyticsEventType(AgentTrackingNotification notification)
+    {
         String notificationType = notification.getNotificationType();
         String action = notification.getAction();
 
-        for (AnalyticsEventType type : AnalyticsEventType.values()) {
-            if (type.notificationType.equals(notificationType) && type.action.equals(action)) {
+        for (AnalyticsEventType type : AnalyticsEventType.values())
+        {
+            if (type.notificationType.equals(notificationType) && type.action.equals(action))
+            {
                 return type;
             }
         }

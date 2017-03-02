@@ -1,15 +1,19 @@
 package com.mulesoft.agent.monitoring.publisher.ingest.model.api;
 
+import java.util.Date;
+import javax.annotation.Generated;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import javax.annotation.Generated;
-import java.util.Date;
-
+/**
+ * Represents a generic ingest metric.
+ */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
@@ -42,8 +46,7 @@ public class IngestMetric
     private Double count;
 
     /**
-     * No args constructor for use in serialization
-     *
+     * No args constructor for use in serialization.
      */
     public IngestMetric()
     {
@@ -195,7 +198,7 @@ public class IngestMetric
         {
             return true;
         }
-        if ((other instanceof IngestMetric) == false)
+        if (!(other instanceof IngestMetric))
         {
             return false;
         }

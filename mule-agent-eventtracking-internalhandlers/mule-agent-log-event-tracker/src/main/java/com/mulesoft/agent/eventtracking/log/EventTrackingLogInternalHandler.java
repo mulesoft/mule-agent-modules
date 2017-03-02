@@ -1,14 +1,14 @@
 package com.mulesoft.agent.eventtracking.log;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import com.mulesoft.agent.common.internalhandler.AbstractLogInternalHandler;
 import com.mulesoft.agent.common.internalhandler.serializer.mixin.AgentTrackingNotificationMixin;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.Type;
 import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
 import com.mulesoft.agent.handlers.exception.InitializationException;
-
-import javax.inject.Named;
-import javax.inject.Singleton;
 
 /**
  * <p>
@@ -27,7 +27,7 @@ public class EventTrackingLogInternalHandler extends AbstractLogInternalHandler<
      * </p>
      */
     @Configurable(value = "$MULE_HOME/logs/events.log", type = Type.DYNAMIC)
-    public String fileName;
+    String fileName;
 
     /**
      * <p>
@@ -37,7 +37,7 @@ public class EventTrackingLogInternalHandler extends AbstractLogInternalHandler<
      * </p>
      */
     @Configurable(value = "$MULE_HOME/logs/events-%d{yyyy-dd-MM}-%i.log", type = Type.DYNAMIC)
-    public String filePattern;
+    String filePattern;
 
     @Override
     protected String getFileName()

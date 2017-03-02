@@ -5,6 +5,9 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import java.text.SimpleDateFormat;
 
+/**
+ * Factory for default object mapper configuration.
+ */
 public class DefaultObjectMapperFactory implements ObjectMapperFactory
 {
     private final String dateFormatPattern;

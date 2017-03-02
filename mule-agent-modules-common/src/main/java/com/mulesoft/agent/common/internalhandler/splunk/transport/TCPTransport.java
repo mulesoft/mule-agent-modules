@@ -24,13 +24,14 @@ import java.util.Collection;
  *     Transport which connects to Splunk using TCP for sending the events.
  *     @see <a href="http://dev.splunk.com/view/java-sdk/SP-CAAAEJ2#add2tcpinput">Splunk SDK - To add data directly to a TCP input</a>
  * </p>
+ * @param <T> Message type.
  * @author Walter Poch
  *         created on 10/23/15
  */
 public class TCPTransport<T> extends AbstractTransport<T>
 {
-    private final static Logger LOGGER = LogManager.getLogger(TCPTransport.class);
-    private final static int CONNECTION_TIMEOUT = 10 * 1000; //10 sec of timeout
+    private static final Logger LOGGER = LogManager.getLogger(TCPTransport.class);
+    private static final int CONNECTION_TIMEOUT = 10 * 1000; //10 sec of timeout
 
     private TCPTransportConfig config;
 
