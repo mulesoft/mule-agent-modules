@@ -1,19 +1,20 @@
 
 package com.mulesoft.agent.monitoring.publisher.ingest.model.api;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
-
-import javax.annotation.Generated;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.Generated;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * Represents the body of the post to publish application metrics to the monitoring ingest API.
@@ -45,8 +46,7 @@ public class IngestApplicationMetricPostBody
     private Map<String, IngestFlowMetrics> flows = new HashMap<String, IngestFlowMetrics>();
 
     /**
-     * No args constructor for use in serialization
-     *
+     * No args constructor for use in serialization.
      */
     public IngestApplicationMetricPostBody()
     {
@@ -54,10 +54,10 @@ public class IngestApplicationMetricPostBody
 
     /**
      *
-     * @param messageCount Samples for message count
-     * @param responseTime Samples for response time
-     * @param errorCount Samples for error count
-     * @param flows Flow metrics
+     * @param messageCount Samples for message count.
+     * @param responseTime Samples for response time.
+     * @param errorCount Samples for error count.
+     * @param flows Flow metrics.
      */
     public IngestApplicationMetricPostBody(Set<IngestMetric> messageCount,
                                            Set<IngestMetric> responseTime,
@@ -137,7 +137,7 @@ public class IngestApplicationMetricPostBody
         {
             return true;
         }
-        if ((other instanceof IngestApplicationMetricPostBody) == false)
+        if (!(other instanceof IngestApplicationMetricPostBody))
         {
             return false;
         }

@@ -51,11 +51,14 @@ public class RestTransportConfig extends HttpBasedSplunkConfig
     @Override
     public String toString()
     {
-        return "RestTransportConfig{" +
-                "user='" + user + '\'' +
-                "} " + super.toString();
+        return "RestTransportConfig{"
+                + "user='" + user + '\''
+                + "} " + super.toString();
     }
 
+    /**
+     * Rest transport builder.
+     */
     public static class Builder
     {
         private RestTransportConfig config = new RestTransportConfig();
@@ -64,15 +67,15 @@ public class RestTransportConfig extends HttpBasedSplunkConfig
         {
             try
             {
-                config.setUser(internalHandler.user);
-                config.setPass(internalHandler.pass);
-                config.setHost(internalHandler.host);
-                config.setPort(internalHandler.port);
-                config.setScheme(HttpScheme.valueOf(internalHandler.scheme.toUpperCase()));
-                config.setSslSecurityProtocol(SSLSecurityProtocol.valueOf(internalHandler.sslSecurityProtocol));
-                config.setIndex(internalHandler.splunkIndexName);
-                config.setSource(internalHandler.splunkSource);
-                config.setSourceType(internalHandler.splunkSourceType);
+                config.setUser(internalHandler.getUser());
+                config.setPass(internalHandler.getPass());
+                config.setHost(internalHandler.getHost());
+                config.setPort(internalHandler.getPort());
+                config.setScheme(HttpScheme.valueOf(internalHandler.getScheme().toUpperCase()));
+                config.setSslSecurityProtocol(SSLSecurityProtocol.valueOf(internalHandler.getSslSecurityProtocol()));
+                config.setIndex(internalHandler.getSplunkIndexName());
+                config.setSource(internalHandler.getSplunkSource());
+                config.setSourceType(internalHandler.getSplunkSourceType());
             }
             catch (Exception ex)
             {
@@ -88,8 +91,8 @@ public class RestTransportConfig extends HttpBasedSplunkConfig
                     || StringUtils.isEmpty(this.config.getSource())
                     || StringUtils.isEmpty(this.config.getSourceType()))
             {
-                throw new AgentConfigurationException("Please review configuration; " +
-                        "you must configure the following properties: user, pass and host.");
+                throw new AgentConfigurationException("Please review configuration; "
+                        + "you must configure the following properties: user, pass and host.");
             }
         }
 

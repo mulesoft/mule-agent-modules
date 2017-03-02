@@ -1,17 +1,22 @@
 package com.mulesoft.agent.eventtracking.db;
 
-import com.mulesoft.agent.AgentEnableOperationException;
-import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
-
 import java.lang.annotation.Annotation;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.mulesoft.agent.AgentEnableOperationException;
+import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
+
+import org.junit.Assert;
+import org.junit.Ignore;
+import org.junit.Test;
 
 @Ignore
 public class EventTrackingDBInternalHandlerTest
@@ -22,10 +27,10 @@ public class EventTrackingDBInternalHandlerTest
             throws SQLException, ClassNotFoundException, AgentEnableOperationException
     {
         EventTrackingDBInternalHandler handler = new EventTrackingDBInternalHandler();
-        handler.driver = System.getProperty("driver");
-        handler.jdbcUrl = System.getProperty("jdbcUrl");
-        handler.user = System.getProperty("user");
-        handler.pass = System.getProperty("pass");
+        handler.setDriver(System.getProperty("driver"));
+        handler.setJdbcUrl(System.getProperty("jdbcUrl"));
+        handler.setUser(System.getProperty("user"));
+        handler.setPass(System.getProperty("pass"));
         handler.eventsTable = System.getProperty("eventsTable");
         handler.annotationsTable = System.getProperty("annotationsTable");
         handler.businessTable = System.getProperty("businessTable");
@@ -68,11 +73,10 @@ public class EventTrackingDBInternalHandlerTest
         st.close();
     }
 
-    private Connection getConnection (EventTrackingDBInternalHandler agent)
-            throws ClassNotFoundException, SQLException
+    private Connection getConnection (EventTrackingDBInternalHandler agent) throws ClassNotFoundException, SQLException
     {
-        Class.forName(agent.driver);
-        return DriverManager.getConnection(agent.jdbcUrl, agent.user, agent.pass);
+        Class.forName(agent.getDriver());
+        return DriverManager.getConnection(agent.getJdbcUrl(), agent.getUser(), agent.getPass());
     }
 
     private List<AgentTrackingNotification> createNotifications ()

@@ -1,16 +1,17 @@
 package com.mulesoft.agent.monitoring.publisher.ingest.model.api;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+import javax.annotation.Generated;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
-
-import javax.annotation.Generated;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 /**
  * Represents the metrics of a Flow.
@@ -38,8 +39,7 @@ public class IngestFlowMetrics
     private Set<IngestMetric> errorCount = new LinkedHashSet<IngestMetric>();
 
     /**
-     * No args constructor for use in serialization
-     *
+     * No args constructor for use in serialization.
      */
     public IngestFlowMetrics()
     {
@@ -47,9 +47,9 @@ public class IngestFlowMetrics
 
     /**
      *
-     * @param messageCount Samples for message count
-     * @param responseTime Samples for response time
-     * @param errorCount Samples for error count
+     * @param messageCount Samples for message count.
+     * @param responseTime Samples for response time.
+     * @param errorCount Samples for error count.
      */
     public IngestFlowMetrics(Set<IngestMetric> messageCount, Set<IngestMetric> responseTime, Set<IngestMetric> errorCount)
     {
@@ -113,7 +113,7 @@ public class IngestFlowMetrics
         {
             return true;
         }
-        if ((other instanceof IngestFlowMetrics) == false)
+        if (!(other instanceof IngestFlowMetrics))
         {
             return false;
         }

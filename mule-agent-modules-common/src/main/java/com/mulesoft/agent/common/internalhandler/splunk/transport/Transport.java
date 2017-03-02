@@ -14,6 +14,7 @@ import java.util.Collection;
 /**
  * @author Walter Poch
  *         created on 10/23/15
+ * @param <T> Message type.
  */
 public interface Transport<T>
 {

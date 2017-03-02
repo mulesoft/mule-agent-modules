@@ -11,8 +11,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mulesoft.agent.common.internalhandler.splunk.transport.config.HttpScheme;
 import com.mulesoft.agent.common.internalhandler.splunk.transport.config.RestTransportConfig;
 import com.mulesoft.agent.handlers.exception.InitializationException;
-import com.splunk.*;
-import org.apache.logging.log4j.*;
+import com.splunk.Args;
+import com.splunk.Index;
+import com.splunk.SSLSecurityProtocol;
+import com.splunk.Service;
+import com.splunk.ServiceArgs;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -23,6 +27,7 @@ import java.util.Collection;
  * <p>
  * Transport which connects to the Splunk REST API for sending the events.
  *
+ * @param <T> Messages type.
  * @author Walter Poch
  *         created on 10/23/15
  * @see <a href="http://dev.splunk.com/view/java-sdk/SP-CAAAEJ2#add2index">Splunk SDK - To add data directly to an index</a>
@@ -30,13 +35,13 @@ import java.util.Collection;
  */
 public class RestTransport<T> extends AbstractTransport<T>
 {
-    private final static org.apache.logging.log4j.Logger LOGGER = LogManager.getLogger(RestTransport.class);
+    private static final org.apache.logging.log4j.Logger LOGGER = LogManager.getLogger(RestTransport.class);
 
     /**
      * http://dev.splunk.com/view/java-sdk/SP-CAAAECX
      * By default, the token is valid for one hour, but is refreshed every time you make a call to Splunk.
      */
-    private final int TOKEN_EXPIRATION_MS = 55 * 60 * 1000; // I use 55 minutes, instead of 60 as a safe net.
+    private static final int TOKEN_EXPIRATION_MS = 55 * 60 * 1000; // I use 55 minutes, instead of 60 as a safe net.
     private long lastConnection;
     private Service service;
     private Index index;

@@ -28,11 +28,16 @@ import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 
+/**
+ * Abstract log internal handler.
+ * @param <T> Message type.
+ */
 public abstract class AbstractLogInternalHandler<T> implements InitializableInternalMessageHandler<T>
 {
-    private final static Logger LOGGER = LogManager.getLogger(AbstractLogInternalHandler.class);
-    public static String MULE_HOME_PLACEHOLDER = "$MULE_HOME";
-    public static String PATTERN_LAYOUT = "%m%n";
+    private static final Logger LOGGER = LogManager.getLogger(AbstractLogInternalHandler.class);
+    public static final String MULE_HOME_PLACEHOLDER = "$MULE_HOME";
+    public static final String PATTERN_LAYOUT = "%m%n";
+    public static final int MB_CONVERSION_UNIT = 1024;
 
     private String className = this.getClass().getName();
     private String loggerName = className + "." + "logger";
@@ -44,8 +49,8 @@ public abstract class AbstractLogInternalHandler<T> implements InitializableInte
     private LoggerContext logContext;
     private ObjectMapper objectMapper;
 
-    protected org.apache.logging.log4j.core.Logger internalLogger;
-    protected OnOffSwitch enabledSwitch;
+    org.apache.logging.log4j.core.Logger internalLogger;
+    OnOffSwitch enabledSwitch;
 
     /**
      * <p>
@@ -54,7 +59,7 @@ public abstract class AbstractLogInternalHandler<T> implements InitializableInte
      * </p>
      */
     @Configurable(value = "false")
-    public boolean enabled;
+    private boolean enabled;
 
     /**
      * <p>
@@ -63,7 +68,7 @@ public abstract class AbstractLogInternalHandler<T> implements InitializableInte
      * </p>
      */
     @Configurable(value = "262144", type = Type.DYNAMIC)
-    public int bufferSize;
+    private int bufferSize;
 
     /**
      * <p>
@@ -73,7 +78,7 @@ public abstract class AbstractLogInternalHandler<T> implements InitializableInte
      * </p>
      */
     @Configurable(value = "true", type = Type.DYNAMIC)
-    public boolean immediateFlush;
+    private boolean immediateFlush;
 
     /**
      * <p>
@@ -82,7 +87,7 @@ public abstract class AbstractLogInternalHandler<T> implements InitializableInte
      * </p>
      */
     @Configurable(value = "1", type = Type.DYNAMIC)
-    public int daysTrigger;
+    private int daysTrigger;
 
     /**
      * <p>
@@ -91,7 +96,7 @@ public abstract class AbstractLogInternalHandler<T> implements InitializableInte
      * </p>
      */
     @Configurable(value = "100", type = Type.DYNAMIC)
-    public int mbTrigger;
+    private int mbTrigger;
 
     /**
      * <p>
@@ -100,7 +105,7 @@ public abstract class AbstractLogInternalHandler<T> implements InitializableInte
      * </p>
      */
     @Configurable(value = "yyyy-MM-dd'T'HH:mm:ss.SZ", type = Type.DYNAMIC)
-    public String dateFormatPattern;
+    private String dateFormatPattern;
 
     protected abstract String getFileName();
 
@@ -174,7 +179,7 @@ public abstract class AbstractLogInternalHandler<T> implements InitializableInte
                 withCharset(Charset.forName("UTF-8")).withAlwaysWriteExceptions(true).withNoConsoleNoAnsi(false).build();
 
             String dayTrigger = this.daysTrigger + "";
-            String sizeTrigger = (this.mbTrigger * 1024 * 1024) + "";
+            String sizeTrigger = (this.mbTrigger * MB_CONVERSION_UNIT * MB_CONVERSION_UNIT) + "";
             TimeBasedTriggeringPolicy timeBasedTriggeringPolicy = TimeBasedTriggeringPolicy.createPolicy(dayTrigger, "true");
             SizeBasedTriggeringPolicy sizeBasedTriggeringPolicy = SizeBasedTriggeringPolicy.createPolicy(sizeTrigger);
             CompositeTriggeringPolicy policy = CompositeTriggeringPolicy.createPolicy(timeBasedTriggeringPolicy, sizeBasedTriggeringPolicy);
@@ -203,5 +208,29 @@ public abstract class AbstractLogInternalHandler<T> implements InitializableInte
         this.objectMapper = new DefaultObjectMapperFactory(this.dateFormatPattern).create();
 
         LOGGER.debug("Successfully configured the Common Log Internal Handler.");
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public void setBufferSize(int bufferSize) {
+        this.bufferSize = bufferSize;
+    }
+
+    public void setImmediateFlush(boolean immediateFlush) {
+        this.immediateFlush = immediateFlush;
+    }
+
+    public void setDaysTrigger(int daysTrigger) {
+        this.daysTrigger = daysTrigger;
+    }
+
+    public void setMbTrigger(int mbTrigger) {
+        this.mbTrigger = mbTrigger;
+    }
+
+    public void setDateFormatPattern(String dateFormatPattern) {
+        this.dateFormatPattern = dateFormatPattern;
     }
 }

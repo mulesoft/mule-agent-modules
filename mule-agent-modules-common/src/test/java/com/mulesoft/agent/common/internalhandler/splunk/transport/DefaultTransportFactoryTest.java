@@ -22,9 +22,9 @@ public class DefaultTransportFactoryTest
     public void canCreateTcpTransport() throws AgentConfigurationException
     {
         AbstractSplunkInternalHandler internalHandler = new DummySplunkInternalHandler();
-        internalHandler.host = "127.0.0.1";
-        internalHandler.port = 8088;
-        internalHandler.scheme = "tcp";
+        internalHandler.setHost("127.0.0.1");
+        internalHandler.setPort(8088);
+        internalHandler.setScheme("tcp");
 
         Transport transport = new DefaultTransportFactory(internalHandler).create();
 
@@ -35,15 +35,15 @@ public class DefaultTransportFactoryTest
     public void canCreateRestTransport() throws AgentConfigurationException
     {
         AbstractSplunkInternalHandler internalHandler = new DummySplunkInternalHandler();
-        internalHandler.user = "testUser";
-        internalHandler.pass = "testPass";
-        internalHandler.host = "127.0.0.1";
-        internalHandler.port = 8089;
-        internalHandler.scheme = "https";
-        internalHandler.sslSecurityProtocol = "TLSv1_2";
-        internalHandler.splunkIndexName = "main";
-        internalHandler.splunkSource = "mule";
-        internalHandler.splunkSourceType = "mule";
+        internalHandler.setUser("testUser");
+        internalHandler.setPass("testPass");
+        internalHandler.setHost("127.0.0.1");
+        internalHandler.setPort(8089);
+        internalHandler.setScheme("https");
+        internalHandler.setSslSecurityProtocol("TLSv1_2");
+        internalHandler.setSplunkIndexName("main");
+        internalHandler.setSplunkSource("mule");
+        internalHandler.setSplunkSourceType("mule");
 
         Transport transport = new DefaultTransportFactory(internalHandler).create();
 
@@ -54,15 +54,15 @@ public class DefaultTransportFactoryTest
     public void canCreateHECTransport() throws AgentConfigurationException
     {
         AbstractSplunkInternalHandler internalHandler = new DummySplunkInternalHandler();
-        internalHandler.token = "testToken";
-        internalHandler.host = "127.0.0.1";
-        internalHandler.port = 8089;
-        internalHandler.scheme = "https";
-        internalHandler.sslSecurityProtocol = "TLSv1_2";
-        internalHandler.splunkIndexName = "main";
-        internalHandler.splunkSource = "mule";
-        internalHandler.splunkSourceType = "mule";
-        internalHandler.acceptAnyCertificate = true;
+        internalHandler.setToken("testToken");
+        internalHandler.setHost("127.0.0.1");
+        internalHandler.setPort(8089);
+        internalHandler.setScheme("https");
+        internalHandler.setSslSecurityProtocol("TLSv1_2");
+        internalHandler.setSplunkIndexName("main");
+        internalHandler.setSplunkSource("mule");
+        internalHandler.setSplunkSourceType("mule");
+        internalHandler.setAcceptAnyCertificate(true);
 
         Transport transport = new DefaultTransportFactory(internalHandler).create();
 

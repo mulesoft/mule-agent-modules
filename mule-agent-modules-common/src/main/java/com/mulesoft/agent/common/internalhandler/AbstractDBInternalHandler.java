@@ -1,5 +1,10 @@
 package com.mulesoft.agent.common.internalhandler;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Collection;
+
 import com.mulesoft.agent.buffer.BufferConfiguration;
 import com.mulesoft.agent.buffer.BufferExhaustedAction;
 import com.mulesoft.agent.buffer.BufferType;
@@ -8,18 +13,22 @@ import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.Password;
 import com.mulesoft.agent.configuration.Type;
 import com.mulesoft.agent.handlers.exception.InitializationException;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.Collection;
-
+/**
+ * Database internal handler.
+ * @param <T> Message type.
+ */
 public abstract class AbstractDBInternalHandler<T> extends BufferedHandler<T>
 {
-    private final static Logger LOGGER = LogManager.getLogger(AbstractDBInternalHandler.class);
+    private static final Logger LOGGER = LogManager.getLogger(AbstractDBInternalHandler.class);
+    private static final int DEFAULT_BUFFER_RETRY_COUNT = 3;
+    private static final long DEFAULT_BUFFER_FLUSH_FREQUENCY = 10000L;
+    private static final int DEFAULT_BUFFER_MAXIMUM_CAPACITY = 1000;
+    private static final boolean DEFAULT_BUFFER_DISCARD_MESSAGES_ON_FLUSH_FAILURE = false;
 
     /**
      * <p>
@@ -27,7 +36,7 @@ public abstract class AbstractDBInternalHandler<T> extends BufferedHandler<T>
      * </p>
      */
     @Configurable(type = Type.DYNAMIC)
-    public String driver;
+    String driver;
 
     /**
      * <p>
@@ -35,7 +44,7 @@ public abstract class AbstractDBInternalHandler<T> extends BufferedHandler<T>
      * </p>
      */
     @Configurable(type = Type.DYNAMIC)
-    public String jdbcUrl;
+    String jdbcUrl;
 
     /**
      * <p>
@@ -43,7 +52,7 @@ public abstract class AbstractDBInternalHandler<T> extends BufferedHandler<T>
      * </p>
      */
     @Configurable(type = Type.DYNAMIC)
-    public String user;
+    String user;
 
     /**
      * <p>
@@ -52,10 +61,10 @@ public abstract class AbstractDBInternalHandler<T> extends BufferedHandler<T>
      */
     @Password
     @Configurable(type = Type.DYNAMIC)
-    public String pass;
 
-    protected abstract void insert(Connection connection, Collection<T> messages)
-            throws SQLException;
+    String pass;
+
+    protected abstract void insert(Connection connection, Collection<T> messages) throws SQLException;
 
     @Override
     protected boolean canHandle(T message)
@@ -122,8 +131,8 @@ public abstract class AbstractDBInternalHandler<T> extends BufferedHandler<T>
         if (StringUtils.isEmpty(this.driver)
                 || StringUtils.isEmpty(this.jdbcUrl))
         {
-            throw new InitializationException("Please review configuration; " +
-                    "you must configure the following properties: driver and jdbcUrl.");
+            throw new InitializationException("Please review configuration; "
+                    + "you must configure the following properties: driver and jdbcUrl.");
         }
 
         try
@@ -132,8 +141,8 @@ public abstract class AbstractDBInternalHandler<T> extends BufferedHandler<T>
         }
         catch (ClassNotFoundException e)
         {
-            throw new InitializationException(String.format("Couldn't load the database driver '%s'. " +
-                    "Did you copy the JAR driver to the {MULE_HOME}/plugins/mule-agent-plugin/lib?", driver), e);
+            throw new InitializationException(String.format("Couldn't load the database driver '%s'. "
+                    + "Did you copy the JAR driver to the {MULE_HOME}/plugins/mule-agent-plugin/lib?", driver), e);
         }
 
         try
@@ -144,8 +153,8 @@ public abstract class AbstractDBInternalHandler<T> extends BufferedHandler<T>
         }
         catch (SQLException e)
         {
-            throw new InitializationException("There was an error on the connection to the DataBase. " +
-                    "Please review your agent configuration.", e);
+            throw new InitializationException("There was an error on the connection to the DataBase. "
+                    + "Please review your agent configuration.", e);
         }
 
         LOGGER.debug("Successfully configured the Common DB Internal Handler.");
@@ -163,12 +172,44 @@ public abstract class AbstractDBInternalHandler<T> extends BufferedHandler<T>
         {
             BufferConfiguration defaultBuffer = new BufferConfiguration();
             defaultBuffer.setType(BufferType.MEMORY);
-            defaultBuffer.setRetryCount(3);
-            defaultBuffer.setFlushFrequency(10000l);
-            defaultBuffer.setMaximumCapacity(1000);
-            defaultBuffer.setDiscardMessagesOnFlushFailure(false);
+            defaultBuffer.setRetryCount(DEFAULT_BUFFER_RETRY_COUNT);
+            defaultBuffer.setFlushFrequency(DEFAULT_BUFFER_FLUSH_FREQUENCY);
+            defaultBuffer.setMaximumCapacity(DEFAULT_BUFFER_MAXIMUM_CAPACITY);
+            defaultBuffer.setDiscardMessagesOnFlushFailure(DEFAULT_BUFFER_DISCARD_MESSAGES_ON_FLUSH_FAILURE);
             defaultBuffer.setWhenExhausted(BufferExhaustedAction.FLUSH);
             return defaultBuffer;
         }
+    }
+
+    public String getDriver() {
+        return driver;
+    }
+
+    public void setDriver(String driver) {
+        this.driver = driver;
+    }
+
+    public String getJdbcUrl() {
+        return jdbcUrl;
+    }
+
+    public void setJdbcUrl(String jdbcUrl) {
+        this.jdbcUrl = jdbcUrl;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
+
+    public String getPass() {
+        return pass;
+    }
+
+    public void setPass(String pass) {
+        this.pass = pass;
     }
 }

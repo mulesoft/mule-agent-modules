@@ -37,12 +37,13 @@ import org.apache.logging.log4j.Logger;
  *         created on 10/23/15
  * @see <a href="http://dev.splunk.com/view/event-collector/SP-CAAAE6M">Introduction to Splunk HTTP Event Collector</a>
  * </p>
+ * @param <T> Message type.
  */
 public class HECTransport<T> extends AbstractTransport<T>
 {
-    private final static Logger LOGGER = LogManager.getLogger(HECTransport.class);
-    private final static int CONNECTION_TIMEOUT = 10 * 1000; //10 sec of timeout
-    private final static String HEC_PATH = "/services/collector";
+    private static final Logger LOGGER = LogManager.getLogger(HECTransport.class);
+    private static final int CONNECTION_TIMEOUT = 10 * 1000; //10 sec of timeout
+    private static final String HEC_PATH = "/services/collector";
 
     private HECTransportConfig config;
     private String host;
@@ -145,6 +146,10 @@ public class HECTransport<T> extends AbstractTransport<T>
     {
     }
 
+    /**
+     * HEC Message definition.
+     * @param <T> Event type.
+     */
     static class HECMessage<T>
     {
         @JsonProperty("host")
@@ -158,7 +163,7 @@ public class HECTransport<T> extends AbstractTransport<T>
         @JsonProperty("event")
         private T event;
 
-        public HECMessage(T event, String source, String sourceType, String index, String host)
+        HECMessage(T event, String source, String sourceType, String index, String host)
         {
             this.event = event;
             this.source = source;
@@ -170,13 +175,13 @@ public class HECTransport<T> extends AbstractTransport<T>
         @Override
         public String toString()
         {
-            return "HECMessage{" +
-                    "host='" + host + '\'' +
-                    ", source='" + source + '\'' +
-                    ", sourceType='" + sourceType + '\'' +
-                    ", index='" + index + '\'' +
-                    ", event=" + event +
-                    '}';
+            return "HECMessage{"
+                    + "host='" + host + '\''
+                    + ", source='" + source + '\''
+                    + ", sourceType='" + sourceType + '\''
+                    + ", index='" + index + '\''
+                    + ", event=" + event
+                    + '}';
         }
     }
 }

@@ -8,11 +8,6 @@
 
 package com.mulesoft.agent.monitoring.publisher;
 
-import com.mulesoft.agent.buffer.BufferedHandler;
-import com.mulesoft.agent.configuration.Configurable;
-import com.mulesoft.agent.domain.monitoring.Metric;
-import com.mulesoft.agent.services.OnOffSwitch;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -20,11 +15,15 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.Collection;
 import java.util.List;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.validation.constraints.NotNull;
+
+import com.mulesoft.agent.buffer.BufferedHandler;
+import com.mulesoft.agent.configuration.Configurable;
+import com.mulesoft.agent.domain.monitoring.Metric;
+import com.mulesoft.agent.services.OnOffSwitch;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -39,12 +38,19 @@ import org.apache.logging.log4j.Logger;
 @Singleton
 public class ZabbixMonitorPublisher extends BufferedHandler<List<Metric>>
 {
-    private final static Logger LOGGER = LogManager.getLogger(ZabbixMonitorPublisher.class);
+    private static final Logger LOGGER = LogManager.getLogger(ZabbixMonitorPublisher.class);
 
     private static final String MESSAGE_START = "{\"request\":\"sender data\",\"data\":[{\"host\":\"";
     private static final String MESSAGE_MIDDLE_LEFT = "\",\"key\":\"";
     private static final String MESSAGE_MIDDLE_RIGHT = "\",\"value\":\"";
     private static final String MESSAGE_END = "\"}]}\n";
+    public static final int SHIFT_TWO = 8;
+    public static final int SHIFT_FOUR = 16;
+    public static final int SHIFT_SIX = 24;
+    public static final int BITMASK = 0xFF;
+    public static final int SHIFT_TWO_BITMASK = 0x00FF;
+    public static final int SHIFT_FOUR_BITMASK = 0x0000FF;
+    public static final int SHIFT_SIX_BITMASK = 0x000000FF;
 
     /**
      * <p>
@@ -83,7 +89,8 @@ public class ZabbixMonitorPublisher extends BufferedHandler<List<Metric>>
     }
 
     @Override
-    public boolean canHandle(@NotNull List<Metric> metrics) {
+    public boolean canHandle(@NotNull List<Metric> metrics)
+    {
         return true;
     }
 
@@ -118,10 +125,10 @@ public class ZabbixMonitorPublisher extends BufferedHandler<List<Metric>>
                     out.write(new byte[]{
                             'Z', 'B', 'X', 'D',
                             '\1',
-                            (byte) (length & 0xFF),
-                            (byte) ((length >> 8) & 0x00FF),
-                            (byte) ((length >> 16) & 0x0000FF),
-                            (byte) ((length >> 24) & 0x000000FF),
+                            (byte) (length & BITMASK),
+                            (byte) ((length >> SHIFT_TWO) & SHIFT_TWO_BITMASK),
+                            (byte) ((length >> SHIFT_FOUR) & SHIFT_FOUR_BITMASK),
+                            (byte) ((length >> SHIFT_SIX) & SHIFT_SIX_BITMASK),
                             '\0', '\0', '\0', '\0'});
 
 
@@ -138,7 +145,8 @@ public class ZabbixMonitorPublisher extends BufferedHandler<List<Metric>>
         {
             LOGGER.warn("Failed to establish connection to Zabbix", e);
             return false;
-        } finally
+        }
+        finally
         {
             try
             {

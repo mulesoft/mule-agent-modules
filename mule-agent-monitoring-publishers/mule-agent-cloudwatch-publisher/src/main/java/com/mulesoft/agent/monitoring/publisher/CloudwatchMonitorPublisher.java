@@ -8,6 +8,15 @@
 
 package com.mulesoft.agent.monitoring.publisher;
 
+import java.util.Collection;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+import javax.validation.constraints.NotNull;
+
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.cloudwatch.AmazonCloudWatchAsyncClient;
@@ -18,16 +27,6 @@ import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.domain.monitoring.Metric;
 import com.mulesoft.agent.services.OnOffSwitch;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-import javax.validation.constraints.NotNull;
-
 /**
  * <p>
  * Handler that publishes JMX information obtained from the Monitoring Service to CloudWatch.
@@ -37,11 +36,9 @@ import javax.validation.constraints.NotNull;
 @Singleton
 public class CloudwatchMonitorPublisher extends BufferedHandler<List<Metric>>
 {
-    // TODO: Implement configurable Internal Handler in the API
-
     /**
      * <p>
-     * Namespace of the metrics as defined in CloudWatch
+     * Namespace of the metrics as defined in CloudWatch.
      * </p>
      */
     @Configurable("com.mulesoft.agent")
@@ -49,7 +46,7 @@ public class CloudwatchMonitorPublisher extends BufferedHandler<List<Metric>>
 
     /**
      * <p>
-     * Access Key used for CloudWatch authentication
+     * Access Key used for CloudWatch authentication.
      * </p>
      */
     @Configurable("missingAccessKey")
@@ -57,7 +54,7 @@ public class CloudwatchMonitorPublisher extends BufferedHandler<List<Metric>>
 
     /**
      * <p>
-     * Secret Key used for CloudWatch authentication
+     * Secret Key used for CloudWatch authentication.
      * </p>
      */
     @Configurable("missingSecretKey")
@@ -87,7 +84,8 @@ public class CloudwatchMonitorPublisher extends BufferedHandler<List<Metric>>
         AWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
         AmazonCloudWatchAsyncClient cloudWatchClient = new AmazonCloudWatchAsyncClient(credentials);
 
-        for (List<Metric> metrics : listOfMetrics) {
+        for (List<Metric> metrics : listOfMetrics)
+        {
             List<MetricDatum> cloudWatchMetrics = transformMetrics(metrics);
             PutMetricDataRequest putMetricDataRequest = new PutMetricDataRequest();
             putMetricDataRequest.setMetricData(cloudWatchMetrics);
@@ -100,10 +98,10 @@ public class CloudwatchMonitorPublisher extends BufferedHandler<List<Metric>>
 
     /**
      * <p>
-     * Transforms the metrics from the Metric domain object o the MetricDatum type used by the AWS sdk
+     * Transforms the metrics from the Metric domain object o the MetricDatum type used by the AWS SDK.
      * </p>
-     * @param metrics The list of Metric objects
-     * @return The converted list of MetricDatum objects
+     * @param metrics The list of Metric objects.
+     * @return The converted list of MetricDatum objects.
      */
     private static List<MetricDatum> transformMetrics(List<Metric> metrics)
     {

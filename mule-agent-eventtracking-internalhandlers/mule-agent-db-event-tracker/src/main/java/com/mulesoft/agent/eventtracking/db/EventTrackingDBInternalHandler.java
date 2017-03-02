@@ -30,7 +30,7 @@ import org.apache.logging.log4j.Logger;
 public class EventTrackingDBInternalHandler extends AbstractDBInternalHandler<AgentTrackingNotification>
 {
 
-    private final static Logger LOGGER = LogManager.getLogger(EventTrackingDBInternalHandler.class);
+    private static final Logger LOGGER = LogManager.getLogger(EventTrackingDBInternalHandler.class);
 
     /**
      * <p>
@@ -39,7 +39,7 @@ public class EventTrackingDBInternalHandler extends AbstractDBInternalHandler<Ag
      * </p>
      */
     @Configurable("MULE_EVENTS")
-    public String eventsTable;
+    String eventsTable;
 
     /**
      * <p>
@@ -48,7 +48,7 @@ public class EventTrackingDBInternalHandler extends AbstractDBInternalHandler<Ag
      * </p>
      */
     @Configurable("MULE_EVENTS_ANNOTATIONS")
-    public String annotationsTable;
+    String annotationsTable;
 
     /**
      * <p>
@@ -57,18 +57,18 @@ public class EventTrackingDBInternalHandler extends AbstractDBInternalHandler<Ag
      * </p>
      */
     @Configurable("MULE_EVENTS_BUSINESS")
-    public String businessTable;
+    String businessTable;
 
     @Override
-    protected void insert (Connection connection, Collection<AgentTrackingNotification> notifications)
+    protected void insert(Connection connection, Collection<AgentTrackingNotification> notifications)
             throws SQLException
     {
-        PreparedStatement eventInsert = connection.prepareStatement(String.format("INSERT INTO %s (id, action, application, mule_message, mule_message_id, notification_type, path, resource_identifier, timestamp, source) " +
-                "VALUES (?,?,?,?,?,?,?,?,?,?)", eventsTable));
-        PreparedStatement annotationsInsert = connection.prepareStatement(String.format("INSERT INTO %s (id, event_id, annotation_type, annotation_value) " +
-                "VALUES (?,?,?,?)", annotationsTable));
-        PreparedStatement businessInsert = connection.prepareStatement(String.format("INSERT INTO %s (id, event_id, business_key, business_value) " +
-                "VALUES (?,?,?,?)", businessTable));
+        PreparedStatement eventInsert = connection.prepareStatement(String.format("INSERT INTO %s (id, action, application, mule_message, mule_message_id, notification_type, path, resource_identifier, timestamp, source) "
+                + "VALUES (?,?,?,?,?,?,?,?,?,?)", eventsTable));
+        PreparedStatement annotationsInsert = connection.prepareStatement(String.format("INSERT INTO %s (id, event_id, annotation_type, annotation_value) "
+                + "VALUES (?,?,?,?)", annotationsTable));
+        PreparedStatement businessInsert = connection.prepareStatement(String.format("INSERT INTO %s (id, event_id, business_key, business_value) "
+                + "VALUES (?,?,?,?)", businessTable));
 
         for (AgentTrackingNotification notification : notifications)
         {
@@ -84,27 +84,28 @@ public class EventTrackingDBInternalHandler extends AbstractDBInternalHandler<Ag
         businessInsert.executeBatch();
     }
 
-    private UUID insertEvent (PreparedStatement statement, AgentTrackingNotification notification)
+    private UUID insertEvent(PreparedStatement statement, AgentTrackingNotification notification)
             throws SQLException
     {
         UUID id = Generators.timeBasedGenerator().generate();
 
-        statement.setString(1, id.toString());
-        statement.setString(2, notification.getAction());
-        statement.setString(3, notification.getApplication());
-        statement.setString(4, notification.getMuleMessage());
-        statement.setString(5, notification.getNotificationType());
-        statement.setString(6, notification.getPath());
-        statement.setString(7, notification.getResourceIdentifier());
-        statement.setLong(8, notification.getTimestamp());
-        statement.setString(9, notification.getSource());
+        int parameterIndex = 1;
+        statement.setString(parameterIndex++, id.toString());
+        statement.setString(parameterIndex++, notification.getAction());
+        statement.setString(parameterIndex++, notification.getApplication());
+        statement.setString(parameterIndex++, notification.getMuleMessage());
+        statement.setString(parameterIndex++, notification.getNotificationType());
+        statement.setString(parameterIndex++, notification.getPath());
+        statement.setString(parameterIndex++, notification.getResourceIdentifier());
+        statement.setLong(parameterIndex++, notification.getTimestamp());
+        statement.setString(parameterIndex, notification.getSource());
 
         statement.addBatch();
 
         return id;
     }
 
-    private void insertAnnotations (PreparedStatement statement, UUID eventId, List<Annotation> annotations)
+    private void insertAnnotations(PreparedStatement statement, UUID eventId, List<Annotation> annotations)
             throws SQLException
     {
         if (annotations == null)
@@ -114,16 +115,17 @@ public class EventTrackingDBInternalHandler extends AbstractDBInternalHandler<Ag
 
         for (Annotation annotation : annotations)
         {
-            statement.setString(1, Generators.timeBasedGenerator().generate().toString());
-            statement.setString(2, eventId.toString());
-            statement.setString(3, annotation.annotationType().toString());
-            statement.setString(4, annotation.toString());
+            int parameterIndex = 1;
+            statement.setString(parameterIndex++, Generators.timeBasedGenerator().generate().toString());
+            statement.setString(parameterIndex++, eventId.toString());
+            statement.setString(parameterIndex++, annotation.annotationType().toString());
+            statement.setString(parameterIndex, annotation.toString());
 
             statement.addBatch();
         }
     }
 
-    private void insertBusinessEvents (PreparedStatement statement, UUID eventId, Map<String, String> businessEvents)
+    private void insertBusinessEvents(PreparedStatement statement, UUID eventId, Map<String, String> businessEvents)
             throws SQLException
     {
         if (businessEvents == null)
@@ -133,10 +135,11 @@ public class EventTrackingDBInternalHandler extends AbstractDBInternalHandler<Ag
 
         for (String key : businessEvents.keySet())
         {
-            statement.setString(1, Generators.timeBasedGenerator().generate().toString());
-            statement.setString(2, eventId.toString());
-            statement.setString(3, key);
-            statement.setString(4, businessEvents.get(key));
+            int parameterIndex = 1;
+            statement.setString(parameterIndex++, Generators.timeBasedGenerator().generate().toString());
+            statement.setString(parameterIndex++, eventId.toString());
+            statement.setString(parameterIndex++, key);
+            statement.setString(parameterIndex, businessEvents.get(key));
 
             statement.addBatch();
         }

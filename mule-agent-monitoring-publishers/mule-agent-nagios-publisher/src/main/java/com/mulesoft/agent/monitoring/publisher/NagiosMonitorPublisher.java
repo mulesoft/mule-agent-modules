@@ -8,9 +8,13 @@
 
 package com.mulesoft.agent.monitoring.publisher;
 
-import com.mulesoft.agent.buffer.BufferedHandler;
-import com.mulesoft.agent.configuration.Configurable;
-import com.mulesoft.agent.domain.monitoring.Metric;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+import javax.validation.constraints.NotNull;
 
 import com.googlecode.jsendnsca.Level;
 import com.googlecode.jsendnsca.MessagePayload;
@@ -20,17 +24,11 @@ import com.googlecode.jsendnsca.NagiosSettings;
 import com.googlecode.jsendnsca.builders.MessagePayloadBuilder;
 import com.googlecode.jsendnsca.builders.NagiosSettingsBuilder;
 import com.googlecode.jsendnsca.encryption.Encryption;
-
-import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-import javax.validation.constraints.NotNull;
-
+import com.mulesoft.agent.buffer.BufferedHandler;
+import com.mulesoft.agent.configuration.Configurable;
+import com.mulesoft.agent.domain.monitoring.Metric;
 import com.mulesoft.agent.services.OnOffSwitch;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -44,7 +42,7 @@ import org.apache.logging.log4j.Logger;
 @Singleton
 public class NagiosMonitorPublisher extends BufferedHandler<List<Metric>>
 {
-    private final static Logger LOGGER = LogManager.getLogger(NagiosMonitorPublisher.class);
+    private static final Logger LOGGER = LogManager.getLogger(NagiosMonitorPublisher.class);
 
     @Configurable("com.mulesoft.agent")
     String host;
@@ -84,8 +82,14 @@ public class NagiosMonitorPublisher extends BufferedHandler<List<Metric>>
     {
         Encryption encryption = Encryption.NONE;
 
-        if ("xor".equalsIgnoreCase(this.encryptionMethod)) encryption = Encryption.XOR;
-        if ("triple_des".equalsIgnoreCase(this.encryptionMethod)) encryption = Encryption.TRIPLE_DES;
+        if ("xor".equalsIgnoreCase(this.encryptionMethod))
+        {
+            encryption = Encryption.XOR;
+        }
+        if ("triple_des".equalsIgnoreCase(this.encryptionMethod))
+        {
+            encryption = Encryption.TRIPLE_DES;
+        }
 
         NagiosSettings settings = new NagiosSettingsBuilder()
                 .withNagiosHost(this.nagiosServer)

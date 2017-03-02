@@ -8,17 +8,6 @@
 
 package com.mulesoft.agent.monitoring.publisher;
 
-import com.mulesoft.agent.buffer.BufferedHandler;
-import com.mulesoft.agent.configuration.Configurable;
-import com.mulesoft.agent.domain.monitoring.Metric;
-import com.mulesoft.agent.services.OnOffSwitch;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-import javax.validation.constraints.NotNull;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -26,6 +15,18 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.Collection;
 import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+import javax.validation.constraints.NotNull;
+
+import com.mulesoft.agent.buffer.BufferedHandler;
+import com.mulesoft.agent.configuration.Configurable;
+import com.mulesoft.agent.domain.monitoring.Metric;
+import com.mulesoft.agent.services.OnOffSwitch;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * <p>
@@ -37,7 +38,12 @@ import java.util.List;
 @Singleton
 public class GraphiteMonitorPublisher extends BufferedHandler<List<Metric>>
 {
-    private final static Logger LOGGER = LogManager.getLogger(GraphiteMonitorPublisher.class);
+    private static final Logger LOGGER = LogManager.getLogger(GraphiteMonitorPublisher.class);
+
+    /**
+     * Constant to convert milliseconds to seconds.
+     */
+    private static final long MILLIS_TO_SECS = 1000L;
 
     /**
      * <p>
@@ -104,7 +110,7 @@ public class GraphiteMonitorPublisher extends BufferedHandler<List<Metric>>
                     message.append(" ");
                     message.append(metric.getValue());
                     message.append(" ");
-                    message.append((int) (metric.getTimestamp() / 1000L));
+                    message.append((int) (metric.getTimestamp() / MILLIS_TO_SECS));
                     message.append("\n");
 
                     out = new OutputStreamWriter(graphiteConnection.getOutputStream());
@@ -141,7 +147,8 @@ public class GraphiteMonitorPublisher extends BufferedHandler<List<Metric>>
                 {
                     graphiteConnection.close();
                 }
-            } catch (IOException e)
+            }
+            catch (IOException e)
             {
 
             }

@@ -9,17 +9,18 @@
 
 package com.mulesoft.agent.monitoring.publisher.ingest.factory;
 
+import java.util.List;
+import javax.inject.Inject;
+
 import com.google.common.base.Preconditions;
 import com.mulesoft.agent.domain.monitoring.SupportedJMXBean;
 import com.mulesoft.agent.monitoring.publisher.ingest.builder.IngestMetricBuilder;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.MetricClassification;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.MetricSample;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.api.IngestMetric;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import javax.inject.Inject;
-import java.util.List;
 
 /**
  * Abstract IngestMetric factory, meant to resolve an IngestMetric from a MetricClassification and a SupportedJMXBean.
@@ -33,7 +34,7 @@ public abstract class TargetMetricFactory
      * Ingest metric builder.
      */
     @Inject
-    protected IngestMetricBuilder metricBuilder;
+    IngestMetricBuilder metricBuilder;
 
     /**
      * Evaluates the given JMX bean to resolve whether this instance is meant to be used on a metric collected from it.

@@ -4,6 +4,9 @@ import com.fasterxml.jackson.core.SerializableString;
 import com.fasterxml.jackson.core.io.CharacterEscapes;
 import com.fasterxml.jackson.core.io.SerializedString;
 
+/**
+ * Custom character escapes.
+ */
 public class CustomCharacterEscapes extends CharacterEscapes
 {
     private final int[] asciiEscapes;

@@ -1,12 +1,12 @@
 package com.mulesoft.agent.gw.http.log;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import com.mulesoft.agent.common.internalhandler.AbstractLogInternalHandler;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.Type;
 import com.mulesoft.module.client.model.HttpEvent;
-
-import javax.inject.Named;
-import javax.inject.Singleton;
 
 /**
  * <p>
@@ -25,7 +25,7 @@ public class GatewayHttpEventsLogInternalHandler extends AbstractLogInternalHand
      * </p>
      */
     @Configurable(value = "$MULE_HOME/logs/gw-http-events.log", type = Type.DYNAMIC)
-    public String fileName;
+    String fileName;
 
     /**
      * <p>
@@ -35,7 +35,7 @@ public class GatewayHttpEventsLogInternalHandler extends AbstractLogInternalHand
      * </p>
      */
     @Configurable(value = "$MULE_HOME/logs/gw-http-events-%d{yyyy-dd-MM}-%i.log", type = Type.DYNAMIC)
-    public String filePattern;
+    String filePattern;
 
     @Override
     protected String getFileName()

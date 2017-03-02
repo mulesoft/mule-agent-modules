@@ -8,14 +8,18 @@
 
 package com.mulesoft.agent.monitoring.publisher.ingest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
-import com.mulesoft.agent.AgentEnableOperationException;
 import com.mulesoft.agent.configuration.NotAvailableOn;
-import com.mulesoft.agent.configuration.PostConfigure;
 import com.mulesoft.agent.domain.monitoring.Metric;
 import com.mulesoft.agent.domain.monitoring.SupportedJMXBean;
 import com.mulesoft.agent.handlers.exception.InitializationException;
@@ -23,18 +27,11 @@ import com.mulesoft.agent.monitoring.publisher.ingest.factory.TargetMetricFactor
 import com.mulesoft.agent.monitoring.publisher.ingest.model.JMXMetricFieldMapping;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.MetricClassification;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.api.IngestMetric;
-import com.mulesoft.agent.services.OnOffSwitch;
 import com.ning.http.client.Response;
+
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import javax.inject.Named;
-import javax.inject.Singleton;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import static com.mulesoft.agent.domain.RuntimeEnvironment.ON_PREM;
 import static com.mulesoft.agent.domain.RuntimeEnvironment.STANDALONE;
@@ -50,7 +47,7 @@ import static com.mulesoft.agent.domain.RuntimeEnvironment.STANDALONE;
 public class IngestTargetMonitorPublisher extends IngestMonitorPublisher<List<Metric>>
 {
 
-    private final static Logger LOGGER = LogManager.getLogger(IngestTargetMonitorPublisher.class);
+    private static final Logger LOGGER = LogManager.getLogger(IngestTargetMonitorPublisher.class);
 
     /**
      * All instances of TargetMetricFactory.

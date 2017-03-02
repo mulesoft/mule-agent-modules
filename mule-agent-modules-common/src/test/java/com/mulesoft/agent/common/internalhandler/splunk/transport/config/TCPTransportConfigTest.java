@@ -24,21 +24,20 @@ public class TCPTransportConfigTest
     public void canCreateACorrectConfig() throws AgentConfigurationException
     {
         AbstractSplunkInternalHandler internalHandler = new DummySplunkInternalHandler();
-        internalHandler.host = "127.0.0.1";
-        internalHandler.port = 8089;
+        internalHandler.setHost("127.0.0.1");
+        internalHandler.setPort(8089);
 
         TCPTransportConfig config = new TCPTransportConfig.Builder(internalHandler).build();
 
-        assertEquals(internalHandler.host, config.getHost());
-        assertEquals(internalHandler.port, config.getPort());
+        assertEquals(internalHandler.getHost(), config.getHost());
+        assertEquals(internalHandler.getPort(), config.getPort());
     }
 
     @Test(expected = AgentConfigurationException.class)
     public void exceptionThrowIfNoHostIsProvided() throws AgentConfigurationException
     {
         AbstractSplunkInternalHandler internalHandler = new DummySplunkInternalHandler();
-        //internalHandler.host = "127.0.0.1";
-        internalHandler.port = 8089;
+        internalHandler.setPort(8089);
 
         new TCPTransportConfig.Builder(internalHandler).build();
     }
@@ -47,8 +46,7 @@ public class TCPTransportConfigTest
     public void exceptionThrowIfNoPortIsProvided() throws AgentConfigurationException
     {
         AbstractSplunkInternalHandler internalHandler = new DummySplunkInternalHandler();
-        internalHandler.host = "127.0.0.1";
-        //internalHandler.port = 8089;
+        internalHandler.setHost("127.0.0.1");
 
         new TCPTransportConfig.Builder(internalHandler).build();
     }

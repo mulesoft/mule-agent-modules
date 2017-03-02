@@ -25,34 +25,34 @@ public class RestTransportConfigTest
     public void canCreateACorrectConfig() throws AgentConfigurationException
     {
         AbstractSplunkInternalHandler internalHandler = new DummySplunkInternalHandler();
-        internalHandler.user = "testUser";
-        internalHandler.pass = "testPass";
-        internalHandler.host = "127.0.0.1";
-        internalHandler.port = 8089;
-        internalHandler.scheme = "https";
-        internalHandler.sslSecurityProtocol = "TLSv1_2";
-        internalHandler.splunkIndexName = "main";
-        internalHandler.splunkSource = "mule";
-        internalHandler.splunkSourceType = "mule";
+        internalHandler.setUser("testUser");
+        internalHandler.setPass("testPass");
+        internalHandler.setHost("127.0.0.1");
+        internalHandler.setPort(8089);
+        internalHandler.setScheme("https");
+        internalHandler.setSslSecurityProtocol("TLSv1_2");
+        internalHandler.setSplunkIndexName("main");
+        internalHandler.setSplunkSource("mule");
+        internalHandler.setSplunkSourceType("mule");
 
         RestTransportConfig config = new RestTransportConfig.Builder(internalHandler).build();
 
-        assertEquals(internalHandler.user, config.getUser());
-        assertEquals(internalHandler.pass, config.getPass());
-        assertEquals(internalHandler.host, config.getHost());
-        assertEquals(internalHandler.port, config.getPort());
-        assertEquals(internalHandler.scheme, config.getScheme().getValue());
-        assertEquals(SSLSecurityProtocol.valueOf(internalHandler.sslSecurityProtocol), config.getSslSecurityProtocol());
-        assertEquals(internalHandler.splunkIndexName, config.getIndex());
-        assertEquals(internalHandler.splunkSource, config.getSource());
-        assertEquals(internalHandler.splunkSourceType, config.getSourceType());
+        assertEquals(internalHandler.getUser(), config.getUser());
+        assertEquals(internalHandler.getPass(), config.getPass());
+        assertEquals(internalHandler.getHost(), config.getHost());
+        assertEquals(internalHandler.getPort(), config.getPort());
+        assertEquals(internalHandler.getScheme(), config.getScheme().getValue());
+        assertEquals(SSLSecurityProtocol.valueOf(internalHandler.getSslSecurityProtocol()), config.getSslSecurityProtocol());
+        assertEquals(internalHandler.getSplunkIndexName(), config.getIndex());
+        assertEquals(internalHandler.getSplunkSource(), config.getSource());
+        assertEquals(internalHandler.getSplunkSourceType(), config.getSourceType());
     }
 
     @Test(expected = AgentConfigurationException.class)
     public void exceptionThrowIfAConfigurationErrorIsFound() throws AgentConfigurationException
     {
         AbstractSplunkInternalHandler internalHandler = new DummySplunkInternalHandler();
-        internalHandler.scheme = "htt";
+        internalHandler.setScheme("htt");
 
         new RestTransportConfig.Builder(internalHandler).build();
     }
@@ -61,15 +61,14 @@ public class RestTransportConfigTest
     public void exceptionThrowIfNoHostIsProvided() throws AgentConfigurationException
     {
         AbstractSplunkInternalHandler internalHandler = new DummySplunkInternalHandler();
-        internalHandler.user = "testUser";
-        internalHandler.pass = "testPass";
-        //internalHandler.host = "127.0.0.1";
-        internalHandler.port = 8089;
-        internalHandler.scheme = "https";
-        internalHandler.sslSecurityProtocol = "TLSv1_2";
-        internalHandler.splunkIndexName = "main";
-        internalHandler.splunkSource = "mule";
-        internalHandler.splunkSourceType = "mule";
+        internalHandler.setUser("testUser");
+        internalHandler.setPass("testPass");
+        internalHandler.setPort(8089);
+        internalHandler.setScheme("https");
+        internalHandler.setSslSecurityProtocol("TLSv1_2");
+        internalHandler.setSplunkIndexName("main");
+        internalHandler.setSplunkSource("mule");
+        internalHandler.setSplunkSourceType("mule");
 
         new RestTransportConfig.Builder(internalHandler).build();
     }
@@ -78,15 +77,14 @@ public class RestTransportConfigTest
     public void exceptionThrowIfNoPassIsProvided() throws AgentConfigurationException
     {
         AbstractSplunkInternalHandler internalHandler = new DummySplunkInternalHandler();
-        internalHandler.user = "testUser";
-        //internalHandler.pass = "testPass";
-        internalHandler.host = "127.0.0.1";
-        internalHandler.port = 8089;
-        internalHandler.scheme = "https";
-        internalHandler.sslSecurityProtocol = "TLSv1_2";
-        internalHandler.splunkIndexName = "main";
-        internalHandler.splunkSource = "mule";
-        internalHandler.splunkSourceType = "mule";
+        internalHandler.setUser("testUser");
+        internalHandler.setHost("127.0.0.1");
+        internalHandler.setPort(8089);
+        internalHandler.setScheme("https");
+        internalHandler.setSslSecurityProtocol("TLSv1_2");
+        internalHandler.setSplunkIndexName("main");
+        internalHandler.setSplunkSource("mule");
+        internalHandler.setSplunkSourceType("mule");
 
         new RestTransportConfig.Builder(internalHandler).build();
     }
@@ -95,15 +93,14 @@ public class RestTransportConfigTest
     public void exceptionThrowIfNoUserIsProvided() throws AgentConfigurationException
     {
         AbstractSplunkInternalHandler internalHandler = new DummySplunkInternalHandler();
-        //internalHandler.user = "testUser";
-        internalHandler.pass = "testPass";
-        internalHandler.host = "127.0.0.1";
-        internalHandler.port = 8089;
-        internalHandler.scheme = "https";
-        internalHandler.sslSecurityProtocol = "TLSv1_2";
-        internalHandler.splunkIndexName = "main";
-        internalHandler.splunkSource = "mule";
-        internalHandler.splunkSourceType = "mule";
+        internalHandler.setPass("testPass");
+        internalHandler.setHost("127.0.0.1");
+        internalHandler.setPort(8089);
+        internalHandler.setScheme("https");
+        internalHandler.setSslSecurityProtocol("TLSv1_2");
+        internalHandler.setSplunkIndexName("main");
+        internalHandler.setSplunkSource("mule");
+        internalHandler.setSplunkSourceType("mule");
 
         new RestTransportConfig.Builder(internalHandler).build();
     }
@@ -112,15 +109,14 @@ public class RestTransportConfigTest
     public void exceptionThrowIfNoPortIsProvided() throws AgentConfigurationException
     {
         AbstractSplunkInternalHandler internalHandler = new DummySplunkInternalHandler();
-        internalHandler.user = "testUser";
-        internalHandler.pass = "testPass";
-        internalHandler.host = "127.0.0.1";
-        //internalHandler.port = 8089;
-        internalHandler.scheme = "https";
-        internalHandler.sslSecurityProtocol = "TLSv1_2";
-        internalHandler.splunkIndexName = "main";
-        internalHandler.splunkSource = "mule";
-        internalHandler.splunkSourceType = "mule";
+        internalHandler.setUser("testUser");
+        internalHandler.setPass("testPass");
+        internalHandler.setHost("127.0.0.1");
+        internalHandler.setScheme("https");
+        internalHandler.setSslSecurityProtocol("TLSv1_2");
+        internalHandler.setSplunkIndexName("main");
+        internalHandler.setSplunkSource("mule");
+        internalHandler.setSplunkSourceType("mule");
 
         new RestTransportConfig.Builder(internalHandler).build();
     }
@@ -129,15 +125,14 @@ public class RestTransportConfigTest
     public void exceptionThrowIfNoSchemeIsProvided() throws AgentConfigurationException
     {
         AbstractSplunkInternalHandler internalHandler = new DummySplunkInternalHandler();
-        internalHandler.user = "testUser";
-        internalHandler.pass = "testPass";
-        internalHandler.host = "127.0.0.1";
-        internalHandler.port = 8089;
-        //internalHandler.scheme = "https";
-        internalHandler.sslSecurityProtocol = "TLSv1_2";
-        internalHandler.splunkIndexName = "main";
-        internalHandler.splunkSource = "mule";
-        internalHandler.splunkSourceType = "mule";
+        internalHandler.setUser("testUser");
+        internalHandler.setPass("testPass");
+        internalHandler.setHost("127.0.0.1");
+        internalHandler.setPort(8089);
+        internalHandler.setSslSecurityProtocol("TLSv1_2");
+        internalHandler.setSplunkIndexName("main");
+        internalHandler.setSplunkSource("mule");
+        internalHandler.setSplunkSourceType("mule");
 
         new RestTransportConfig.Builder(internalHandler).build();
     }
@@ -146,15 +141,14 @@ public class RestTransportConfigTest
     public void exceptionThrowIfNoSslSecurityProtocolIsProvided() throws AgentConfigurationException
     {
         AbstractSplunkInternalHandler internalHandler = new DummySplunkInternalHandler();
-        internalHandler.user = "testUser";
-        internalHandler.pass = "testPass";
-        internalHandler.host = "127.0.0.1";
-        internalHandler.port = 8089;
-        internalHandler.scheme = "https";
-        //internalHandler.sslSecurityProtocol = "TLSv1_2";
-        internalHandler.splunkIndexName = "main";
-        internalHandler.splunkSource = "mule";
-        internalHandler.splunkSourceType = "mule";
+        internalHandler.setUser("testUser");
+        internalHandler.setPass("testPass");
+        internalHandler.setHost("127.0.0.1");
+        internalHandler.setPort(8089);
+        internalHandler.setScheme("https");
+        internalHandler.setSplunkIndexName("main");
+        internalHandler.setSplunkSource("mule");
+        internalHandler.setSplunkSourceType("mule");
 
         new RestTransportConfig.Builder(internalHandler).build();
     }
@@ -163,15 +157,14 @@ public class RestTransportConfigTest
     public void exceptionThrowIfNoIndexIsProvided() throws AgentConfigurationException
     {
         AbstractSplunkInternalHandler internalHandler = new DummySplunkInternalHandler();
-        internalHandler.user = "testUser";
-        internalHandler.pass = "testPass";
-        internalHandler.host = "127.0.0.1";
-        internalHandler.port = 8089;
-        internalHandler.scheme = "https";
-        internalHandler.sslSecurityProtocol = "TLSv1_2";
-        //internalHandler.splunkIndexName = "main";
-        internalHandler.splunkSource = "mule";
-        internalHandler.splunkSourceType = "mule";
+        internalHandler.setUser("testUser");
+        internalHandler.setPass("testPass");
+        internalHandler.setHost("127.0.0.1");
+        internalHandler.setPort(8089);
+        internalHandler.setScheme("https");
+        internalHandler.setSslSecurityProtocol("TLSv1_2");
+        internalHandler.setSplunkSource("mule");
+        internalHandler.setSplunkSourceType("mule");
 
         new RestTransportConfig.Builder(internalHandler).build();
     }
@@ -180,15 +173,14 @@ public class RestTransportConfigTest
     public void exceptionThrowIfNoSourceIsProvided() throws AgentConfigurationException
     {
         AbstractSplunkInternalHandler internalHandler = new DummySplunkInternalHandler();
-        internalHandler.user = "testUser";
-        internalHandler.pass = "testPass";
-        internalHandler.host = "127.0.0.1";
-        internalHandler.port = 8089;
-        internalHandler.scheme = "https";
-        internalHandler.sslSecurityProtocol = "TLSv1_2";
-        internalHandler.splunkIndexName = "main";
-        //internalHandler.splunkSource = "mule";
-        internalHandler.splunkSourceType = "mule";
+        internalHandler.setUser("testUser");
+        internalHandler.setPass("testPass");
+        internalHandler.setHost("127.0.0.1");
+        internalHandler.setPort(8089);
+        internalHandler.setScheme("https");
+        internalHandler.setSslSecurityProtocol("TLSv1_2");
+        internalHandler.setSplunkIndexName("main");
+        internalHandler.setSplunkSourceType("mule");
 
         new RestTransportConfig.Builder(internalHandler).build();
     }
@@ -197,15 +189,14 @@ public class RestTransportConfigTest
     public void exceptionThrowIfNoSourceTypeIsProvided() throws AgentConfigurationException
     {
         AbstractSplunkInternalHandler internalHandler = new DummySplunkInternalHandler();
-        internalHandler.user = "testUser";
-        internalHandler.pass = "testPass";
-        internalHandler.host = "127.0.0.1";
-        internalHandler.port = 8089;
-        internalHandler.scheme = "https";
-        internalHandler.sslSecurityProtocol = "TLSv1_2";
-        internalHandler.splunkIndexName = "main";
-        internalHandler.splunkSource = "mule";
-        //internalHandler.splunkSourceType = "mule";
+        internalHandler.setUser("testUser");
+        internalHandler.setPass("testPass");
+        internalHandler.setHost("127.0.0.1");
+        internalHandler.setPort(8089);
+        internalHandler.setScheme("https");
+        internalHandler.setSslSecurityProtocol("TLSv1_2");
+        internalHandler.setSplunkIndexName("main");
+        internalHandler.setSplunkSource("mule");
 
         new RestTransportConfig.Builder(internalHandler).build();
     }
