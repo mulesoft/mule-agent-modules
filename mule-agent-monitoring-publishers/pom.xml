@@ -18,6 +18,7 @@
         <module>mule-agent-zabbix-publisher</module>
         <module>mule-agent-nagios-publisher</module>
         <module>mule-agent-ingest-publisher</module>
+        <module>mule-agent-cloudhub-publisher</module>
     </modules>
 
     <properties>
