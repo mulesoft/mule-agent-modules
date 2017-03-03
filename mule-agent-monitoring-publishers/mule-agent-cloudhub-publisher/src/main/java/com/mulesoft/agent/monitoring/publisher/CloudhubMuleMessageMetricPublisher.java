@@ -1,5 +1,12 @@
 package com.mulesoft.agent.monitoring.publisher;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import com.mulesoft.agent.AgentEnableOperationException;
 import com.mulesoft.agent.buffer.BufferedHandler;
 import com.mulesoft.agent.configuration.Configurable;
@@ -10,17 +17,10 @@ import com.mulesoft.agent.domain.monitoring.Metric;
 import com.mulesoft.agent.monitoring.publisher.client.CloudhubPlatformClient;
 import com.mulesoft.agent.monitoring.publisher.factory.MuleMessageSnapshotFactory;
 import com.mulesoft.agent.services.OnOffSwitch;
+
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  * Handler that publishes Mule messages count to CloudHub.
@@ -47,8 +47,7 @@ public class CloudhubMuleMessageMetricPublisher
     {
     }
 
-    protected CloudhubMuleMessageMetricPublisher(
-            CloudhubPlatformClient client, MuleMessageSnapshotFactory factory)
+    protected CloudhubMuleMessageMetricPublisher(CloudhubPlatformClient client, MuleMessageSnapshotFactory factory)
     {
         super();
         this.cloudhubClient = client;
@@ -78,8 +77,7 @@ public class CloudhubMuleMessageMetricPublisher
         {
             for (GroupedApplicationsMetrics gam : messages)
             {
-                Map<String, ApplicationMetrics> appsWithMetrics =
-                        gam.getMetricsByApplicationName();
+                Map<String, ApplicationMetrics> appsWithMetrics = gam.getMetricsByApplicationName();
 
                 if (appsWithMetrics.size() == 0)
                 {
@@ -88,36 +86,36 @@ public class CloudhubMuleMessageMetricPublisher
                 }
                 if (appsWithMetrics.size() > 1)
                 {
-                    throw new RuntimeException(String.format("There is more than one app running: %s",
-                            appsWithMetrics.size()));
+                    throw new RuntimeException(String.format("There is more than one app running: %s", appsWithMetrics.size()));
                 }
 
                 List<Metric> appMetrics = appsWithMetrics.entrySet()
                         .iterator().next()
                         .getValue().getMetrics();
 
-                Optional<Metric> msgCountMetric = appMetrics.stream()
-                        .filter(m ->
-                                MULE_MESSAGES_METRIC_NAME.equals(m.getName()))
-                        .findAny();
-                if (!msgCountMetric.isPresent())
+                Metric msgCountMetric = null;
+                for (Metric metric : appMetrics)
                 {
-                    LOGGER.info(String.format("No %s metric found",
-                            MULE_MESSAGES_METRIC_NAME));
+                    if (MULE_MESSAGES_METRIC_NAME.equals(metric.getName()))
+                    {
+                        msgCountMetric = metric;
+                    }
+                }
+                if (msgCountMetric == null)
+                {
+                    LOGGER.info(String.format("No %s metric found", MULE_MESSAGES_METRIC_NAME));
                     continue;
                 }
-                long messageCount = msgCountMetric.get().getValue().longValue();
-                long timestamp = msgCountMetric.get().getTimestamp();
+                long messageCount = msgCountMetric.getValue().longValue();
+                long timestamp = msgCountMetric.getTimestamp();
 
-                success = cloudhubClient.sendMessagesStats(
-                        factory.newSnapshot(messageCount, timestamp));
+                success = cloudhubClient.sendMessagesStats(factory.newSnapshot(messageCount, timestamp));
             }
             return success;
         }
         catch (Exception e)
         {
-            LOGGER.error("Error flushing memory metrics to CloudHub: {}",
-                    ExceptionUtils.getRootCauseMessage(e));
+            LOGGER.error("Error flushing memory metrics to CloudHub: {}", ExceptionUtils.getRootCauseMessage(e));
             LOGGER.debug(e);
             return success;
         }

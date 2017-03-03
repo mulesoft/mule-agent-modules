@@ -1,5 +1,11 @@
 package com.mulesoft.agent.monitoring.publisher;
 
+import java.util.Collection;
+import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import com.mulesoft.agent.AgentEnableOperationException;
 import com.mulesoft.agent.buffer.BufferedHandler;
 import com.mulesoft.agent.configuration.Configurable;
@@ -9,16 +15,10 @@ import com.mulesoft.agent.domain.monitoring.SupportedJMXBean;
 import com.mulesoft.agent.monitoring.publisher.client.CloudhubPlatformClient;
 import com.mulesoft.agent.monitoring.publisher.factory.MemorySnapshotFactory;
 import com.mulesoft.agent.services.OnOffSwitch;
+
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
 
 /**
  * Handler that publishes JMX memory information to CloudHub.
@@ -75,42 +75,47 @@ public class CloudhubMemoryMetricPublisher
         {
             for (List<Metric> sample : collection)
             {
-                Optional<Metric> memoryTotalMetric = sample.stream()
-                        .filter(m ->
-                                SupportedJMXBean.HEAP_TOTAL.getMetricName().equals(m.getName()))
-                        .findAny();
-                if (!memoryTotalMetric.isPresent())
+                Metric memoryTotalMetric = null;
+                for (Metric metric : sample)
                 {
-                    LOGGER.info(String.format("No %s metric found",
-                            SupportedJMXBean.HEAP_TOTAL.getMetricName()));
+                    if (SupportedJMXBean.HEAP_TOTAL.getMetricName().equals(metric.getName()))
+                    {
+                        memoryTotalMetric = metric;
+                    }
+                }
+
+                if (memoryTotalMetric == null)
+                {
+                    LOGGER.info(String.format("No %s metric found", SupportedJMXBean.HEAP_TOTAL.getMetricName()));
                     continue;
                 }
-                Metric metric = memoryTotalMetric.get();
-                long memoryTotal = metric.getValue().longValue();
-                long timestamp = metric.getTimestamp();
 
-                Optional<Metric> memoryUsedMetric = sample.stream()
-                        .filter(m ->
-                                SupportedJMXBean.HEAP_USAGE.getMetricName().equals(m.getName()))
-                        .findAny();
-                if (!memoryUsedMetric.isPresent())
+                long memoryTotal = memoryTotalMetric.getValue().longValue();
+                long timestamp = memoryTotalMetric.getTimestamp();
+
+                Metric memoryUsedMetric = null;
+                for (Metric metric : sample)
                 {
-                    LOGGER.info(String.format("No %s metric found",
-                            SupportedJMXBean.HEAP_USAGE.getMetricName()));
+                    if (SupportedJMXBean.HEAP_USAGE.getMetricName().equals(metric.getName()))
+                    {
+                        memoryUsedMetric = metric;
+                    }
+                }
+
+                if (memoryUsedMetric == null)
+                {
+                    LOGGER.info(String.format("No %s metric found", SupportedJMXBean.HEAP_USAGE.getMetricName()));
                     continue;
                 }
-                long memoryUsed = memoryUsedMetric.get()
-                        .getValue().longValue();
+                long memoryUsed = memoryUsedMetric.getValue().longValue();
 
-                success = cloudhubClient.sendMemoryStats(
-                        factory.newSnapshot(memoryTotal, memoryUsed, timestamp));
+                success = cloudhubClient.sendMemoryStats(factory.newSnapshot(memoryTotal, memoryUsed, timestamp));
             }
             return success;
         }
         catch (Exception e)
         {
-            LOGGER.error("Error flushing memory metrics to CloudHub: {}",
-                    ExceptionUtils.getRootCauseMessage(e));
+            LOGGER.error("Error flushing memory metrics to CloudHub: {}", ExceptionUtils.getRootCauseMessage(e));
             LOGGER.debug(e);
             return success;
         }
