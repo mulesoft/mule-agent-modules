@@ -1,0 +1,73 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "schema of the list of event tracking notifications",
+  "type": "object",
+  "properties": {
+    "source": {
+      "type": "string"
+    },
+    "data": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "application": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "notificationType": {
+            "type": "string"
+          },
+          "pipelineType": {
+            "type": ["string", "null"]
+          },
+          "action": {
+            "type": "string"
+          },
+          "resourceIdentifier": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "muleMessage": {
+            "type": "string"
+          },
+          "path": {
+            "type": ["string", "null"]
+          },
+          "annotations": {
+            "type": ["array", "null"]
+          },
+          "muleMessageId": {
+            "type": ["string", "null"]
+          },
+          "rootMuleMessageId": {
+            "type": "string"
+          },
+          "muleEventId": {
+            "type": ["string", "null"]
+          },
+          "correlationId": {
+            "type": ["string", "null"]
+          },
+          "transactionId": {
+            "type": ["string", "null"]
+          },
+          "customEventProperties": {
+            "type": ["object", "null"],
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          },
+          "customEventName": {
+            "type": ["string", "null"]
+          }
+        }
+      }
+    }
+  },
+  "required": [ "source", "data" ]
+}

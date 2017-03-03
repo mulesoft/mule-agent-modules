@@ -1,0 +1,24 @@
+{
+  "source":"mule",
+  "data":[
+    {
+      "application":"app1",
+      "notificationType":"EndpointMessageNotification",
+      "pipelineType":null,
+      "action":"receive",
+      "resourceIdentifier":"1",
+      "source":"http://localhost:8082",
+      "muleMessage":"/hola",
+      "path":null,
+      "annotations":null,
+      "muleMessageId":"99f5fbf0-ec81-11e6-96c7-a45e60db6b95",
+      "rootMuleMessageId":"99f5fbf0-ec81-11e6-96c7-a45e60db6b95",
+      "muleEventId":null,
+      "correlationId":null,
+      "transactionId":null,
+      "customEventProperties":null,
+      "customEventName":null,
+      "timestamp":"2017-02-06T12:33:25953-0300"
+    }
+  ]
+}
