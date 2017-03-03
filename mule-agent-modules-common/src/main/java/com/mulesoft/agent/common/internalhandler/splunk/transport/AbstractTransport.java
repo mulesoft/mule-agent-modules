@@ -18,12 +18,13 @@ import java.io.OutputStream;
 /**
  * @author Walter Poch
  *         created on 10/27/15
+ * @param <T> Message type.
  */
 public abstract class AbstractTransport<T> implements Transport<T>
 {
-    private final static Logger LOGGER = LogManager.getLogger(AbstractTransport.class);
-    protected final static String CHARSET = "UTF-8";
-    protected final static String LINE_BREAKER = "\r\n";
+    private static final Logger LOGGER = LogManager.getLogger(AbstractTransport.class);
+    protected static final String CHARSET = "UTF-8";
+    protected static final String LINE_BREAKER = "\r\n";
 
     private final ObjectMapper objectMapper;
 

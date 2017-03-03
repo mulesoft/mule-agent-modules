@@ -1,13 +1,14 @@
 package com.mulesoft.agent.gw.http.log;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.mulesoft.agent.AgentEnableOperationException;
 import com.mulesoft.agent.handlers.exception.InitializationException;
 import com.mulesoft.module.client.model.HttpEvent;
+
 import org.junit.Ignore;
 import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Ignore
 public class GatewayHttpEventsLogInternalHandlerTest
@@ -19,12 +20,12 @@ public class GatewayHttpEventsLogInternalHandlerTest
         GatewayHttpEventsLogInternalHandler handler = new GatewayHttpEventsLogInternalHandler();
         handler.fileName = System.getProperty("fileName");
         handler.filePattern = System.getProperty("filePattern");
-        handler.bufferSize = Integer.parseInt(System.getProperty("bufferSize"));
-        handler.immediateFlush = Boolean.parseBoolean(System.getProperty("immediateFlush"));
-        handler.daysTrigger = Integer.parseInt(System.getProperty("daysTrigger"));
-        handler.mbTrigger = Integer.parseInt(System.getProperty("mbTrigger"));
-        handler.enabled = Boolean.parseBoolean(System.getProperty("enabled"));
-        handler.dateFormatPattern = System.getProperty("dateFormatPattern");
+        handler.setBufferSize(Integer.parseInt(System.getProperty("bufferSize")));
+        handler.setImmediateFlush(Boolean.parseBoolean(System.getProperty("immediateFlush")));
+        handler.setDaysTrigger(Integer.parseInt(System.getProperty("daysTrigger")));
+        handler.setMbTrigger(Integer.parseInt(System.getProperty("mbTrigger")));
+        handler.setEnabled(Boolean.parseBoolean(System.getProperty("enabled")));
+        handler.setDateFormatPattern(System.getProperty("dateFormatPattern"));
         handler.postConfigurable();
         handler.initialize();
 

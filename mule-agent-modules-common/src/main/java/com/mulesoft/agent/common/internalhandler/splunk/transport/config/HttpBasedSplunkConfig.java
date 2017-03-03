@@ -17,6 +17,7 @@ import com.splunk.SSLSecurityProtocol;
  */
 public abstract class HttpBasedSplunkConfig extends AbstractSplunkConfig
 {
+
     @Configurable(value = "https", type = Type.DYNAMIC)
     private HttpScheme scheme;
     @Configurable(value = "TLSv1_2", type = Type.DYNAMIC)
@@ -29,7 +30,6 @@ public abstract class HttpBasedSplunkConfig extends AbstractSplunkConfig
     private String sourceType;
     @Configurable(value = "true", type = Type.DYNAMIC)
     private Boolean acceptAnyCertificate;
-
 
     public HttpScheme getScheme()
     {
@@ -81,23 +81,26 @@ public abstract class HttpBasedSplunkConfig extends AbstractSplunkConfig
         this.sourceType = sourceType;
     }
 
-    public void setAcceptAnyCertificate(Boolean acceptAnyCertificate) {
+    public void setAcceptAnyCertificate(Boolean acceptAnyCertificate)
+    {
         this.acceptAnyCertificate = acceptAnyCertificate;
     }
 
-    public Boolean getAcceptAnyCertificate() {
+    public Boolean getAcceptAnyCertificate()
+    {
         return acceptAnyCertificate;
     }
 
     @Override
     public String toString()
     {
-        return "HttpBasedSplunkConfig{" +
-                "scheme=" + scheme +
-                ", sslSecurityProtocol=" + sslSecurityProtocol +
-                ", index='" + index + '\'' +
-                ", source='" + source + '\'' +
-                ", sourceType='" + sourceType + '\'' +
-                "} " + super.toString();
+        return "HttpBasedSplunkConfig{"
+                + "scheme=" + scheme
+                + ", sslSecurityProtocol=" + sslSecurityProtocol
+                + ", index='" + index + '\''
+                + ", source='" + source + '\''
+                + ", sourceType='" + sourceType + '\''
+                + "} " + super.toString();
     }
+
 }

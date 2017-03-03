@@ -1,26 +1,26 @@
 
 package com.mulesoft.agent.monitoring.publisher.ingest.client;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mulesoft.agent.clients.AuthenticationProxyClient;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.api.IngestApplicationMetricPostBody;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.api.IngestMetric;
 import com.ning.http.client.Response;
+
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 /**
- * Monitoring Ingest API Client
+ * Monitoring Ingest API Client.
  */
-public class AnypointMonitoringIngestAPIClient
+public final class AnypointMonitoringIngestAPIClient
 {
 
     private static final Logger LOGGER = LogManager.getLogger(AnypointMonitoringIngestAPIClient.class);
@@ -47,6 +47,7 @@ public class AnypointMonitoringIngestAPIClient
     private final AuthenticationProxyClient authProxyClient;
 
     /**
+     * Create a monitoring client for the given API version and the Authentication Proxy client.
      *
      * @param apiVersion Monitoring API version.
      * @param authProxyClient Authentication proxy client.
@@ -80,7 +81,7 @@ public class AnypointMonitoringIngestAPIClient
     {
         Response httpResponse = this.authProxyClient.post(this.targetMetricsPath, body);
 
-        if (httpResponse.getStatusCode() >= 300 )
+        if (javax.ws.rs.core.Response.Status.Family.familyOf(httpResponse.getStatusCode()) == javax.ws.rs.core.Response.Status.Family.SUCCESSFUL)
         {
             LOGGER.warn("Post of target metrics failed with status " + httpResponse.getStatusCode());
             if (LOGGER.isDebugEnabled())
@@ -113,10 +114,11 @@ public class AnypointMonitoringIngestAPIClient
         headers.put(APPLICATION_NAME_HEADER, Lists.newArrayList(applicationName));
         Response httpResponse = this.authProxyClient.post(this.applicationMetricsPath, body, headers);
 
-        if (httpResponse.getStatusCode() >= 300 )
+        if (javax.ws.rs.core.Response.Status.Family.familyOf(httpResponse.getStatusCode()) == javax.ws.rs.core.Response.Status.Family.SUCCESSFUL)
         {
             LOGGER.warn(String.format("Post of application metrics for %s failed with status %d", applicationName, httpResponse.getStatusCode()));
-            if (LOGGER.isDebugEnabled()) {
+            if (LOGGER.isDebugEnabled())
+            {
                 try
                 {
                     LOGGER.debug(String.format("Post of application metrics for %s failed with status %d, response body: %s", applicationName, httpResponse.getStatusCode(), httpResponse.getResponseBody("UTF-8")));

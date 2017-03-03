@@ -1,5 +1,10 @@
 package com.mulesoft.agent.monitoring.publisher.ingest;
 
+import java.text.SimpleDateFormat;
+import java.util.Collection;
+import javax.inject.Inject;
+import javax.ws.rs.core.Response;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.mulesoft.agent.AgentEnableOperationException;
@@ -15,21 +20,22 @@ import com.mulesoft.agent.handlers.exception.InitializationException;
 import com.mulesoft.agent.handlers.internal.buffer.DiscardingMessageBufferConfigurationFactory;
 import com.mulesoft.agent.monitoring.publisher.ingest.client.AnypointMonitoringIngestAPIClient;
 import com.mulesoft.agent.services.OnOffSwitch;
-import org.apache.commons.lang.StringUtils;
 
-import javax.inject.Inject;
-import java.text.SimpleDateFormat;
-import java.util.Collection;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * <p>
  * Abstract monitoring metrics publisher.
  * </p>
+ *
+ * @param <T> The type of metric being pushed by the publisher.
  */
 public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
 {
 
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SZ";
+    private static final long FLUSH_FREQUENCY = 60000L;
+    private static final int MAXIMUM_CAPACITY = 1000;
 
     /**
      * Factory to create the {@link AuthenticationProxyClient}.
@@ -56,14 +62,14 @@ public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
     private Boolean enabled;
 
     /**
-     * Monitoring Ingest Client
+     * Monitoring Ingest Client.
      */
-    protected AnypointMonitoringIngestAPIClient client;
+    AnypointMonitoringIngestAPIClient client;
 
     /**
-     * Enabled Switch
+     * Enabled Switch.
      */
-    protected OnOffSwitch enabledSwitch;
+    OnOffSwitch enabledSwitch;
 
     /**
      * Manually set this publisher as enabled/disabled.
@@ -135,7 +141,7 @@ public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
     {
         if (this.buffer == null)
         {
-            this.buffer = new DiscardingMessageBufferConfigurationFactory().create(60000L, 1000, BufferType.MEMORY, null);
+            this.buffer = new DiscardingMessageBufferConfigurationFactory().create(FLUSH_FREQUENCY, MAXIMUM_CAPACITY, BufferType.MEMORY, null);
         }
         return this.buffer;
     }
@@ -147,14 +153,14 @@ public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
      */
     private boolean checkConfiguration()
     {
-        return this.authenticationProxy != null &&
-                this.authenticationProxy.getSecurity() != null &&
-                StringUtils.isNotBlank(this.authenticationProxy.getSecurity().getKeyStoreAlias()) &&
-                StringUtils.isNotBlank(this.authenticationProxy.getSecurity().getKeyStoreAliasPassword()) &&
-                StringUtils.isNotBlank(this.authenticationProxy.getSecurity().getKeyStoreFile()) &&
-                StringUtils.isNotBlank(this.authenticationProxy.getSecurity().getKeyStorePassword()) &&
-                StringUtils.isNotBlank(this.authenticationProxy.getSecurity().getTrustStoreFile()) &&
-                this.authenticationProxy.getEndpoint() != null;
+        return this.authenticationProxy != null
+                && this.authenticationProxy.getSecurity() != null
+                && StringUtils.isNotBlank(this.authenticationProxy.getSecurity().getKeyStoreAlias())
+                && StringUtils.isNotBlank(this.authenticationProxy.getSecurity().getKeyStoreAliasPassword())
+                && StringUtils.isNotBlank(this.authenticationProxy.getSecurity().getKeyStoreFile())
+                && StringUtils.isNotBlank(this.authenticationProxy.getSecurity().getKeyStorePassword())
+                && StringUtils.isNotBlank(this.authenticationProxy.getSecurity().getTrustStoreFile())
+                && this.authenticationProxy.getEndpoint() != null;
     }
 
     /**
@@ -192,6 +198,6 @@ public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
      */
     protected boolean isSuccessStatusCode(int statusCode)
     {
-        return statusCode >= 200 && statusCode < 300;
+        return Response.Status.Family.familyOf(statusCode) ==  Response.Status.Family.SUCCESSFUL;
     }
 }

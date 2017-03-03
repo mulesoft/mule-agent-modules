@@ -1,9 +1,9 @@
 package com.mulesoft.agent.monitoring.publisher.ingest.model;
 
-import com.mulesoft.agent.domain.monitoring.Metric;
-
 import java.util.Date;
 import java.util.List;
+
+import com.mulesoft.agent.domain.monitoring.Metric;
 
 /**
  * <p>
@@ -20,7 +20,8 @@ public class DefaultMetricSample implements MetricSample
     private final Double avg;
     private final Double count;
 
-    public DefaultMetricSample(Date date, Double min, Double max, Double sum, Double avg, Double count) {
+    public DefaultMetricSample(Date date, Double min, Double max, Double sum, Double avg, Double count)
+    {
         this.date = date;
         this.min = min;
         this.max = max;
@@ -103,13 +104,13 @@ public class DefaultMetricSample implements MetricSample
     @Override
     public String toString()
     {
-        return "DefaultMetricSample{" +
-                "date=" + date +
-                ", min=" + min +
-                ", max=" + max +
-                ", sum=" + sum +
-                ", avg=" + avg +
-                ", count=" + count +
-                '}';
+        return "DefaultMetricSample{"
+                + "date=" + date
+                + ", min=" + min
+                + ", max=" + max
+                + ", sum=" + sum
+                + ", avg=" + avg
+                + ", count=" + count
+                + '}';
     }
 }

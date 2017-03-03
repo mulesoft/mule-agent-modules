@@ -20,9 +20,18 @@ import com.mulesoft.agent.handlers.exception.InitializationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Abstract splunk internal handler.
+ * @param <T> Message type.
+ */
 public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T>
 {
-    private final static Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
+
+    private static final int DEFAULT_BUFFER_RETRY_COUNT = 3;
+    private static final long DEFAULT_BUFFER_FLUSH_FREQUENCY = 10000L;
+    private static final int DEFAULT_BUFFER_MAXIMUM_CAPACITY = 1000;
+    private static final boolean DEFAULT_DISCARD_ON_FAILURE = false;
 
     private TransportFactory<T> transportFactory = new DefaultTransportFactory<>(this);
     private ObjectMapper objectMapper;
@@ -34,7 +43,7 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
      * </p>
      */
     @Configurable(type = Type.DYNAMIC)
-    public String user;
+    private String user;
 
     /**
      * <p>
@@ -43,7 +52,7 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
      */
     @Password
     @Configurable(type = Type.DYNAMIC)
-    public String pass;
+    private String pass;
 
     /**
      * <p>
@@ -52,7 +61,7 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
      */
     @Password
     @Configurable(type = Type.DYNAMIC)
-    public String token;
+    private String token;
 
     /**
      * <p>
@@ -60,7 +69,7 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
      * </p>
      */
     @Configurable(type = Type.DYNAMIC)
-    public String host;
+    private String host;
 
     /**
      * <p>
@@ -69,7 +78,7 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
      * </p>
      */
     @Configurable(value = "8089", type = Type.DYNAMIC)
-    public int port;
+    private int port;
 
     /**
      * <p>
@@ -78,7 +87,7 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
      * </p>
      */
     @Configurable(value = "https", type = Type.DYNAMIC)
-    public String scheme;
+    private String scheme;
 
     /**
      * <p>
@@ -87,7 +96,7 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
      * </p>
      */
     @Configurable(value = "TLSv1_2", type = Type.DYNAMIC)
-    public String sslSecurityProtocol;
+    private String sslSecurityProtocol;
 
     /**
      * <p>
@@ -97,7 +106,7 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
      * </p>
      */
     @Configurable(value = "main", type = Type.DYNAMIC)
-    public String splunkIndexName;
+    private String splunkIndexName;
 
     /**
      * <p>
@@ -106,7 +115,7 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
      * </p>
      */
     @Configurable(value = "mule", type = Type.DYNAMIC)
-    public String splunkSource;
+    private String splunkSource;
 
     /**
      * <p>
@@ -115,7 +124,7 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
      * </p>
      */
     @Configurable(value = "mule", type = Type.DYNAMIC)
-    public String splunkSourceType;
+    private String splunkSourceType;
 
     /**
      * <p>
@@ -124,7 +133,7 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
      * </p>
      */
     @Configurable(value = "yyyy-MM-dd'T'HH:mm:ss.SZ", type = Type.DYNAMIC)
-    public String dateFormatPattern;
+    private String dateFormatPattern;
 
     /**
      * <p>
@@ -134,7 +143,7 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
      * </p>
      */
     @Configurable(value = "true", type = Type.DYNAMIC)
-    public Boolean acceptAnyCertificate;
+    private Boolean acceptAnyCertificate;
 
     @Override
     protected boolean canHandle(T message)
@@ -212,29 +221,174 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
         {
             BufferConfiguration defaultBuffer = new BufferConfiguration();
             defaultBuffer.setType(BufferType.MEMORY);
-            defaultBuffer.setRetryCount(3);
-            defaultBuffer.setFlushFrequency(10000l);
-            defaultBuffer.setMaximumCapacity(1000);
-            defaultBuffer.setDiscardMessagesOnFlushFailure(false);
+            defaultBuffer.setRetryCount(DEFAULT_BUFFER_RETRY_COUNT);
+            defaultBuffer.setFlushFrequency(DEFAULT_BUFFER_FLUSH_FREQUENCY);
+            defaultBuffer.setMaximumCapacity(DEFAULT_BUFFER_MAXIMUM_CAPACITY);
+            defaultBuffer.setDiscardMessagesOnFlushFailure(DEFAULT_DISCARD_ON_FAILURE);
             defaultBuffer.setWhenExhausted(BufferExhaustedAction.FLUSH);
             return defaultBuffer;
         }
     }
 
+    public void setTransportFactory(TransportFactory<T> transportFactory)
+    {
+        this.transportFactory = transportFactory;
+    }
+
+    public void setObjectMapper(ObjectMapper objectMapper)
+    {
+        this.objectMapper = objectMapper;
+    }
+
+    public void setTransport(Transport<T> transport)
+    {
+        this.transport = transport;
+    }
+
+    public void setUser(String user)
+    {
+        this.user = user;
+    }
+
+    public void setPass(String pass)
+    {
+        this.pass = pass;
+    }
+
+    public void setToken(String token)
+    {
+        this.token = token;
+    }
+
+    public void setHost(String host)
+    {
+        this.host = host;
+    }
+
+    public void setPort(int port)
+    {
+        this.port = port;
+    }
+
+    public void setScheme(String scheme)
+    {
+        this.scheme = scheme;
+    }
+
+    public void setSslSecurityProtocol(String sslSecurityProtocol)
+    {
+        this.sslSecurityProtocol = sslSecurityProtocol;
+    }
+
+    public void setSplunkIndexName(String splunkIndexName)
+    {
+        this.splunkIndexName = splunkIndexName;
+    }
+
+    public void setSplunkSource(String splunkSource)
+    {
+        this.splunkSource = splunkSource;
+    }
+
+    public void setSplunkSourceType(String splunkSourceType)
+    {
+        this.splunkSourceType = splunkSourceType;
+    }
+
+    public void setDateFormatPattern(String dateFormatPattern)
+    {
+        this.dateFormatPattern = dateFormatPattern;
+    }
+
+    public void setAcceptAnyCertificate(Boolean acceptAnyCertificate)
+    {
+        this.acceptAnyCertificate = acceptAnyCertificate;
+    }
+
+    public TransportFactory<T> getTransportFactory()
+    {
+        return transportFactory;
+    }
+
+    public Transport<T> getTransport()
+    {
+        return transport;
+    }
+
+    public String getUser()
+    {
+        return user;
+    }
+
+    public String getPass()
+    {
+        return pass;
+    }
+
+    public String getToken()
+    {
+        return token;
+    }
+
+    public String getHost()
+    {
+        return host;
+    }
+
+    public int getPort()
+    {
+        return port;
+    }
+
+    public String getScheme()
+    {
+        return scheme;
+    }
+
+    public String getSslSecurityProtocol()
+    {
+        return sslSecurityProtocol;
+    }
+
+    public String getSplunkIndexName()
+    {
+        return splunkIndexName;
+    }
+
+    public String getSplunkSource()
+    {
+        return splunkSource;
+    }
+
+    public String getSplunkSourceType()
+    {
+        return splunkSourceType;
+    }
+
+    public String getDateFormatPattern()
+    {
+        return dateFormatPattern;
+    }
+
+    public Boolean getAcceptAnyCertificate()
+    {
+        return acceptAnyCertificate;
+    }
+
     @Override
     public String toString()
     {
-        return "AbstractSplunkInternalHandler{" +
-                "user='" + user + '\'' +
-                ", host='" + host + '\'' +
-                ", token='" + token + '\'' +
-                ", port=" + port +
-                ", scheme='" + scheme + '\'' +
-                ", sslSecurityProtocol='" + sslSecurityProtocol + '\'' +
-                ", splunkIndexName='" + splunkIndexName + '\'' +
-                ", splunkSource='" + splunkSource + '\'' +
-                ", splunkSourceType='" + splunkSourceType + '\'' +
-                ", dateFormatPattern='" + dateFormatPattern + '\'' +
-                '}';
+        return "AbstractSplunkInternalHandler{"
+                + "user='" + user + '\''
+                + ", host='" + host + '\''
+                + ", token='" + token + '\''
+                + ", port=" + port
+                + ", scheme='" + scheme + '\''
+                + ", sslSecurityProtocol='" + sslSecurityProtocol + '\''
+                + ", splunkIndexName='" + splunkIndexName + '\''
+                + ", splunkSource='" + splunkSource + '\''
+                + ", splunkSourceType='" + splunkSourceType + '\''
+                + ", dateFormatPattern='" + dateFormatPattern + '\''
+                + '}';
     }
 }

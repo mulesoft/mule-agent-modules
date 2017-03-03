@@ -7,6 +7,7 @@ import com.mulesoft.agent.monitoring.publisher.ingest.model.DefaultMetricSample;
  */
 public class MemoryMetricSampleDecorator extends MetricSampleDecorator
 {
+    private static final long MB_DIVISOR = 1048576L;
 
     public MemoryMetricSampleDecorator(DefaultMetricSample sample)
     {
@@ -19,7 +20,7 @@ public class MemoryMetricSampleDecorator extends MetricSampleDecorator
     @Override
     protected Double processValue(Double value)
     {
-        return value / (1024 * 1024);
+        return value / MB_DIVISOR;
     }
 
     @Override
@@ -27,5 +28,4 @@ public class MemoryMetricSampleDecorator extends MetricSampleDecorator
     {
         return "MemoryMetricSampleDecorator{} " + super.toString();
     }
-
 }

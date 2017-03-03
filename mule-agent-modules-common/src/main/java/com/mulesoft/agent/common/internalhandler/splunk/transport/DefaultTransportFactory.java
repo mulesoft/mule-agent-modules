@@ -21,6 +21,7 @@ import org.apache.logging.log4j.Logger;
  * Factory to create the specific transports.
  * In this version in order to maintain backward compatibility uses a set of checks on the Splunk Internal Handler fields.
  * </p>
+ * @param <T> Message type.
  *
  * @author Walter Poch
  *         created on 10/28/15
@@ -28,7 +29,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class DefaultTransportFactory<T> implements TransportFactory<T>
 {
-    private final static Logger LOGGER = LogManager.getLogger(DefaultTransportFactory.class);
+    private static final Logger LOGGER = LogManager.getLogger(DefaultTransportFactory.class);
 
     private final AbstractSplunkInternalHandler<T> internalHandler;
 
@@ -40,14 +41,14 @@ public class DefaultTransportFactory<T> implements TransportFactory<T>
     @Override
     public Transport<T> create() throws AgentConfigurationException
     {
-        if (StringUtils.isNotBlank(this.internalHandler.token))
+        if (StringUtils.isNotBlank(this.internalHandler.getToken()))
         {
             HECTransportConfig config = new HECTransportConfig.Builder(this.internalHandler).build();
             LOGGER.debug("Creating the a HECTransport with the settings: " + config);
             return new HECTransport<T>(config, this.internalHandler.getObjectMapper());
         }
 
-        if (this.internalHandler.scheme.equals("tcp"))
+        if (this.internalHandler.getScheme().equals("tcp"))
         {
             TCPTransportConfig config = new TCPTransportConfig.Builder(this.internalHandler).build();
             LOGGER.debug("Creating the a TCPTransport with the settings: " + config);

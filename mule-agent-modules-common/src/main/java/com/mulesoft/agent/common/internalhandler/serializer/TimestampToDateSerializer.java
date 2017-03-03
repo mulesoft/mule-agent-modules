@@ -7,6 +7,9 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import java.io.IOException;
 import java.util.Date;
 
+/**
+ * Serializer to transform timestamps to java.util.Date.
+ */
 public class TimestampToDateSerializer extends JsonSerializer<Long>
 {
     @Override

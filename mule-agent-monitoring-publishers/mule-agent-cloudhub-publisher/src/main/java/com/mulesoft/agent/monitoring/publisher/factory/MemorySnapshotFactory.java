@@ -8,23 +8,29 @@ import javax.inject.Singleton;
  */
 @Named
 @Singleton
-public class MemorySnapshotFactory {
+public class MemorySnapshotFactory
+{
 
-    public MemorySnapshot newSnapshot(
-            long memoryMax, long memoryUsed, long timestamp) {
-        double memoryPercent = ((double) memoryUsed / memoryMax) * 100D;
+    private static final double PERCENTAGE_CONVERSION = 100D;
+
+    public MemorySnapshot newSnapshot(long memoryMax, long memoryUsed, long timestamp)
+    {
+        double memoryPercent = ((double) memoryUsed / memoryMax) * PERCENTAGE_CONVERSION;
         return new MemorySnapshot(memoryMax, memoryUsed, memoryPercent, timestamp);
     }
 
+    /**
+     * Holds state of last Memory metric snapshot.
+     */
+    public static class MemorySnapshot
+    {
+        final long memoryTotalMaxBytes;
+        final long memoryTotalUsedBytes;
+        final double memoryPercentUsed;
+        final long timestamp;
 
-    public static class MemorySnapshot {
-        public final long memoryTotalMaxBytes;
-        public final long memoryTotalUsedBytes;
-        public final double memoryPercentUsed;
-        public final long timestamp;
-
-        MemorySnapshot(long memoryTotalMaxBytes, long memoryTotalUsedBytes,
-                       double memoryPercentUsed, long timestamp) {
+        MemorySnapshot(long memoryTotalMaxBytes, long memoryTotalUsedBytes, double memoryPercentUsed, long timestamp)
+        {
             this.memoryTotalMaxBytes = memoryTotalMaxBytes;
             this.memoryTotalUsedBytes = memoryTotalUsedBytes;
             this.memoryPercentUsed = memoryPercentUsed;

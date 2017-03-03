@@ -7,6 +7,15 @@
 
 package com.mulesoft.agent.eventtracker.analytics;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -22,17 +31,9 @@ import com.mulesoft.agent.configuration.common.AuthenticationProxyConfiguration;
 import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
 import com.mulesoft.agent.handlers.exception.InitializationException;
 import com.mulesoft.agent.handlers.internal.buffer.DiscardingMessageBufferConfigurationFactory;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
 import static com.mulesoft.agent.domain.RuntimeEnvironment.ON_PREM;
 import static com.mulesoft.agent.domain.RuntimeEnvironment.STANDALONE;
@@ -55,6 +56,8 @@ public class EventTrackingAnalyticsInternalHandler extends BufferedHandler<Agent
      * </p>
      */
     private static final Logger LOGGER = LogManager.getLogger(EventTrackingAnalyticsInternalHandler.class);
+    private static final long FLUSH_FREQUENCY = 10000L;
+    private static final int MAXIMUM_CAPACITY = 5000;
 
     /**
      * <p>
@@ -83,7 +86,7 @@ public class EventTrackingAnalyticsInternalHandler extends BufferedHandler<Agent
      * </p>
      */
     @Configurable("true")
-    protected boolean enabled;
+    boolean enabled;
 
     /**
      * <p>
@@ -143,7 +146,7 @@ public class EventTrackingAnalyticsInternalHandler extends BufferedHandler<Agent
     {
         if (this.buffer == null)
         {
-            this.buffer = new DiscardingMessageBufferConfigurationFactory().create(10000L, 5000, BufferType.MEMORY, null);
+            this.buffer = new DiscardingMessageBufferConfigurationFactory().create(FLUSH_FREQUENCY, MAXIMUM_CAPACITY, BufferType.MEMORY, null);
         }
         return this.buffer;
     }
