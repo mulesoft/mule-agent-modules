@@ -34,7 +34,16 @@ public abstract class TargetMetricFactory
      * Ingest metric builder.
      */
     @Inject
-    IngestMetricBuilder metricBuilder;
+    private IngestMetricBuilder metricBuilder;
+
+    TargetMetricFactory()
+    {
+    }
+
+    TargetMetricFactory(IngestMetricBuilder metricBuilder)
+    {
+        this.metricBuilder = metricBuilder;
+    }
 
     /**
      * Evaluates the given JMX bean to resolve whether this instance is meant to be used on a metric collected from it.
@@ -56,7 +65,7 @@ public abstract class TargetMetricFactory
     {
         Preconditions.checkArgument(appliesForMetric(bean),
                 String.format("Invoked factory does not apply for %s, make sure you are checking with appliesForMetric first.", bean.name()));
-        if (classification != null)
+        if (classification != null && classification.getKeys().contains(bean.getMetricName()))
         {
             MetricSample sample = doApply(classification, bean);
             if (sample.getCount() <= 0 || sample.getAvg() < 0 || sample.getSum() < 0 || sample.getMax() < 0 || sample.getMin() < 0)

@@ -2,6 +2,7 @@ package com.mulesoft.agent.monitoring.publisher.ingest.model;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -79,5 +80,10 @@ public class MetricClassification
     {
         List<Metric> metrics = this.classification.get(key);
         return metrics != null ? metrics : Lists.<Metric>newLinkedList();
+    }
+
+    public Set<String> getKeys()
+    {
+        return this.classification.keySet();
     }
 }

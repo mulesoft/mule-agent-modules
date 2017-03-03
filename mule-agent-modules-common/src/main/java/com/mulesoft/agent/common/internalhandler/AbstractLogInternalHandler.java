@@ -30,6 +30,7 @@ import org.apache.logging.log4j.core.layout.PatternLayout;
 
 /**
  * Abstract log internal handler.
+ *
  * @param <T> Message type.
  */
 public abstract class AbstractLogInternalHandler<T> implements InitializableInternalMessageHandler<T>
@@ -176,7 +177,7 @@ public abstract class AbstractLogInternalHandler<T> implements InitializableInte
             this.logConfiguration = logContext.getConfiguration();
 
             Layout<? extends Serializable> layout = PatternLayout.newBuilder().withPattern(PATTERN_LAYOUT).
-                withCharset(Charset.forName("UTF-8")).withAlwaysWriteExceptions(true).withNoConsoleNoAnsi(false).build();
+                    withCharset(Charset.forName("UTF-8")).withAlwaysWriteExceptions(true).withNoConsoleNoAnsi(false).build();
 
             String dayTrigger = this.daysTrigger + "";
             String sizeTrigger = (this.mbTrigger * MB_CONVERSION_UNIT * MB_CONVERSION_UNIT) + "";
@@ -210,27 +211,33 @@ public abstract class AbstractLogInternalHandler<T> implements InitializableInte
         LOGGER.debug("Successfully configured the Common Log Internal Handler.");
     }
 
-    public void setEnabled(boolean enabled) {
+    public void setEnabled(boolean enabled)
+    {
         this.enabled = enabled;
     }
 
-    public void setBufferSize(int bufferSize) {
+    public void setBufferSize(int bufferSize)
+    {
         this.bufferSize = bufferSize;
     }
 
-    public void setImmediateFlush(boolean immediateFlush) {
+    public void setImmediateFlush(boolean immediateFlush)
+    {
         this.immediateFlush = immediateFlush;
     }
 
-    public void setDaysTrigger(int daysTrigger) {
+    public void setDaysTrigger(int daysTrigger)
+    {
         this.daysTrigger = daysTrigger;
     }
 
-    public void setMbTrigger(int mbTrigger) {
+    public void setMbTrigger(int mbTrigger)
+    {
         this.mbTrigger = mbTrigger;
     }
 
-    public void setDateFormatPattern(String dateFormatPattern) {
+    public void setDateFormatPattern(String dateFormatPattern)
+    {
         this.dateFormatPattern = dateFormatPattern;
     }
 }

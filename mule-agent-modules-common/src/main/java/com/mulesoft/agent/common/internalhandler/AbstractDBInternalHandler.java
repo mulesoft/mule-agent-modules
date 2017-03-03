@@ -20,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * Database internal handler.
+ *
  * @param <T> Message type.
  */
 public abstract class AbstractDBInternalHandler<T> extends BufferedHandler<T>
@@ -181,35 +182,43 @@ public abstract class AbstractDBInternalHandler<T> extends BufferedHandler<T>
         }
     }
 
-    public String getDriver() {
+    public String getDriver()
+    {
         return driver;
     }
 
-    public void setDriver(String driver) {
+    public void setDriver(String driver)
+    {
         this.driver = driver;
     }
 
-    public String getJdbcUrl() {
+    public String getJdbcUrl()
+    {
         return jdbcUrl;
     }
 
-    public void setJdbcUrl(String jdbcUrl) {
+    public void setJdbcUrl(String jdbcUrl)
+    {
         this.jdbcUrl = jdbcUrl;
     }
 
-    public String getUser() {
+    public String getUser()
+    {
         return user;
     }
 
-    public void setUser(String user) {
+    public void setUser(String user)
+    {
         this.user = user;
     }
 
-    public String getPass() {
+    public String getPass()
+    {
         return pass;
     }
 
-    public void setPass(String pass) {
+    public void setPass(String pass)
+    {
         this.pass = pass;
     }
 }
