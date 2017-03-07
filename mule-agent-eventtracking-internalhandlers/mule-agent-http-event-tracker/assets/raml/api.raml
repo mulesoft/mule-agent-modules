@@ -25,33 +25,3 @@ schemas:
       400:
         description: |
           Returns Bad Request when the provided body does not conform with the JSON Schema.
-  /{source}:
-    uriParameters: 
-      source:
-        description: |
-          Source of the event tracking notifications.
-    get:
-      description: |
-        Returns the event tracking notification with the provided source.
-      responses: 
-        200:
-          body: 
-            application/json:
-              schema: EventTrackingNotification
-              example: !include examples/eventTrackingNotification.json
-        404:
-          description: |
-            Returns Not Found when there is not an event notification with the provided source.            
-    delete:
-      description: |
-        Deletes all event tracking notifications with the provided source.
-      responses:
-        200:
-          description: |
-            Returns OK when the event tracking notification with the provided source were deleted successfully.
-        404:
-          description: |
-            Returns Not Found when there is not an event notification with the provided source.
-          
-
-

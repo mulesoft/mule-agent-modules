@@ -3,6 +3,9 @@
 The Http Event Tracking Internal handler will push all the Event Tracking Notifications produced from the Mule Runtime
 to the configured service.
 
+To consume the event tracking notification pushed by this internal handler you should implement a service that
+implements the API found in _assets/raml/api.raml_
+
 == Configurable Fields
 
 |===
