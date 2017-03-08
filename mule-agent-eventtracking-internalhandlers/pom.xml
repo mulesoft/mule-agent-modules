@@ -17,6 +17,7 @@
         <module>mule-agent-log-event-tracker</module>
         <module>mule-agent-tryit-event-tracker</module>
         <module>mule-agent-analytics-event-tracker</module>
+        <module>mule-agent-http-event-tracker</module>
     </modules>
 
     <properties>
