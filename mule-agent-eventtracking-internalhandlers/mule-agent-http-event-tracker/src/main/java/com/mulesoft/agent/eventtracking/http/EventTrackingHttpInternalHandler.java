@@ -128,10 +128,16 @@ public class EventTrackingHttpInternalHandler extends BufferedHandler<AgentTrack
         if (this.objectMapper == null)
         {
             this.objectMapper = new ObjectMapper();
+            this.objectMapper.addMixInAnnotations(AgentTrackingNotification.class, AgentTrackingNotificationMixin.class);
         }
 
-        this.objectMapper.addMixInAnnotations(AgentTrackingNotification.class, AgentTrackingNotificationMixin.class);
+        if (this.transport != null)
+        {
+            LOGGER.debug("Disposing the previous Http transport");
+            this.transport.dispose();
+        }
 
+        LOGGER.debug("Creating a new Http transport");
         this.transport = new EventTrackingHttpInternalHandler.HttpTransport();
         this.transport.init();
 
@@ -190,7 +196,7 @@ public class EventTrackingHttpInternalHandler extends BufferedHandler<AgentTrack
             catch (Exception e)
             {
                 LOGGER.error("Error initializing the HTTP Event Host: {} - Port: {}. Error: {}",
-                        host, port, ExceptionUtils.getRootCauseStackTrace(e));
+                        host, port, ExceptionUtils.getRootCauseMessage(e));
                 LOGGER.debug(e);
 
                 throw new InitializationException(
@@ -225,13 +231,13 @@ public class EventTrackingHttpInternalHandler extends BufferedHandler<AgentTrack
             }
             catch (InterruptedException e)
             {
-                LOGGER.error("Error sending messages. Error: {}", host, port, ExceptionUtils.getRootCauseStackTrace(e));
+                LOGGER.error("Error sending messages. Error: {}", host, port, ExceptionUtils.getRootCauseMessage(e));
                 LOGGER.debug(e);
                 return false;
             }
             catch (ExecutionException e)
             {
-                LOGGER.error("Error sending messages. Error: {}", host, port, ExceptionUtils.getRootCauseStackTrace(e));
+                LOGGER.error("Error sending messages. Error: {}", host, port, ExceptionUtils.getRootCauseMessage(e));
                 LOGGER.debug(e);
 
                 return false;
@@ -241,6 +247,10 @@ public class EventTrackingHttpInternalHandler extends BufferedHandler<AgentTrack
         @Override
         public void dispose()
         {
+            if (httpClient != null)
+            {
+                httpClient.close();
+            }
         }
 
         private String serialize(Object message)
@@ -251,7 +261,8 @@ public class EventTrackingHttpInternalHandler extends BufferedHandler<AgentTrack
             }
             catch (JsonProcessingException e)
             {
-                LOGGER.error("Error converting to json", e);
+                LOGGER.error("Error converting event tracking notification to json: {}", message.getClass(), ExceptionUtils.getRootCauseMessage(e));
+                LOGGER.debug(e);
 
                 throw new RuntimeException(e);
             }
