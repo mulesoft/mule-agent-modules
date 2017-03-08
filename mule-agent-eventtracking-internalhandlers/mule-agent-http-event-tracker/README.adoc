@@ -1,0 +1,55 @@
+= Http event tracking internal handler
+
+The Http Event Tracking Internal handler will push all the Event Tracking Notifications produced from the Mule Runtime
+to the configured service.
+
+To consume the event tracking notification pushed by this internal handler you should implement a service that
+implements the API found in _assets/raml/api.raml_
+
+== Configurable Fields
+
+|===
+|Field|Data Type|Description|Type|Default Value
+
+|host
+|String
+|The service's URL where the tracking notifications will be pushed.
+|Required
+|
+
+|port
+|int
+|The port where the configured service is listening.
+|Optional
+|8080
+
+|path
+|String
+|The path on the host where the service listen.
+|Required
+|
+
+|schema
+|String
+|Scheme of connection to the configured service. Possible values: http, https.
+|Optional
+|https
+
+|source
+|String
+|The source to use on the events sent to the configured service.
+|Optional
+|mule
+
+|===
+
+=== Configuration Example
+
+.Http tracker Internal Handler minimum Configuration
+[source,yaml]
+....
+---
+  mule.agent.tracking.handler.httpCustom:
+    host: 192.168.33.666
+    path: /api/events
+....
