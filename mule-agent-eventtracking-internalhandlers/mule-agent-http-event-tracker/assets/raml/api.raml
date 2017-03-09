@@ -1,0 +1,27 @@
+#%RAML 0.8
+title: Event Tracking Consumer API
+version: v1
+baseUri: /api/{version}
+protocols: [ HTTP, HTTPS ]
+mediaType: application/json
+
+schemas: 
+  - EventTrackingNotification: !include schemas/eventTrackingNotification.json
+    
+/events:
+  post:
+    description: |
+      Saves a new event tracking notification list.
+    body:
+      application/json:
+        schema: EventTrackingNotification
+        example: !include examples/eventTrackingNotification.json
+    responses: 
+      200:
+        body:
+          application/json:
+            schema: EventTrackingNotification
+            example: !include examples/eventTrackingNotification.json
+      400:
+        description: |
+          Returns Bad Request when the provided body does not conform with the JSON Schema.
