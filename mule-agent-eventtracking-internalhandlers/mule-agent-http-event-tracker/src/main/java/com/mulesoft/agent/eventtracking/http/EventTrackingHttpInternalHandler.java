@@ -46,7 +46,10 @@ import java.util.concurrent.ExecutionException;
 @Named("mule.agent.tracking.handler.http")
 public class EventTrackingHttpInternalHandler extends BufferedHandler<AgentTrackingNotification>
 {
-    private final static Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
+
+    private static final long FLUSH_FREQUENCY = 60000L;
+    private static final int MAXIMUM_CAPACITY = 1000;
 
     private ObjectMapper objectMapper;
     private Transport<AgentTrackingNotification> transport;
@@ -57,7 +60,7 @@ public class EventTrackingHttpInternalHandler extends BufferedHandler<AgentTrack
      * </p>
      */
     @Configurable(type = Type.DYNAMIC)
-    public String host;
+    String host;
 
     /**
      * <p>
@@ -66,7 +69,7 @@ public class EventTrackingHttpInternalHandler extends BufferedHandler<AgentTrack
      * </p>
      */
     @Configurable(value = "8080", type = Type.DYNAMIC)
-    public int port;
+    int port;
 
     /**
      * <p>
@@ -74,7 +77,7 @@ public class EventTrackingHttpInternalHandler extends BufferedHandler<AgentTrack
      * </p>
      */
     @Configurable(type = Type.DYNAMIC)
-    public String path;
+    String path;
 
     /**
      * <p>
@@ -83,7 +86,7 @@ public class EventTrackingHttpInternalHandler extends BufferedHandler<AgentTrack
      * </p>
      */
     @Configurable(value = "https", type = Type.DYNAMIC)
-    public String scheme;
+    String scheme;
 
     /**
      * <p>
@@ -92,7 +95,7 @@ public class EventTrackingHttpInternalHandler extends BufferedHandler<AgentTrack
      * </p>
      */
     @Configurable(value = "mule", type = Type.DYNAMIC)
-    public String source;
+    String source;
 
     @Override
     protected boolean canHandle(AgentTrackingNotification message)
@@ -142,7 +145,7 @@ public class EventTrackingHttpInternalHandler extends BufferedHandler<AgentTrack
         this.transport.init();
 
         LOGGER.debug("Successfully configured the Http Internal Handler.");
-        
+
         super.initialize();
     }
 
@@ -151,7 +154,7 @@ public class EventTrackingHttpInternalHandler extends BufferedHandler<AgentTrack
     {
         if (this.buffer == null)
         {
-            this.buffer = new DiscardingMessageBufferConfigurationFactory().create(60000L, 1000, BufferType.MEMORY, null);
+            this.buffer = new DiscardingMessageBufferConfigurationFactory().create(FLUSH_FREQUENCY, MAXIMUM_CAPACITY, BufferType.MEMORY, null);
         }
         return this.buffer;
     }
@@ -159,22 +162,27 @@ public class EventTrackingHttpInternalHandler extends BufferedHandler<AgentTrack
     @Override
     public String toString()
     {
-        return "EventTrackingHttpInternalHandler{" +
-                ", host='" + host + '\'' +
-                ", port=" + port  +
-                ", path='" + path + '\'' +
-                ", scheme='" + scheme + '\'' +
-                ", source='" + source + '\''+
-                '}';
+        return "EventTrackingHttpInternalHandler{"
+                + ", host='" + host + '\''
+                + ", port=" + port
+                + ", path='" + path + '\''
+                + ", scheme='" + scheme + '\''
+                + ", source='" + source + '\''
+                + '}';
     }
 
 
+    /**
+     * <p>
+     * Transport which connects to the configured service using HTTP or HTTPS.
+     * </p>
+     */
     private class HttpTransport implements Transport<AgentTrackingNotification>
     {
         private AsyncHttpClient httpClient;
         private URL url;
 
-        private final static int CONNECTION_TIMEOUT = 10 * 1000;
+        private static final int CONNECTION_TIMEOUT = 10 * 1000;
 
         @Override
         public void init() throws InitializationException
@@ -269,6 +277,12 @@ public class EventTrackingHttpInternalHandler extends BufferedHandler<AgentTrack
         }
     }
 
+    /**
+     * <p>
+     * Wrapped message to send to the configured service.
+     * </p>
+     * @param <T> Message type.
+     */
     static class HttpMessage<T>
     {
         @JsonProperty("source")
@@ -277,7 +291,7 @@ public class EventTrackingHttpInternalHandler extends BufferedHandler<AgentTrack
         @JsonProperty("data")
         private Collection<T> events;
 
-        public HttpMessage(Collection<T> events, String source)
+        HttpMessage(Collection<T> events, String source)
         {
             this.events = events;
             this.source = source;
