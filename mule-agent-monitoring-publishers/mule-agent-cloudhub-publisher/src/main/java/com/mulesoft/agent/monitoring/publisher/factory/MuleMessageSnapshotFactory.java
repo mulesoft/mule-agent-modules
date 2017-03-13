@@ -21,13 +21,21 @@ public class MuleMessageSnapshotFactory
      */
     public static class MuleMessageSnapshot
     {
-        final long messageCount;
-        final long timestamp;
+        private final long messageCount;
+        private final long timestamp;
 
         MuleMessageSnapshot(long messageCount, long timestamp)
         {
             this.messageCount = messageCount;
             this.timestamp = timestamp;
+        }
+
+        public long getMessageCount() {
+            return messageCount;
+        }
+
+        public long getTimestamp() {
+            return timestamp;
         }
     }
 }

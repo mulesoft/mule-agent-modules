@@ -40,6 +40,7 @@ public class DefaultCloudhubPlatformClient implements CloudhubPlatformClient
     private static final String PLATFORM_HOST = System.getProperty("platform.services.endpoint");
     private static final String CH_API_TOKEN = System.getProperty("ion.api.token");
     private static final String AWS_INSTANCE_ID = System.getProperty("server.id");
+    private static final String CH_APP_ID = System.getProperty("application.id");
 
     @Configurable("5000")
     private int connectionTimeoutMilli;
@@ -54,6 +55,7 @@ public class DefaultCloudhubPlatformClient implements CloudhubPlatformClient
         Preconditions.checkNotNull(PLATFORM_HOST);
         Preconditions.checkNotNull(CH_API_TOKEN);
         Preconditions.checkNotNull(AWS_INSTANCE_ID);
+        Preconditions.checkNotNull(CH_APP_ID);
 
         AsyncHttpClientConfig builder = new Builder()
                 .setConnectTimeout(connectionTimeoutMilli)
@@ -97,6 +99,7 @@ public class DefaultCloudhubPlatformClient implements CloudhubPlatformClient
                 .setBodyEncoding(StandardCharsets.UTF_8.name())
                 .addHeader("Content-type", "application/json")
                 .addHeader("X-ION-Authenticate", CH_API_TOKEN)
+                .addHeader("X-ION-Application", CH_APP_ID)
                 .build();
         try
         {
