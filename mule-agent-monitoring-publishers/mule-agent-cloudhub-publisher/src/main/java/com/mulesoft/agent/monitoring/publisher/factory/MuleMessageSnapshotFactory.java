@@ -21,8 +21,8 @@ public class MuleMessageSnapshotFactory
      */
     public static class MuleMessageSnapshot
     {
-        final long messageCount;
-        final long timestamp;
+        public final long messageCount;
+        public final long timestamp;
 
         MuleMessageSnapshot(long messageCount, long timestamp)
         {

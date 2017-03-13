@@ -24,10 +24,10 @@ public class MemorySnapshotFactory
      */
     public static class MemorySnapshot
     {
-        final long memoryTotalMaxBytes;
-        final long memoryTotalUsedBytes;
-        final double memoryPercentUsed;
-        final long timestamp;
+        public final long memoryTotalMaxBytes;
+        public final long memoryTotalUsedBytes;
+        public final double memoryPercentUsed;
+        public final long timestamp;
 
         MemorySnapshot(long memoryTotalMaxBytes, long memoryTotalUsedBytes, double memoryPercentUsed, long timestamp)
         {
