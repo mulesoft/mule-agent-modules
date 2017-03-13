@@ -14,7 +14,7 @@ public class MuleMessageSnapshotFactoryTest {
         MuleMessageSnapshotFactory.MuleMessageSnapshot snapshot = factory.newSnapshot(10L, 1487730487L);
 
         assertNotNull("Snapshot should be created", snapshot);
-        assertEquals("Should match input", 10L, snapshot.messageCount);
-        assertEquals("Should match input", 1487730487L, snapshot.timestamp);
+        assertEquals("Should match input", 10L, snapshot.getMessageCount());
+        assertEquals("Should match input", 1487730487L, snapshot.getTimestamp());
     }
 }

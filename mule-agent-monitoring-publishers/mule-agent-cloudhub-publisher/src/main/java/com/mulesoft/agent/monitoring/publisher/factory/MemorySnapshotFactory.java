@@ -24,10 +24,10 @@ public class MemorySnapshotFactory
      */
     public static class MemorySnapshot
     {
-        public final long memoryTotalMaxBytes;
-        public final long memoryTotalUsedBytes;
-        public final double memoryPercentUsed;
-        public final long timestamp;
+        private final long memoryTotalMaxBytes;
+        private final long memoryTotalUsedBytes;
+        private final double memoryPercentUsed;
+        private final long timestamp;
 
         MemorySnapshot(long memoryTotalMaxBytes, long memoryTotalUsedBytes, double memoryPercentUsed, long timestamp)
         {
@@ -35,6 +35,22 @@ public class MemorySnapshotFactory
             this.memoryTotalUsedBytes = memoryTotalUsedBytes;
             this.memoryPercentUsed = memoryPercentUsed;
             this.timestamp = timestamp;
+        }
+
+        public long getMemoryTotalMaxBytes() {
+            return memoryTotalMaxBytes;
+        }
+
+        public long getMemoryTotalUsedBytes() {
+            return memoryTotalUsedBytes;
+        }
+
+        public double getMemoryPercentUsed() {
+            return memoryPercentUsed;
+        }
+
+        public long getTimestamp() {
+            return timestamp;
         }
     }
 }
