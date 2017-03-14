@@ -37,19 +37,23 @@ public class MemorySnapshotFactory
             this.timestamp = timestamp;
         }
 
-        public long getMemoryTotalMaxBytes() {
+        public long getMemoryTotalMaxBytes()
+        {
             return memoryTotalMaxBytes;
         }
 
-        public long getMemoryTotalUsedBytes() {
+        public long getMemoryTotalUsedBytes()
+        {
             return memoryTotalUsedBytes;
         }
 
-        public double getMemoryPercentUsed() {
+        public double getMemoryPercentUsed()
+        {
             return memoryPercentUsed;
         }
 
-        public long getTimestamp() {
+        public long getTimestamp()
+        {
             return timestamp;
         }
     }

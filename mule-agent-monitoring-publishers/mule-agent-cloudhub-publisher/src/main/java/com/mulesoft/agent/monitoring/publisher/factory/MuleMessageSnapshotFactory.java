@@ -30,11 +30,13 @@ public class MuleMessageSnapshotFactory
             this.timestamp = timestamp;
         }
 
-        public long getMessageCount() {
+        public long getMessageCount()
+        {
             return messageCount;
         }
 
-        public long getTimestamp() {
+        public long getTimestamp()
+        {
             return timestamp;
         }
     }
