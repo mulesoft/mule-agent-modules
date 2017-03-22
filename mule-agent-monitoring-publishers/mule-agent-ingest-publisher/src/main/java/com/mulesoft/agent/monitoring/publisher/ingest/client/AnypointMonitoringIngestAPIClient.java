@@ -114,7 +114,7 @@ public final class AnypointMonitoringIngestAPIClient
         headers.put(APPLICATION_NAME_HEADER, Lists.newArrayList(applicationName));
         Response httpResponse = this.authProxyClient.post(this.applicationMetricsPath, body, headers);
 
-        if (javax.ws.rs.core.Response.Status.Family.familyOf(httpResponse.getStatusCode()) == javax.ws.rs.core.Response.Status.Family.SUCCESSFUL)
+        if (javax.ws.rs.core.Response.Status.Family.familyOf(httpResponse.getStatusCode()) != javax.ws.rs.core.Response.Status.Family.SUCCESSFUL)
         {
             LOGGER.warn(String.format("Post of application metrics for %s failed with status %d", applicationName, httpResponse.getStatusCode()));
             if (LOGGER.isDebugEnabled())
