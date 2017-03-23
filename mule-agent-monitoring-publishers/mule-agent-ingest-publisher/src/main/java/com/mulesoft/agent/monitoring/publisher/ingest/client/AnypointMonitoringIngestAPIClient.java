@@ -81,7 +81,7 @@ public final class AnypointMonitoringIngestAPIClient
     {
         Response httpResponse = this.authProxyClient.post(this.targetMetricsPath, body);
 
-        if (javax.ws.rs.core.Response.Status.Family.familyOf(httpResponse.getStatusCode()) == javax.ws.rs.core.Response.Status.Family.SUCCESSFUL)
+        if (javax.ws.rs.core.Response.Status.Family.familyOf(httpResponse.getStatusCode()) != javax.ws.rs.core.Response.Status.Family.SUCCESSFUL)
         {
             LOGGER.warn("Post of target metrics failed with status " + httpResponse.getStatusCode());
             if (LOGGER.isDebugEnabled())
