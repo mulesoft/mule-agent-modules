@@ -1,5 +1,11 @@
 package com.mulesoft.agent.eventtracking.db;
 
+import com.fasterxml.uuid.Generators;
+import com.google.common.net.MediaType;
+import com.mulesoft.agent.common.internalhandler.AbstractDBInternalHandler;
+import com.mulesoft.agent.configuration.Configurable;
+import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
+
 import java.lang.annotation.Annotation;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -8,13 +14,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
-
-import com.fasterxml.uuid.Generators;
-import com.mulesoft.agent.common.internalhandler.AbstractDBInternalHandler;
-import com.mulesoft.agent.configuration.Configurable;
-import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -93,7 +95,7 @@ public class EventTrackingDBInternalHandler extends AbstractDBInternalHandler<Ag
         statement.setString(parameterIndex++, id.toString());
         statement.setString(parameterIndex++, notification.getAction());
         statement.setString(parameterIndex++, notification.getApplication());
-        statement.setString(parameterIndex++, notification.getMuleMessage());
+        statement.setString(parameterIndex++, getPayloadAsString(notification));
         statement.setString(parameterIndex++, notification.getNotificationType());
         statement.setString(parameterIndex++, notification.getPath());
         statement.setString(parameterIndex++, notification.getResourceIdentifier());
@@ -103,6 +105,16 @@ public class EventTrackingDBInternalHandler extends AbstractDBInternalHandler<Ag
         statement.addBatch();
 
         return id;
+    }
+
+    private String getPayloadAsString(AgentTrackingNotification notification)
+    {
+        if (notification.getEvent() == null || notification.getEvent().getMessage() == null || notification.getEvent().getMessage().getPayload().getContent() == null)
+        {
+            return null;
+        }
+        return new String(notification.getEvent().getMessage().getPayload().getContent(),
+                          MediaType.parse(notification.getEvent().getMessage().getPayload().getDataType().getMediaType()).charset().get());
     }
 
     private void insertAnnotations(PreparedStatement statement, UUID eventId, List<Annotation> annotations)
