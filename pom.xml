@@ -2,7 +2,7 @@
 
     <groupId>com.mulesoft.agent</groupId>
     <artifactId>mule-agent-modules</artifactId>
-    <version>1.6.3-mule-4.x-M5</version>
+    <version>1.6.5-mule-4-M5.x-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modelVersion>4.0.0</modelVersion>
@@ -31,7 +31,7 @@
     </modules>
 
     <properties>
-        <mule.agent.api.version>1.6.3-mule-4.x-M5</mule.agent.api.version>
+        <mule.agent.api.version>1.6.5-mule-4-M5.x-SNAPSHOT</mule.agent.api.version>
 
         <async.http.client.version>1.9.39</async.http.client.version>
         <aws.sdk.version>1.6.0</aws.sdk.version>
