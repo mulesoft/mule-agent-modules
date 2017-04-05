@@ -7,7 +7,7 @@
 
 package com.mulesoft.agent.common.internalhandler.splunk.transport.config;
 
-import com.mulesoft.agent.AgentConfigurationException;
+import com.mulesoft.agent.exception.AgentConfigurationException;
 import com.mulesoft.agent.common.internalhandler.AbstractSplunkInternalHandler;
 import com.mulesoft.agent.common.internalhandler.splunk.DummySplunkInternalHandler;
 import org.junit.Test;
