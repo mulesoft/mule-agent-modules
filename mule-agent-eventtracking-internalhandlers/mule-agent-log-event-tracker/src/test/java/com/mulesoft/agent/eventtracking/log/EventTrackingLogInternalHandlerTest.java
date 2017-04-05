@@ -4,7 +4,7 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mulesoft.agent.AgentEnableOperationException;
+import com.mulesoft.agent.exception.AgentEnableOperationException;
 import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
 
 import org.junit.Ignore;

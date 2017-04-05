@@ -15,7 +15,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mulesoft.agent.AgentEnableOperationException;
+import com.mulesoft.agent.exception.AgentEnableOperationException;
 import com.mulesoft.module.client.model.HttpEvent;
 import com.mulesoft.module.client.model.HttpEventBuilder;
 import com.mulesoft.module.client.model.PolicyViolation;
