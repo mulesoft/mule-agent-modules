@@ -8,7 +8,7 @@
 
 package com.mulesoft.agent.monitoring.publisher;
 
-import com.mulesoft.agent.AgentEnableOperationException;
+import com.mulesoft.agent.exception.AgentEnableOperationException;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.PostConfigure;
 import com.mulesoft.agent.handlers.InternalMessageHandler;

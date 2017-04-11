@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.nio.charset.Charset;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mulesoft.agent.AgentEnableOperationException;
+import com.mulesoft.agent.exception.AgentEnableOperationException;
 import com.mulesoft.agent.common.internalhandler.serializer.DefaultObjectMapperFactory;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.PostConfigure;
