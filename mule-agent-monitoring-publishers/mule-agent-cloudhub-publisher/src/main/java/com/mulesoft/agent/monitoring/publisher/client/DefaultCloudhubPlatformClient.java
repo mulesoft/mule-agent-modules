@@ -116,9 +116,5 @@ public class DefaultCloudhubPlatformClient implements CloudhubPlatformClient
             LOGGER.warn("Could not send request to Cloudhub Platform service", e);
             return false;
         }
-        finally
-        {
-            httpClient.closeAsynchronously();
-        }
     }
 }
