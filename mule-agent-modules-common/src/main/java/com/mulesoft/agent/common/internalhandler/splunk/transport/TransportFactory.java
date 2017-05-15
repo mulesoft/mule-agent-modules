@@ -7,7 +7,7 @@
 
 package com.mulesoft.agent.common.internalhandler.splunk.transport;
 
-import com.mulesoft.agent.AgentConfigurationException;
+import com.mulesoft.agent.exception.AgentConfigurationException;
 
 /**
  * @author Walter Poch

@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mulesoft.agent.AgentEnableOperationException;
+import com.mulesoft.agent.exception.AgentEnableOperationException;
 import com.mulesoft.agent.handlers.exception.InitializationException;
 import com.mulesoft.module.client.model.HttpEvent;
 

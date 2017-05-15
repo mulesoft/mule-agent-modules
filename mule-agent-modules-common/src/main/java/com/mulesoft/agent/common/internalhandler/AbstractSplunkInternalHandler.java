@@ -3,7 +3,7 @@ package com.mulesoft.agent.common.internalhandler;
 import java.util.Collection;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mulesoft.agent.AgentConfigurationException;
+import com.mulesoft.agent.exception.AgentConfigurationException;
 import com.mulesoft.agent.buffer.BufferConfiguration;
 import com.mulesoft.agent.buffer.BufferExhaustedAction;
 import com.mulesoft.agent.buffer.BufferType;

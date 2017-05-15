@@ -8,7 +8,7 @@
 
 package com.mulesoft.agent.monitoring.publisher;
 
-import com.mulesoft.agent.AgentEnableOperationException;
+import com.mulesoft.agent.exception.AgentEnableOperationException;
 import com.mulesoft.agent.domain.monitoring.Metric;
 import com.mulesoft.agent.services.OnOffSwitch;
 import org.junit.Assert;
