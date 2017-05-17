@@ -58,10 +58,11 @@ public class FlowSourceCloudhubInternalHandler extends BufferedHandler<FlowSourc
     @Override
     protected boolean flush(Collection<FlowSourceEvent> messages)
     {
-        LOGGER.debug("Flushing tracking payloads");
+        LOGGER.trace("Flushing tracking payloads");
         try
         {
             replayStore.putFlowSourceEvent(messages);
+            LOGGER.trace("Flushed tracking payloads");
             return true;
         }
         catch (S3StorageException ex)

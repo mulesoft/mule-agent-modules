@@ -49,7 +49,7 @@ public class EventTrackingCloudhubInternalHandler extends BufferedHandler<AgentT
     @Override
     protected boolean flush(Collection<AgentTrackingNotification> notifications)
     {
-        LOGGER.debug("Flushing events to cloudhub platform");
+        LOGGER.trace("Flushing events to cloudhub platform");
         try
         {
             List<InsightEvent> events = new ArrayList<>(notifications.size());
@@ -58,6 +58,7 @@ public class EventTrackingCloudhubInternalHandler extends BufferedHandler<AgentT
                 events.add(AgentNotificationTransformer.toInsightEvent(notification));
             }
             insightClient.sendInsight(events);
+            LOGGER.trace("Flushed events to cloudhub platform");
             return true;
         }
         catch (InsightException ex)

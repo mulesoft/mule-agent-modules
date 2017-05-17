@@ -96,14 +96,14 @@ public class CloudhubInsightClient implements InsightClient
                     .setBody(MAPPER.writeValueAsString(events))
                     .setBodyEncoding("UTF-8")
                     .build();
-            LOGGER.debug("Sending insight events to cloudhub platform");
+            LOGGER.trace("Sending insight events to cloudhub platform");
             Response response = httpClient.executeRequest(request).get();
             if (response.getStatusCode() != HttpURLConnection.HTTP_OK)
             {
                 throw new InsightSendingException(String.format(
                         "Error sending tracking events to platform, status code: %s", response.getStatusCode()));
             }
-            LOGGER.debug("Sent insight events to cloudhub platform");
+            LOGGER.trace("Sent insight events to cloudhub platform");
         }
         catch (JsonProcessingException e)
         {

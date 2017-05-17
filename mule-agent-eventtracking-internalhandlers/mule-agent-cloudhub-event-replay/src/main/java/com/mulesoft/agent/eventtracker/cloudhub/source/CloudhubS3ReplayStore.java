@@ -74,7 +74,9 @@ public class CloudhubS3ReplayStore implements ReplayStore
     public FlowSourceEvent getFlowSourceEvent(String appName, String flowName, String transactionId,
             ClassLoader appClassLoader)
     {
+        LOGGER.trace("Fetch event for {} {} {}", appName, flowName, transactionId);
         S3Object inputStream = s3.getFileVersion(bucket, objectName(appName, transactionId, flowName), null);
+        LOGGER.trace("Got stream {}", inputStream);
         if (inputStream == null)
         {
             return null;
@@ -87,6 +89,7 @@ public class CloudhubS3ReplayStore implements ReplayStore
             event.setFlowName(flowName);
             event.setMessageId(transactionId);
         }
+        LOGGER.trace("Got flow source event {}", event);
         return event;
     }
 
@@ -108,17 +111,17 @@ public class CloudhubS3ReplayStore implements ReplayStore
 
     void putFlowSourceEvent(FlowSourceEvent event)
     {
-        LOGGER.debug("check event {}", event.getMessageId());
+        LOGGER.trace("Check flow source event {}", event.getMessageId());
         String path = objectName(event);
         ObjectMetadata value = s3.getFileVersionMetadata(bucket, path, null);
         if (value == null)
         {
-            LOGGER.debug("putting event {} to s3", event.getMessageId());
+            LOGGER.trace("Putting flow source event {} to s3", event.getMessageId());
             byte[] bytes = FlowSourceStreamCodec.toBytes(event);
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength(bytes.length);
             s3.putFileVersion(bucket, path, new ByteArrayInputStream(bytes), metadata);
-            LOGGER.debug("put event {} to s3", event.getMessageId());
+            LOGGER.trace("Put flow source event {} to s3", event.getMessageId());
         }
     }
 
