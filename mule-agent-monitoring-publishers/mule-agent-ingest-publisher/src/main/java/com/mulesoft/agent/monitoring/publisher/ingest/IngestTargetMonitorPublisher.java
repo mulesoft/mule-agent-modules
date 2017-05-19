@@ -8,6 +8,7 @@
 
 package com.mulesoft.agent.monitoring.publisher.ingest;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +45,7 @@ import static com.mulesoft.agent.domain.RuntimeEnvironment.STANDALONE;
 @Singleton
 @Named("mule.agent.ingest.target.metrics.internal.handler")
 @NotAvailableOn(environment = {ON_PREM, STANDALONE})
-public class IngestTargetMonitorPublisher extends IngestMonitorPublisher<List<Metric>>
+public class IngestTargetMonitorPublisher extends IngestMonitorPublisher<ArrayList<Metric>>
 {
 
     private static final Logger LOGGER = LogManager.getLogger(IngestTargetMonitorPublisher.class);
@@ -75,7 +76,7 @@ public class IngestTargetMonitorPublisher extends IngestMonitorPublisher<List<Me
      * @param collection Buffer contents.
      * @return Processed target metrics ready to be sent to ingest API.
      */
-    private Map<String, Set<IngestMetric>> processTargetMetrics(Collection<List<Metric>> collection)
+    private Map<String, Set<IngestMetric>> processTargetMetrics(Collection<ArrayList<Metric>> collection)
     {
 
         Map<String, Set<IngestMetric>> result = Maps.newHashMap();
@@ -134,7 +135,7 @@ public class IngestTargetMonitorPublisher extends IngestMonitorPublisher<List<Me
      * @param collection Buffer contents.
      * @return Whether the run was successful or not.
      */
-    protected boolean send(Collection<List<Metric>> collection)
+    protected boolean send(Collection<ArrayList<Metric>> collection)
     {
         LOGGER.debug("Publishing target metrics to ingest api.");
         try

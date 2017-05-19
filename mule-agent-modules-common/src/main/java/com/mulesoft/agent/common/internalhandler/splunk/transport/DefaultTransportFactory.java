@@ -15,6 +15,8 @@ import com.mulesoft.agent.common.internalhandler.splunk.transport.config.TCPTran
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import java.io.Serializable;
+
 
 /**
  * <p>
@@ -27,7 +29,7 @@ import org.apache.logging.log4j.Logger;
  *         created on 10/28/15
  * @since 1.3.0
  */
-public class DefaultTransportFactory<T> implements TransportFactory<T>
+public class DefaultTransportFactory<T extends Serializable> implements TransportFactory<T>
 {
     private static final Logger LOGGER = LogManager.getLogger(DefaultTransportFactory.class);
 

@@ -1,5 +1,6 @@
 package com.mulesoft.agent.monitoring.publisher;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.inject.Inject;
@@ -26,7 +27,7 @@ import org.apache.logging.log4j.Logger;
 @Named("mule.agent.cloudhub.memory.internal.handler")
 @Singleton
 public class CloudhubMemoryMetricPublisher
-        extends BufferedHandler<List<Metric>>
+        extends BufferedHandler<ArrayList<Metric>>
 {
 
     private static final Logger LOGGER = LogManager.getLogger(
@@ -62,13 +63,13 @@ public class CloudhubMemoryMetricPublisher
     }
 
     @Override
-    protected boolean canHandle(List<Metric> metrics)
+    protected boolean canHandle(ArrayList<Metric> metrics)
     {
         return true;
     }
 
     @Override
-    protected boolean flush(Collection<List<Metric>> collection)
+    protected boolean flush(Collection<ArrayList<Metric>> collection)
     {
         boolean success = false;
         try

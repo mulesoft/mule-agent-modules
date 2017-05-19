@@ -19,6 +19,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -51,7 +52,7 @@ public class GraphiteMonitorPublisherTest
     public void ifDisabledDoNothing() throws AgentEnableOperationException
     {
         when(enabledSwitch.isEnabled()).thenReturn(false);
-        List<Metric> testMetrics = new LinkedList<Metric>();
+        ArrayList<Metric> testMetrics = new ArrayList<Metric>();
         Metric mockedMetric = mock(Metric.class);
         testMetrics.add(mockedMetric);
         Assert.assertFalse(publisher.handle(testMetrics));
@@ -63,7 +64,7 @@ public class GraphiteMonitorPublisherTest
     @Test
     public void failWhenAddressIsWrong()
     {
-        List<Metric> testMetrics = new LinkedList<Metric>();
+        ArrayList<Metric> testMetrics = new ArrayList<Metric>();
         Metric mockedMetric = mock(Metric.class);
         testMetrics.add(mockedMetric);
         assertTrue(publisher.handle(testMetrics));
@@ -74,7 +75,7 @@ public class GraphiteMonitorPublisherTest
     @Test
     public void doHandle() throws IOException, InterruptedException
     {
-        List<Metric> testMetrics = new LinkedList<Metric>();
+        ArrayList<Metric> testMetrics = new ArrayList<Metric>();
         Metric mockedMetric = mock(Metric.class);
         when(mockedMetric.getName()).thenReturn("aName");
         when(mockedMetric.getName()).thenReturn("aValue");

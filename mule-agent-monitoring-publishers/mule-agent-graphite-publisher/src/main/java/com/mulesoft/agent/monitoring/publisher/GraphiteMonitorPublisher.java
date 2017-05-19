@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.inject.Inject;
@@ -36,7 +37,7 @@ import org.apache.logging.log4j.Logger;
  */
 @Named("mule.agent.graphite.jmx.internal.handler")
 @Singleton
-public class GraphiteMonitorPublisher extends BufferedHandler<List<Metric>>
+public class GraphiteMonitorPublisher extends BufferedHandler<ArrayList<Metric>>
 {
     private static final Logger LOGGER = LogManager.getLogger(GraphiteMonitorPublisher.class);
 
@@ -82,13 +83,13 @@ public class GraphiteMonitorPublisher extends BufferedHandler<List<Metric>>
     }
 
     @Override
-    public boolean canHandle(@NotNull List<Metric> metrics)
+    public boolean canHandle(@NotNull ArrayList<Metric> metrics)
     {
         return true;
     }
 
     @Override
-    public boolean flush(@NotNull Collection<List<Metric>> listOfMetrics)
+    public boolean flush(@NotNull Collection<ArrayList<Metric>> listOfMetrics)
     {
         Socket graphiteConnection = null;
         OutputStreamWriter out = null;

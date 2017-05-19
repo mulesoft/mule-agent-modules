@@ -26,7 +26,7 @@ public class CloudhubMemoryMetricPublisherTest {
     public void testSendStats() {
         Mockito.doReturn(true)
                .when(client).sendMemoryStats(Mockito.any(MemorySnapshotFactory.MemorySnapshot.class));
-        Collection<List<Metric>> input = setup();
+        Collection<ArrayList<Metric>> input = setup();
 
         assertTrue("Flush should complete", publisher.flush(input));
         Mockito.verify(client).sendMemoryStats(Mockito.any(MemorySnapshotFactory.MemorySnapshot.class));
@@ -34,18 +34,18 @@ public class CloudhubMemoryMetricPublisherTest {
 
     @Test
     public void testSendStatsException() {
-        Collection<List<Metric>> input = setup();
+        Collection<ArrayList<Metric>> input = setup();
         Mockito.doThrow(new RuntimeException())
                .when(client).sendMemoryStats(Mockito.any(MemorySnapshotFactory.MemorySnapshot.class));
 
         assertFalse("Flush should fail", publisher.flush(input));
     }
 
-    private Collection<List<Metric>> setup() {
+    private Collection<ArrayList<Metric>> setup() {
         Metric memoryMax = new Metric(1486668276960L, SupportedJMXBean.HEAP_TOTAL.getMetricName(), 10000L);
         Metric memoryUsed = new Metric(1486668276960L, SupportedJMXBean.HEAP_USAGE.getMetricName(), 1000L);
 
-        Collection<List<Metric>> l = new ArrayList<>();
+        Collection<ArrayList<Metric>> l = new ArrayList<>();
         l.add(new ArrayList<>(Arrays.asList(memoryMax, memoryUsed)));
         return l;
     }

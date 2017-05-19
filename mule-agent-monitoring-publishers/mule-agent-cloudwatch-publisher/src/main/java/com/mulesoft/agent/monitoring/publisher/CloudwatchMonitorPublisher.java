@@ -8,6 +8,7 @@
 
 package com.mulesoft.agent.monitoring.publisher;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
@@ -34,7 +35,7 @@ import com.mulesoft.agent.services.OnOffSwitch;
  */
 @Named("cloudwatch.agent.monitor.publisher")
 @Singleton
-public class CloudwatchMonitorPublisher extends BufferedHandler<List<Metric>>
+public class CloudwatchMonitorPublisher extends BufferedHandler<ArrayList<Metric>>
 {
     /**
      * <p>
@@ -73,13 +74,13 @@ public class CloudwatchMonitorPublisher extends BufferedHandler<List<Metric>>
     }
 
     @Override
-    public boolean canHandle(@NotNull List<Metric> metrics)
+    public boolean canHandle(@NotNull ArrayList<Metric> metrics)
     {
         return true;
     }
 
     @Override
-    public boolean flush(@NotNull Collection<List<Metric>> listOfMetrics)
+    public boolean flush(@NotNull Collection<ArrayList<Metric>> listOfMetrics)
     {
         AWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
         AmazonCloudWatchAsyncClient cloudWatchClient = new AmazonCloudWatchAsyncClient(credentials);

@@ -6,6 +6,7 @@
  */
 
 package com.mulesoft.agent.common.internalhandler.splunk;
+import java.io.Serializable;
 
 import com.mulesoft.agent.common.internalhandler.AbstractSplunkInternalHandler;
 
@@ -13,6 +14,6 @@ import com.mulesoft.agent.common.internalhandler.AbstractSplunkInternalHandler;
  * @author Walter Poch
  *         created on 10/29/15
  */
-public class DummySplunkInternalHandler<T> extends AbstractSplunkInternalHandler<T>
+public class DummySplunkInternalHandler<T extends Serializable> extends AbstractSplunkInternalHandler<T>
 {
 }

@@ -16,6 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -58,7 +59,7 @@ public class CloudwatchMonitorPublisherTest
     public void ifDisabledDoNothing() throws AgentEnableOperationException
     {
         when(enabledSwitch.isEnabled()).thenReturn(false);
-        List<Metric> testMetrics = new LinkedList<Metric>();
+        ArrayList<Metric> testMetrics = new ArrayList<>();
         Metric mockedMetric = mock(Metric.class);
         testMetrics.add(mockedMetric);
         Assert.assertFalse(publisher.handle(testMetrics));
