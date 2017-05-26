@@ -49,6 +49,9 @@ public class CloudhubInsightClientTest
     {
         System.setProperty("application.id", "appId");
         System.setProperty("ion.api.token", "appToken");
+        System.setProperty("csorganization.id", "orgId");
+        System.setProperty("environment.id", "envId");
+        System.setProperty("server.id", "workerId");
         System.setProperty("platform.services.endpoint", "http://platform");
         client = new CloudhubInsightClient(1000, 2000);
         client.init();
@@ -85,6 +88,27 @@ public class CloudhubInsightClientTest
     }
 
     @Test(expected = InitializationException.class)
+    public void testMissingCsOrgId() throws InitializationException
+    {
+        System.clearProperty("csorganization.id");
+        client.init();
+    }
+
+    @Test(expected = InitializationException.class)
+    public void testMissingEnvId() throws InitializationException
+    {
+        System.clearProperty("environment.id");
+        client.init();
+    }
+
+    @Test(expected = InitializationException.class)
+    public void testMissingWorkerId() throws InitializationException
+    {
+        System.clearProperty("server.id");
+        client.init();
+    }
+
+    @Test(expected = InitializationException.class)
     public void testMissingPlatformHost() throws InitializationException
     {
         System.clearProperty("platform.services.endpoint");
@@ -100,7 +124,9 @@ public class CloudhubInsightClientTest
         verify(httpClient, times(1)).executeRequest(requestCaptor.capture());
 
         assertEquals("PUT", requestCaptor.getValue().getMethod());
-        assertEquals("http://platform/v2/tracking/appId/events", requestCaptor.getValue().getUrl());
+        assertEquals(
+                "http://platform/v2/tracking/organizations/orgId/environments/envId/applications/appId/workers/workerId/events",
+                requestCaptor.getValue().getUrl());
         assertEquals(3, requestCaptor.getValue().getHeaders().size());
         assertEquals(Arrays.asList("application/json; charset=UTF-8"),
                 requestCaptor.getValue().getHeaders().get("Content-Type"));

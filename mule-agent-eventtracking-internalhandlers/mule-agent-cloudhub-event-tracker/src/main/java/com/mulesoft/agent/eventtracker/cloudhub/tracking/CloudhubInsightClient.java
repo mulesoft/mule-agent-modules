@@ -36,10 +36,13 @@ public class CloudhubInsightClient implements InsightClient
 
     private static final Logger LOGGER = LogManager.getLogger(CloudhubInsightClient.class);
 
-    private static final String INSIGHTS_PATH_FORMAT = "%s/v2/tracking/%s/events";
+    private static final String INSIGHTS_PATH_FORMAT = "%s/v2/tracking/organizations/%s/environments/%s/applications/%s/workers/%s/events";
 
     private static final String APP_ID_PROPERTY = "application.id";
     private static final String APP_TOKEN_PROPERTY = "ion.api.token";
+    private static final String CS_ORG_ID_PROPERTY = "csorganization.id";
+    private static final String ENV_ID_PROPERTY = "environment.id";
+    private static final String SERVER_ID_PROPERTY = "server.id";
     private static final String PLATFORM_HOST_PROPERTY = "platform.services.endpoint";
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
@@ -70,12 +73,16 @@ public class CloudhubInsightClient implements InsightClient
     {
         appId = System.getProperty(APP_ID_PROPERTY);
         appToken = System.getProperty(APP_TOKEN_PROPERTY);
+        String orgId = System.getProperty(CS_ORG_ID_PROPERTY);
+        String envId = System.getProperty(ENV_ID_PROPERTY);
+        String workerId = System.getProperty(SERVER_ID_PROPERTY);
         String platformHost = System.getProperty(PLATFORM_HOST_PROPERTY);
-        if (appId == null || appToken == null || platformHost == null)
+        if (appId == null || appToken == null || orgId == null || envId == null || workerId == null
+                || platformHost == null)
         {
-            throw new InitializationException("Missing application id or application token or platform host!");
+            throw new InitializationException("Missing application meta info for insights!");
         }
-        insightPath = String.format(INSIGHTS_PATH_FORMAT, platformHost, appId);
+        insightPath = String.format(INSIGHTS_PATH_FORMAT, platformHost, orgId, envId, appId, workerId);
 
         Builder builder = new Builder().setCompressionEnforced(true)
                 .setConnectTimeout(connectionTimeoutMilli)
