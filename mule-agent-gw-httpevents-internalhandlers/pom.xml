@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.mulesoft.agent</groupId>
         <artifactId>mule-agent-modules</artifactId>
-        <version>1.7.0-mule-3.x-SNAPSHOT</version>
+        <version>1.7.1-mule-3.x-SNAPSHOT</version>
     </parent>
 
     <packaging>pom</packaging>
