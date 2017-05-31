@@ -1,5 +1,10 @@
 package com.mulesoft.agent.eventtracking.db;
 
+import com.fasterxml.uuid.Generators;
+import com.mulesoft.agent.common.internalhandler.AbstractDBInternalHandler;
+import com.mulesoft.agent.configuration.Configurable;
+import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
+
 import java.lang.annotation.Annotation;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -8,13 +13,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
-
-import com.fasterxml.uuid.Generators;
-import com.mulesoft.agent.common.internalhandler.AbstractDBInternalHandler;
-import com.mulesoft.agent.configuration.Configurable;
-import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -95,7 +96,7 @@ public class EventTrackingDBInternalHandler extends AbstractDBInternalHandler<Ag
         statement.setString(parameterIndex++, notification.getApplication());
         statement.setString(parameterIndex++, notification.getMuleMessage());
         statement.setString(parameterIndex++, notification.getNotificationType());
-        statement.setString(parameterIndex++, notification.getPath());
+        statement.setString(parameterIndex++, notification.getComponentLocation().getLocation());
         statement.setString(parameterIndex++, notification.getResourceIdentifier());
         statement.setLong(parameterIndex++, notification.getTimestamp());
         statement.setString(parameterIndex, notification.getSource());
