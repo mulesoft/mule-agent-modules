@@ -7,15 +7,15 @@
 
 package com.mulesoft.agent.eventtracker.analytics;
 
-import java.io.IOException;
-import java.util.Map;
-import java.util.UUID;
-
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
+
+import java.io.IOException;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * <p>
@@ -45,7 +45,7 @@ public class AnalyticsEventSerializer extends JsonSerializer<AgentTrackingNotifi
             jgen.writeStringField("type", analyticsEventType == null ? "" : analyticsEventType.name());
             jgen.writeNumberField("timestamp", value.getTimestamp());
             jgen.writeStringField("flowName", value.getResourceIdentifier());
-            jgen.writeStringField("path", value.getPath());
+            jgen.writeStringField("path", value.getComponentLocation().getLocation());
             jgen.writeFieldName("customProperties");
             jgen.writeStartObject();
             if (value.getCustomEventProperties() != null)
