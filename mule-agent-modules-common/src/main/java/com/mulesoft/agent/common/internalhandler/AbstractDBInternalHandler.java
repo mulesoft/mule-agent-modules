@@ -17,13 +17,14 @@ import com.mulesoft.agent.handlers.exception.InitializationException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import java.io.Serializable;
 
 /**
  * Database internal handler.
  *
  * @param <T> Message type.
  */
-public abstract class AbstractDBInternalHandler<T> extends BufferedHandler<T>
+public abstract class AbstractDBInternalHandler<T extends Serializable> extends BufferedHandler<T>
 {
     private static final Logger LOGGER = LogManager.getLogger(AbstractDBInternalHandler.class);
     private static final int DEFAULT_BUFFER_RETRY_COUNT = 3;

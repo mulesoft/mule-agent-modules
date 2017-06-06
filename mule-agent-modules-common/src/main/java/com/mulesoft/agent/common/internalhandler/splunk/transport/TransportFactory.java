@@ -10,8 +10,6 @@ package com.mulesoft.agent.common.internalhandler.splunk.transport;
 import com.mulesoft.agent.exception.AgentConfigurationException;
 
 /**
- * @author Walter Poch
- *         created on 10/28/15
  * @param <T> Message type.
  */
 public interface TransportFactory<T>

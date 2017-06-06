@@ -13,6 +13,8 @@ import com.mulesoft.agent.common.internalhandler.splunk.transport.DefaultTranspo
 import com.mulesoft.agent.common.internalhandler.splunk.transport.Transport;
 import com.mulesoft.agent.common.internalhandler.splunk.transport.TransportFactory;
 import com.mulesoft.agent.configuration.Configurable;
+import java.io.Serializable;
+
 import com.mulesoft.agent.configuration.Password;
 import com.mulesoft.agent.configuration.Type;
 import com.mulesoft.agent.handlers.exception.InitializationException;
@@ -24,7 +26,7 @@ import org.apache.logging.log4j.Logger;
  * Abstract splunk internal handler.
  * @param <T> Message type.
  */
-public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T>
+public abstract class AbstractSplunkInternalHandler<T extends Serializable> extends BufferedHandler<T>
 {
     private static final Logger LOGGER = LogManager.getLogger();
 

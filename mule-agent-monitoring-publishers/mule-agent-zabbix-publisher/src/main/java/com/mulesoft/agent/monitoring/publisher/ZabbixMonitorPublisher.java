@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.inject.Inject;
@@ -36,7 +37,7 @@ import org.apache.logging.log4j.Logger;
  */
 @Named("mule.agent.zabbix.jmx.internal.handler")
 @Singleton
-public class ZabbixMonitorPublisher extends BufferedHandler<List<Metric>>
+public class ZabbixMonitorPublisher extends BufferedHandler<ArrayList<Metric>>
 {
     private static final Logger LOGGER = LogManager.getLogger(ZabbixMonitorPublisher.class);
 
@@ -89,13 +90,13 @@ public class ZabbixMonitorPublisher extends BufferedHandler<List<Metric>>
     }
 
     @Override
-    public boolean canHandle(@NotNull List<Metric> metrics)
+    public boolean canHandle(@NotNull ArrayList<Metric> metrics)
     {
         return true;
     }
 
     @Override
-    public boolean flush(@NotNull Collection<List<Metric>> listOfMetrics)
+    public boolean flush(@NotNull Collection<ArrayList<Metric>> listOfMetrics)
     {
         Socket zabbixConnection = null;
         OutputStream out = null;

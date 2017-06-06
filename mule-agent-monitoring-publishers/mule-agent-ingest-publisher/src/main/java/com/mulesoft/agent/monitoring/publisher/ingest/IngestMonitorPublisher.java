@@ -1,5 +1,6 @@
 package com.mulesoft.agent.monitoring.publisher.ingest;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import javax.inject.Inject;
@@ -30,7 +31,7 @@ import org.apache.commons.lang.StringUtils;
  *
  * @param <T> The type of metric being pushed by the publisher.
  */
-public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
+public abstract class IngestMonitorPublisher<T extends Serializable> extends BufferedHandler<T>
 {
 
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SZ";

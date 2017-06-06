@@ -4,6 +4,8 @@
 /.jruby
 *.iml
 *.ipr
+*.releaseBackup
+release.properties
 *.iws
 /target
 .DS_Store*

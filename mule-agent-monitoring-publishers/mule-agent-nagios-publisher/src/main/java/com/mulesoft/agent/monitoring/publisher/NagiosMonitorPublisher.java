@@ -9,6 +9,7 @@
 package com.mulesoft.agent.monitoring.publisher;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.inject.Inject;
@@ -40,7 +41,7 @@ import org.apache.logging.log4j.Logger;
  */
 @Named("mule.agent.nagios.jmx.internal.handler")
 @Singleton
-public class NagiosMonitorPublisher extends BufferedHandler<List<Metric>>
+public class NagiosMonitorPublisher extends BufferedHandler<ArrayList<Metric>>
 {
     private static final Logger LOGGER = LogManager.getLogger(NagiosMonitorPublisher.class);
 
@@ -72,13 +73,13 @@ public class NagiosMonitorPublisher extends BufferedHandler<List<Metric>>
     }
 
     @Override
-    public boolean canHandle(@NotNull List<Metric> metrics)
+    public boolean canHandle(@NotNull ArrayList<Metric> metrics)
     {
         return true;
     }
 
     @Override
-    public boolean flush(Collection<List<Metric>> listOfMetrics)
+    public boolean flush(Collection<ArrayList<Metric>> listOfMetrics)
     {
         Encryption encryption = Encryption.NONE;
 
