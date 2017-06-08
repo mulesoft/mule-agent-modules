@@ -17,6 +17,8 @@
         <module>mule-agent-log-event-tracker</module>
         <module>mule-agent-analytics-event-tracker</module>
         <module>mule-agent-http-event-tracker</module>
+        <module>mule-agent-cloudhub-event-tracker</module>
+        <module>mule-agent-cloudhub-event-replay</module>
     </modules>
 
     <properties>
