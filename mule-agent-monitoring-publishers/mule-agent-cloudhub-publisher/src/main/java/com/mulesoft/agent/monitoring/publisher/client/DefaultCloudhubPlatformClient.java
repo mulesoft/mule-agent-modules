@@ -40,8 +40,8 @@ public class DefaultCloudhubPlatformClient implements CloudhubPlatformClient
     private static final String PLATFORM_HOST = System.getProperty("platform.services.endpoint");
     private static final String AWS_INSTANCE_ID = System.getProperty("server.id");
 
-    private static String CH_API_TOKEN = System.getProperty("ion.api.token");
-    private static String CH_APP_ID = System.getProperty("application.id");
+    private String CHApiToken;
+    private String CHApplicationId;
 
     @Configurable("5000")
     private int connectionTimeoutMilli;
@@ -53,10 +53,13 @@ public class DefaultCloudhubPlatformClient implements CloudhubPlatformClient
     @PostConfigure
     public void init()
     {
+        CHApiToken = System.getProperty("ion.api.token");
+        CHApplicationId = System.getProperty("application.id");
+
         Preconditions.checkNotNull(PLATFORM_HOST);
-        Preconditions.checkNotNull(CH_API_TOKEN);
         Preconditions.checkNotNull(AWS_INSTANCE_ID);
-        Preconditions.checkNotNull(CH_APP_ID);
+        Preconditions.checkNotNull(CHApiToken);
+        Preconditions.checkNotNull(CHApplicationId);
 
         AsyncHttpClientConfig builder = new Builder()
                 .setConnectTimeout(connectionTimeoutMilli)
@@ -92,9 +95,9 @@ public class DefaultCloudhubPlatformClient implements CloudhubPlatformClient
 
     private boolean doPost(String body, String path)
     {
-        if (!canSendStats())
+        if ("na".equals(getCloudHubApplicationId()))
         {
-            // discard stats in the case of a cached instance without a running app
+            // discard in the case of a cached instance without a running app
             return true;
         }
 
@@ -105,8 +108,8 @@ public class DefaultCloudhubPlatformClient implements CloudhubPlatformClient
                 .setBody(body)
                 .setBodyEncoding(StandardCharsets.UTF_8.name())
                 .addHeader("Content-type", "application/json")
-                .addHeader("X-ION-Authenticate", CH_API_TOKEN)
-                .addHeader("X-ION-Application", CH_APP_ID)
+                .addHeader("X-ION-Authenticate", getCloudHubApiToken())
+                .addHeader("X-ION-Application", getCloudHubApplicationId())
                 .build();
 
         try
@@ -126,17 +129,23 @@ public class DefaultCloudhubPlatformClient implements CloudhubPlatformClient
         }
     }
 
-    private boolean canSendStats()
-    {
-        if ("na".equals(CH_APP_ID))
-        {
-            CH_APP_ID = System.getProperty("application.id");
-            CH_API_TOKEN = System.getProperty("ion.api.token");
-            if ("na".equals(CH_APP_ID))
-            {
-                return false;
+    private String getCloudHubApplicationId() {
+        if ("na".equals(this.CHApplicationId)) {
+            String potentialApplicationId = System.getProperty("application.id");
+            if (!"na".equals(potentialApplicationId)) {
+                this.CHApplicationId = potentialApplicationId;
             }
         }
-        return true;
+        return this.CHApplicationId;
+    }
+
+    private String getCloudHubApiToken() {
+        if ("na".equals(this.CHApiToken)) {
+            String potentialApiToken = System.getProperty("ion.api.token");
+            if (!"na".equals(potentialApiToken)) {
+                this.CHApiToken = potentialApiToken;
+            }
+        }
+        return this.CHApiToken;
     }
 }
