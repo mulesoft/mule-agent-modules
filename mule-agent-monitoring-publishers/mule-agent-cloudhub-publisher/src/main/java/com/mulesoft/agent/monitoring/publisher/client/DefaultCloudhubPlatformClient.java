@@ -129,20 +129,26 @@ public class DefaultCloudhubPlatformClient implements CloudhubPlatformClient
         }
     }
 
-    private String getCloudHubApplicationId() {
-        if ("na".equals(this.CHApplicationId)) {
+    private String getCloudHubApplicationId()
+    {
+        if ("na".equals(this.CHApplicationId))
+        {
             String potentialApplicationId = System.getProperty("application.id");
-            if (!"na".equals(potentialApplicationId)) {
+            if (!"na".equals(potentialApplicationId))
+            {
                 this.CHApplicationId = potentialApplicationId;
             }
         }
         return this.CHApplicationId;
     }
 
-    private String getCloudHubApiToken() {
-        if ("na".equals(this.CHApiToken)) {
+    private String getCloudHubApiToken()
+    {
+        if ("na".equals(this.CHApiToken))
+        {
             String potentialApiToken = System.getProperty("ion.api.token");
-            if (!"na".equals(potentialApiToken)) {
+            if (!"na".equals(potentialApiToken))
+            {
                 this.CHApiToken = potentialApiToken;
             }
         }
