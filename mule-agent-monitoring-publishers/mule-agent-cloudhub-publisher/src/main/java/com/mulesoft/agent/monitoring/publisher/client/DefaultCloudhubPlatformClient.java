@@ -36,11 +36,12 @@ public class DefaultCloudhubPlatformClient implements CloudhubPlatformClient
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final Logger LOGGER = LogManager.getLogger(DefaultCloudhubPlatformClient.class);
 
-    // these properties are set by CloudhubPropertiesCoreExtension when mule starts on a worker
+    // these properties are set by CloudhubPropertiesCoreExtension when mule starts
     private static final String PLATFORM_HOST = System.getProperty("platform.services.endpoint");
-    private static final String CH_API_TOKEN = System.getProperty("ion.api.token");
     private static final String AWS_INSTANCE_ID = System.getProperty("server.id");
-    private static final String CH_APP_ID = System.getProperty("application.id");
+
+    private String CHApiToken;
+    private String CHApplicationId;
 
     @Configurable("5000")
     private int connectionTimeoutMilli;
@@ -52,10 +53,13 @@ public class DefaultCloudhubPlatformClient implements CloudhubPlatformClient
     @PostConfigure
     public void init()
     {
+        CHApiToken = System.getProperty("ion.api.token");
+        CHApplicationId = System.getProperty("application.id");
+
         Preconditions.checkNotNull(PLATFORM_HOST);
-        Preconditions.checkNotNull(CH_API_TOKEN);
         Preconditions.checkNotNull(AWS_INSTANCE_ID);
-        Preconditions.checkNotNull(CH_APP_ID);
+        Preconditions.checkNotNull(CHApiToken);
+        Preconditions.checkNotNull(CHApplicationId);
 
         AsyncHttpClientConfig builder = new Builder()
                 .setConnectTimeout(connectionTimeoutMilli)
@@ -91,6 +95,12 @@ public class DefaultCloudhubPlatformClient implements CloudhubPlatformClient
 
     private boolean doPost(String body, String path)
     {
+        if ("na".equals(getCloudHubApplicationId()))
+        {
+            // discard in the case of a cached instance without a running app
+            return true;
+        }
+
         String endpoint = String.format(path, PLATFORM_HOST, AWS_INSTANCE_ID);
         Request req = new RequestBuilder()
                 .setMethod("POST")
@@ -98,9 +108,10 @@ public class DefaultCloudhubPlatformClient implements CloudhubPlatformClient
                 .setBody(body)
                 .setBodyEncoding(StandardCharsets.UTF_8.name())
                 .addHeader("Content-type", "application/json")
-                .addHeader("X-ION-Authenticate", CH_API_TOKEN)
-                .addHeader("X-ION-Application", CH_APP_ID)
+                .addHeader("X-ION-Authenticate", getCloudHubApiToken())
+                .addHeader("X-ION-Application", getCloudHubApplicationId())
                 .build();
+
         try
         {
             Response res = httpClient.executeRequest(req).get();
@@ -116,5 +127,31 @@ public class DefaultCloudhubPlatformClient implements CloudhubPlatformClient
             LOGGER.warn("Could not send request to Cloudhub Platform service", e);
             return false;
         }
+    }
+
+    private String getCloudHubApplicationId()
+    {
+        if ("na".equals(this.CHApplicationId))
+        {
+            String potentialApplicationId = System.getProperty("application.id");
+            if (!"na".equals(potentialApplicationId))
+            {
+                this.CHApplicationId = potentialApplicationId;
+            }
+        }
+        return this.CHApplicationId;
+    }
+
+    private String getCloudHubApiToken()
+    {
+        if ("na".equals(this.CHApiToken))
+        {
+            String potentialApiToken = System.getProperty("ion.api.token");
+            if (!"na".equals(potentialApiToken))
+            {
+                this.CHApiToken = potentialApiToken;
+            }
+        }
+        return this.CHApiToken;
     }
 }
