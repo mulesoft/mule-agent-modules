@@ -62,8 +62,8 @@
 
         <!-- AsyncHttpClient -->
         <dependency>
-            <groupId>com.ning</groupId>
-            <artifactId>async-http-client</artifactId>
+            <groupId>org.glassfish.grizzly</groupId>
+            <artifactId>grizzly-http-client</artifactId>        
         </dependency>
 
         <!-- Test Dependencies -->
