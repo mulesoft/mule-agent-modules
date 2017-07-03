@@ -2,6 +2,10 @@ package com.mulesoft.agent.common.internalhandler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mulesoft.agent.AgentEnableOperationException;
+import com.mulesoft.agent.buffer.BufferConfiguration;
+import com.mulesoft.agent.buffer.BufferExhaustedAction;
+import com.mulesoft.agent.buffer.BufferType;
+import com.mulesoft.agent.buffer.BufferedHandler;
 import com.mulesoft.agent.common.internalhandler.serializer.DefaultObjectMapperFactory;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.PostConfigure;
@@ -26,14 +30,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.Deflater;
 
-public abstract class AbstractLogInternalHandler<T> implements InitializableInternalMessageHandler<T>
+public abstract class AbstractLogInternalHandler<T> extends BufferedHandler<T>
 {
     private final static Logger LOGGER = LoggerFactory.getLogger(AbstractLogInternalHandler.class);
     public static String MULE_HOME_PLACEHOLDER = "$MULE_HOME";
     public static String PATTERN_LAYOUT = "%m%n";
+
+    private static final int DEFAULT_BUFFER_RETRY_COUNT = 3;
+    private static final long DEFAULT_BUFFER_FLUSH_FREQUENCY = 10000L;
+    private static final int DEFAULT_BUFFER_MAXIMUM_CAPACITY = 1000;
+    private static final boolean DEFAULT_DISCARD_ON_FAILURE = false;
 
     private String className = this.getClass().getName();
     private String loggerName = className + "." + "logger";
@@ -112,44 +122,47 @@ public abstract class AbstractLogInternalHandler<T> implements InitializableInte
         return this.objectMapper;
     }
 
-    public void enable(boolean state)
-            throws AgentEnableOperationException
+    @Override
+    public BufferConfiguration getBuffer()
     {
-        this.enabledSwitch.switchTo(state);
-    }
-
-    public boolean isEnabled()
-    {
-        return this.enabledSwitch.isEnabled();
+        if (buffer != null)
+        {
+            return buffer;
+        }
+        else
+        {
+            BufferConfiguration defaultBuffer = new BufferConfiguration();
+            defaultBuffer.setType(BufferType.MEMORY);
+            defaultBuffer.setRetryCount(DEFAULT_BUFFER_RETRY_COUNT);
+            defaultBuffer.setFlushFrequency(DEFAULT_BUFFER_FLUSH_FREQUENCY);
+            defaultBuffer.setMaximumCapacity(DEFAULT_BUFFER_MAXIMUM_CAPACITY);
+            defaultBuffer.setDiscardMessagesOnFlushFailure(DEFAULT_DISCARD_ON_FAILURE);
+            defaultBuffer.setWhenExhausted(BufferExhaustedAction.FLUSH);
+            return defaultBuffer;
+        }
     }
 
     @Override
-    public boolean handle(T message)
+    protected boolean canHandle(T message)
     {
-        if (this.isEnabled())
-        {
-            try
-            {
-                String serialized = this.objectMapper.writeValueAsString(message);
-
-                this.internalLogger.info(serialized);
-                return true;
-            }
-            catch (Exception e)
-            {
-                LOGGER.error("There was an error logging the object.", e);
-                return false;
-            }
-        }
-        return false;
+        return true;
     }
 
-    @PostConfigure
-    public void postConfigurable()
+    @Override
+    protected boolean flush(Collection<T> collection)
     {
-        if (this.enabledSwitch == null)
+        try
         {
-            this.enabledSwitch = OnOffSwitch.newNullSwitch(this.enabled);
+            for (T message : collection)
+            {
+                this.internalLogger.info(objectMapper.writeValueAsString(message));
+            }
+            return true;
+        }
+        catch (Exception e)
+        {
+            LOGGER.error("There was an error logging the object.", e);
+            return false;
         }
     }
 
@@ -157,6 +170,7 @@ public abstract class AbstractLogInternalHandler<T> implements InitializableInte
     public void initialize() throws InitializationException
     {
         LOGGER.debug("Configuring the Common Log Internal Handler...");
+        super.initialize();
 
         // Check if we should disable the loggers
         if (this.logContext != null)
