@@ -37,7 +37,7 @@
         <common.beanutils.version>1.9.2</common.beanutils.version>
         <commons.lang.version>2.4</commons.lang.version>
         <gw.version>2.2.0</gw.version>
-        <jackson.version>2.3.2</jackson.version>
+        <jackson.version>2.10.1</jackson.version>
         <javax.validation.version>1.0.0.GA</javax.validation.version>
         <jersey.version>2.11</jersey.version>
         <junit.version>4.10</junit.version>
