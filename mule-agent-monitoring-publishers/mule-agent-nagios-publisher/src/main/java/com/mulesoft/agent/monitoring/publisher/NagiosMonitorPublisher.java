@@ -1,14 +1,14 @@
 /**
- * Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
- *
- * The software in this package is published under the terms of the CPAL v1.0
- * license, a copy of which has been included with this distribution in the
- * LICENSE.txt file.
+ * (c) 2003-2014 MuleSoft, Inc. This software is protected under international copyright
+ * law. All use of this software is subject to MuleSoft's Master Subscription Agreement
+ * (or other master license agreement) separately entered into in writing between you and
+ * MuleSoft. If such an agreement is not in place, you may not use the software.
  */
 
 package com.mulesoft.agent.monitoring.publisher;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.inject.Inject;
@@ -40,7 +40,7 @@ import org.apache.logging.log4j.Logger;
  */
 @Named("mule.agent.nagios.jmx.internal.handler")
 @Singleton
-public class NagiosMonitorPublisher extends BufferedHandler<List<Metric>>
+public class NagiosMonitorPublisher extends BufferedHandler<ArrayList<Metric>>
 {
     private static final Logger LOGGER = LogManager.getLogger(NagiosMonitorPublisher.class);
 
@@ -72,13 +72,13 @@ public class NagiosMonitorPublisher extends BufferedHandler<List<Metric>>
     }
 
     @Override
-    public boolean canHandle(@NotNull List<Metric> metrics)
+    public boolean canHandle(@NotNull ArrayList<Metric> metrics)
     {
         return true;
     }
 
     @Override
-    public boolean flush(Collection<List<Metric>> listOfMetrics)
+    public boolean flush(Collection<ArrayList<Metric>> listOfMetrics)
     {
         Encryption encryption = Encryption.NONE;
 

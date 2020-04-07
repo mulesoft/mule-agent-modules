@@ -1,0 +1,33 @@
+<!--
+  ~ (c) 2003-2015 MuleSoft, Inc. This software is protected under international copyright
+  ~ law. All use of this software is subject to MuleSoft's Master Subscription Agreement
+  ~ (or other master license agreement) separately entered into in writing between you and
+  ~ MuleSoft. If such an agreement is not in place, you may not use the software.
+  -->
+
+<assembly>
+    <id>db</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <dependencySets>
+        <dependencySet>
+            <excludes>
+                <exclude>com.mulesoft.agent:mule-agent-db-gw-http-tracker:jar</exclude>
+            </excludes>
+            <unpack>false</unpack>
+            <scope>runtime</scope>
+            <outputDirectory>/</outputDirectory>
+        </dependencySet>
+    </dependencySets>
+    <fileSets>
+        <fileSet>
+            <directory>target</directory>
+            <outputDirectory>/</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+</assembly>

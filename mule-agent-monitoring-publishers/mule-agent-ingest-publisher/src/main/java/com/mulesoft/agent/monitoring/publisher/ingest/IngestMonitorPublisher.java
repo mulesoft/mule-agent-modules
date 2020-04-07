@@ -1,5 +1,13 @@
+/**
+ * (c) 2003-2014 MuleSoft, Inc. This software is protected under international copyright
+ * law. All use of this software is subject to MuleSoft's Master Subscription Agreement
+ * (or other master license agreement) separately entered into in writing between you and
+ * MuleSoft. If such an agreement is not in place, you may not use the software.
+ */
+
 package com.mulesoft.agent.monitoring.publisher.ingest;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import javax.inject.Inject;
@@ -30,7 +38,7 @@ import org.apache.commons.lang.StringUtils;
  *
  * @param <T> The type of metric being pushed by the publisher.
  */
-public abstract class IngestMonitorPublisher<T> extends BufferedHandler<T>
+public abstract class IngestMonitorPublisher<T extends Serializable> extends BufferedHandler<T>
 {
 
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SZ";

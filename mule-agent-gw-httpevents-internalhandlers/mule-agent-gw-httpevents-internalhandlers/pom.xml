@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.mulesoft.agent</groupId>
+        <artifactId>mule-agent-modules</artifactId>
+        <version>2.4.6</version>
+    </parent>
+
+    <packaging>pom</packaging>
+
+    <name>Mule Agent :: Modules :: GW Http Event</name>
+    <url>http://maven.apache.org</url>
+    <artifactId>mule-agent-gw-httpevents-internalhandlers</artifactId>
+
+    <modules>
+        <module>mule-agent-db-gw-http-tracker</module>
+        <module>mule-agent-splunk-gw-http-tracker</module>
+        <module>mule-agent-log-gw-http-tracker</module>
+    </modules>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+</project>

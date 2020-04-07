@@ -8,23 +8,25 @@
 package com.mulesoft.agent.eventtracker.analytics;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
+import org.mule.tooling.event.model.component.location.ComponentLocation;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
- * <p>
  * Serializer that converts an {@link AgentTrackingNotification} to the JSON format supported by
  * the Analytics service.
- * </p>
  */
 public class AnalyticsEventSerializer extends JsonSerializer<AgentTrackingNotification>
 {
+    private static final Logger LOGGER = LogManager.getLogger(AnalyticsEventSerializer.class);
 
     @Override
     public Class<AgentTrackingNotification> handledType()
@@ -33,52 +35,60 @@ public class AnalyticsEventSerializer extends JsonSerializer<AgentTrackingNotifi
     }
 
     @Override
-    public void serialize(AgentTrackingNotification value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException
+    public void serialize(AgentTrackingNotification value, JsonGenerator jgen, SerializerProvider provider) throws IOException
     {
-        try
+        AnalyticsEventType analyticsEventType = AnalyticsEventType.getAnalyticsEventType(value);
+
+        if (analyticsEventType.equals(AnalyticsEventType.UNKNOWN))
         {
-            AnalyticsEventType analyticsEventType = AnalyticsEventType.getAnalyticsEventType(value);
-            jgen.writeStartObject();
-            jgen.writeStringField("id", UUID.randomUUID().toString());
-            jgen.writeStringField("messageId", value.getCorrelationId());
-            jgen.writeStringField("name", value.getNotificationType());
-            jgen.writeStringField("type", analyticsEventType == null ? "" : analyticsEventType.name());
-            jgen.writeNumberField("timestamp", value.getTimestamp());
-            jgen.writeStringField("flowName", value.getResourceIdentifier());
-            jgen.writeStringField("path", value.getComponentLocation().getLocation());
-            jgen.writeFieldName("customProperties");
-            jgen.writeStartObject();
-            if (value.getCustomEventProperties() != null)
-            {
-                for (Map.Entry<String, String> property : value.getCustomEventProperties().entrySet())
-                {
-                    jgen.writeStringField(property.getKey(), property.getValue());
-                }
-            }
-            jgen.writeEndObject();
-            jgen.writeFieldName("systemProperties");
-            jgen.writeStartObject();
-            if (value.getNotificationType().equals("ExceptionNotification"))
-            {
-                jgen.writeStringField("EXCEPTION_DETAILS", value.getSource());
-            }
-            if (value.getNotificationType().equals("ComponentNotification"))
-            {
-                jgen.writeStringField("COMPONENT_CLASS", value.getSource());
-            }
-            if (value.getCorrelationId() != null)
-            {
-                jgen.writeStringField("MESSAGE_CORRELATION_ID", value.getCorrelationId());
-            }
-            if (value.getTransactionId() != null)
-            {
-                jgen.writeStringField("CUSTOM_TRANSACTION_ID", value.getTransactionId());
-            }
-            jgen.writeEndObject();
-            jgen.writeEndObject();
+            LOGGER.debug("Skipping serialization of notification with UNKNOWN type from application {}.", value.getApplication());
+            return;
         }
-        catch (IOException e)
+
+        jgen.writeStartObject();
+        jgen.writeStringField("id", getId());
+        jgen.writeStringField("messageId", value.getCorrelationId());
+        jgen.writeStringField("name", Optional.ofNullable(value.getCustomEventName()).orElse(""));
+        jgen.writeStringField("type", analyticsEventType.name());
+        jgen.writeNumberField("timestamp", value.getTimestamp());
+        jgen.writeStringField("flowName", Optional.ofNullable(value.getResourceIdentifier()).orElse(""));
+        jgen.writeStringField("path", Optional.ofNullable(value.getComponentLocation()).map(ComponentLocation::getLocation).orElse(""));
+        jgen.writeFieldName("customProperties");
+        jgen.writeStartObject();
+
+        if (value.getCustomEventProperties() != null)
         {
+            for (Map.Entry<String, String> property : value.getCustomEventProperties().entrySet())
+            {
+                jgen.writeStringField(property.getKey(), property.getValue());
+            }
         }
+
+        jgen.writeEndObject();
+        jgen.writeFieldName("systemProperties");
+        jgen.writeStartObject();
+        if (value.getNotificationType().equals("ExceptionNotification"))
+        {
+            jgen.writeStringField("EXCEPTION_DETAILS", value.getSource());
+        }
+        if (value.getNotificationType().equals("ComponentNotification"))
+        {
+            jgen.writeStringField("COMPONENT_CLASS", value.getSource());
+        }
+        if (value.getCorrelationId() != null)
+        {
+            jgen.writeStringField("MESSAGE_CORRELATION_ID", value.getCorrelationId());
+        }
+        if (value.getTrackingTransactionId() != null)
+        {
+            jgen.writeStringField("CUSTOM_TRANSACTION_ID", value.getTrackingTransactionId());
+        }
+        jgen.writeEndObject();
+        jgen.writeEndObject();
+    }
+
+    protected String getId()
+    {
+        return UUID.randomUUID().toString();
     }
 }

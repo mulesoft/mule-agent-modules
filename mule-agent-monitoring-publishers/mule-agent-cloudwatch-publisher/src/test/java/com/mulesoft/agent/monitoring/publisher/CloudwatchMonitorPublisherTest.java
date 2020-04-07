@@ -1,9 +1,8 @@
 /**
- * Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
- *
- * The software in this package is published under the terms of the CPAL v1.0
- * license, a copy of which has been included with this distribution in the
- * LICENSE.txt file.
+ * (c) 2003-2014 MuleSoft, Inc. This software is protected under international copyright
+ * law. All use of this software is subject to MuleSoft's Master Subscription Agreement
+ * (or other master license agreement) separately entered into in writing between you and
+ * MuleSoft. If such an agreement is not in place, you may not use the software.
  */
 
 package com.mulesoft.agent.monitoring.publisher;
@@ -16,6 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -58,7 +58,7 @@ public class CloudwatchMonitorPublisherTest
     public void ifDisabledDoNothing() throws AgentEnableOperationException
     {
         when(enabledSwitch.isEnabled()).thenReturn(false);
-        List<Metric> testMetrics = new LinkedList<Metric>();
+        ArrayList<Metric> testMetrics = new ArrayList<>();
         Metric mockedMetric = mock(Metric.class);
         testMetrics.add(mockedMetric);
         Assert.assertFalse(publisher.handle(testMetrics));

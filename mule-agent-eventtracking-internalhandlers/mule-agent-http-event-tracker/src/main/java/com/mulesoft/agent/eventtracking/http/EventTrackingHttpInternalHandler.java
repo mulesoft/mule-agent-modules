@@ -20,15 +20,20 @@ import com.mulesoft.agent.configuration.Type;
 import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
 import com.mulesoft.agent.handlers.exception.InitializationException;
 import com.mulesoft.agent.handlers.internal.buffer.DiscardingMessageBufferConfigurationFactory;
-import com.ning.http.client.AsyncHttpClient;
-import com.ning.http.client.AsyncHttpClientConfig;
-import com.ning.http.client.Response;
+
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import org.asynchttpclient.AsyncHttpClient;
+import org.asynchttpclient.AsyncHttpClientConfig;
+import org.asynchttpclient.DefaultAsyncHttpClient;
+import org.asynchttpclient.DefaultAsyncHttpClientConfig;
+import org.asynchttpclient.Response;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -37,10 +42,8 @@ import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 
 /**
- * <p>
- * The Event Tracking Http Internal handler will push all event tracking
- * notifications produced from the Mule ESB to the configured service.
- * </p>
+ * The Event Tracking Http Internal handler will push all event tracking notifications produced from the Mule ESB to
+ * the configured service.
  */
 @Singleton
 @Named("mule.agent.tracking.handler.http")
@@ -55,44 +58,34 @@ public class EventTrackingHttpInternalHandler extends BufferedHandler<AgentTrack
     private Transport<AgentTrackingNotification> transport;
 
     /**
-     * <p>
      * IP or hostname of the service where the notification will be pushed.
-     * </p>
      */
     @Configurable(type = Type.DYNAMIC)
     String host;
 
     /**
-     * <p>
      * Service connection port.
      * Default: 8080
-     * </p>
      */
     @Configurable(value = "8080", type = Type.DYNAMIC)
     int port;
 
     /**
-     * <p>
      *  Path where the service is listening.
-     * </p>
      */
     @Configurable(type = Type.DYNAMIC)
     String path;
 
     /**
-     * <p>
      * Scheme of connection to the service (http, https).
      * Default: https
-     * </p>
      */
     @Configurable(value = "https", type = Type.DYNAMIC)
     String scheme;
 
     /**
-     * <p>
      * The source used on the events sent to the service.
      * Default: mule
-     * </p>
      */
     @Configurable(value = "mule", type = Type.DYNAMIC)
     String source;
@@ -173,9 +166,7 @@ public class EventTrackingHttpInternalHandler extends BufferedHandler<AgentTrack
 
 
     /**
-     * <p>
      * Transport which connects to the configured service using HTTP or HTTPS.
-     * </p>
      */
     private class HttpTransport implements Transport<AgentTrackingNotification>
     {
@@ -187,19 +178,17 @@ public class EventTrackingHttpInternalHandler extends BufferedHandler<AgentTrack
         @Override
         public void init() throws InitializationException
         {
-            try
+            try (Socket socket = new Socket())
             {
-                Socket socket = new Socket();
                 socket.connect(new InetSocketAddress(host, port), CONNECTION_TIMEOUT);
-                socket.close();
 
                 this.url = new URL(scheme, host, port, path);
 
-                AsyncHttpClientConfig.Builder builder = new AsyncHttpClientConfig.Builder()
+                DefaultAsyncHttpClientConfig.Builder builder = new DefaultAsyncHttpClientConfig.Builder()
                         .setConnectTimeout(CONNECTION_TIMEOUT);
 
                 AsyncHttpClientConfig asyncHttpClientConfig = builder.build();
-                httpClient = new AsyncHttpClient(asyncHttpClientConfig);
+                httpClient = new DefaultAsyncHttpClient(asyncHttpClientConfig);
             }
             catch (Exception e)
             {
@@ -253,11 +242,16 @@ public class EventTrackingHttpInternalHandler extends BufferedHandler<AgentTrack
         }
 
         @Override
-        public void dispose()
-        {
-            if (httpClient != null)
-            {
-                httpClient.close();
+        public void dispose() {
+            if (httpClient != null) {
+                try {
+                    httpClient.close();
+                } catch (IOException e) {
+                    LOGGER.error("The connection could not be closed.", ExceptionUtils.getRootCauseMessage(e));
+                    LOGGER.debug(e);
+
+                    throw new RuntimeException(e);
+                }
             }
         }
 
@@ -278,9 +272,8 @@ public class EventTrackingHttpInternalHandler extends BufferedHandler<AgentTrack
     }
 
     /**
-     * <p>
      * Wrapped message to send to the configured service.
-     * </p>
+     *
      * @param <T> Message type.
      */
     static class HttpMessage<T>

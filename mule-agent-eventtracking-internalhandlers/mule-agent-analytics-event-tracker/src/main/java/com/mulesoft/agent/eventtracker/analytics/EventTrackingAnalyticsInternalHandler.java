@@ -118,7 +118,7 @@ public class EventTrackingAnalyticsInternalHandler extends BufferedHandler<Agent
             for (List<AgentTrackingNotification> applicationNotifications : groupedNotifications)
             {
                 String applicationName = applicationNotifications.get(0).getApplication();
-                Map<String, Collection<String>> headers = new HashMap<>();
+                Map<CharSequence, Collection<String>> headers = new HashMap<>();
                 headers.put("X-APPLICATION-NAME", Lists.newArrayList(applicationName));
                 try
                 {

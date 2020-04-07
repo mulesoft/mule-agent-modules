@@ -3,7 +3,7 @@
     <parent>
         <artifactId>mule-agent-gw-httpevents-internalhandlers</artifactId>
         <groupId>com.mulesoft.agent</groupId>
-        <version>1.7.0-mule-4.x-SNAPSHOT</version>
+        <version>2.4.6-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -27,32 +27,18 @@
         <dependency>
             <groupId>com.mulesoft.agent</groupId>
             <artifactId>mule-agent-modules-common</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
 
         <!-- GW Dependencies -->
         <dependency>
             <groupId>com.mulesoft.anypoint</groupId>
-            <artifactId>api-gateway-client</artifactId>
-            <version>${gw.version}</version>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
+            <artifactId>api-gateway-api</artifactId>
         </dependency>
 
         <!-- Logging Dependencies -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
         </dependency>
 
         <dependency>
@@ -66,38 +52,13 @@
             </exclusions>
         </dependency>
 
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.37</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.oracle</groupId>
-            <artifactId>ojdbc6</artifactId>
-            <version>11.2.0.3</version>
-            <scope>test</scope>
-        </dependency>
-
         <!-- Test Dependencies -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-        </dependency>
     </dependencies>
-
-    <repositories>
-        <repository>
-            <id>codelds</id>
-            <url>https://code.lds.org/nexus/content/groups/main-repo</url>
-        </repository>
-    </repositories>
 
     <build>
         <plugins>

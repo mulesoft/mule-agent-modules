@@ -1,19 +1,11 @@
 /**
- * Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
- *
- * The software in this package is published under the terms of the CPAL v1.0
- * license, a copy of which has been included with this distribution in the
- * LICENSE.txt file.
+ * (c) 2003-2014 MuleSoft, Inc. This software is protected under international copyright
+ * law. All use of this software is subject to MuleSoft's Master Subscription Agreement
+ * (or other master license agreement) separately entered into in writing between you and
+ * MuleSoft. If such an agreement is not in place, you may not use the software.
  */
 
 package com.mulesoft.agent.monitoring.publisher.ingest;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.inject.Named;
-import javax.inject.Singleton;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -27,24 +19,29 @@ import com.mulesoft.agent.monitoring.publisher.ingest.factory.TargetMetricFactor
 import com.mulesoft.agent.monitoring.publisher.ingest.model.JMXMetricFieldMapping;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.MetricClassification;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.api.IngestMetric;
-import com.ning.http.client.Response;
-
+import org.asynchttpclient.Response;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import javax.inject.Named;
+import javax.inject.Singleton;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static com.mulesoft.agent.domain.RuntimeEnvironment.ON_PREM;
 import static com.mulesoft.agent.domain.RuntimeEnvironment.STANDALONE;
 
 /**
- * <p>
  * Handler that publishes JMX information obtained from the Monitoring Service to a running Ingest API instance.
- * </p>
  */
 @Singleton
 @Named("mule.agent.ingest.target.metrics.internal.handler")
 @NotAvailableOn(environment = {ON_PREM, STANDALONE})
-public class IngestTargetMonitorPublisher extends IngestMonitorPublisher<List<Metric>>
+public class IngestTargetMonitorPublisher extends IngestMonitorPublisher<ArrayList<Metric>>
 {
 
     private static final Logger LOGGER = LogManager.getLogger(IngestTargetMonitorPublisher.class);
@@ -57,6 +54,7 @@ public class IngestTargetMonitorPublisher extends IngestMonitorPublisher<List<Me
 
     /**
      * Initialization code to be run after configuration.
+     *
      * @throws InitializationException when target metric factories we not injected or when configuration is invalid.
      */
     @Override
@@ -75,10 +73,10 @@ public class IngestTargetMonitorPublisher extends IngestMonitorPublisher<List<Me
      * @param collection Buffer contents.
      * @return Processed target metrics ready to be sent to ingest API.
      */
-    private Map<String, Set<IngestMetric>> processTargetMetrics(Collection<List<Metric>> collection)
+    private Map<String, Set<IngestMetric>> processTargetMetrics(Collection<ArrayList<Metric>> collection)
     {
 
-        Map<String, Set<IngestMetric>> result = Maps.newHashMap();
+        Map<String, Set<IngestMetric>> metricsResult = Maps.newHashMap();
 
         for (List<Metric> sample : collection)
         {
@@ -92,7 +90,6 @@ public class IngestTargetMonitorPublisher extends IngestMonitorPublisher<List<Me
 
             for (SupportedJMXBean bean : SupportedJMXBean.values())
             {
-
                 TargetMetricFactory applicableFactory = null;
                 for (TargetMetricFactory factory : targetMetricFactories)
                 {
@@ -110,22 +107,22 @@ public class IngestTargetMonitorPublisher extends IngestMonitorPublisher<List<Me
                 IngestMetric metric = applicableFactory.apply(classification, bean);
                 if (metric != null && metric.getCount() > 0)
                 {
-                    JMXMetricFieldMapping mapping = JMXMetricFieldMapping.forSupportedJMXBean(bean);
-                    Set<IngestMetric> existentMetrics = result.get(mapping.getFieldName());
+                    String fieldName = JMXMetricFieldMapping.from(bean);
+
+                    Set<IngestMetric> existentMetrics = metricsResult.get(fieldName);
                     if (existentMetrics != null)
                     {
                         existentMetrics.add(metric);
                     }
                     else
                     {
-                        result.put(mapping.getFieldName(), Sets.newHashSet(metric));
+                        metricsResult.put(fieldName, Sets.newHashSet(metric));
                     }
                 }
             }
-
         }
 
-        return result;
+        return metricsResult;
     }
 
     /**
@@ -134,7 +131,7 @@ public class IngestTargetMonitorPublisher extends IngestMonitorPublisher<List<Me
      * @param collection Buffer contents.
      * @return Whether the run was successful or not.
      */
-    protected boolean send(Collection<List<Metric>> collection)
+    protected boolean send(Collection<ArrayList<Metric>> collection)
     {
         LOGGER.debug("Publishing target metrics to ingest api.");
         try
