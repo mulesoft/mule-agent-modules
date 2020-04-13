@@ -3,7 +3,7 @@
     <parent>
         <artifactId>mule-agent-modules</artifactId>
         <groupId>com.mulesoft.agent</groupId>
-        <version>1.7.2-mule-3.x-SNAPSHOT</version>
+        <version>1.14.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -12,17 +12,6 @@
 
     <name>Mule Agent :: Modules :: Common</name>
     <url>http://maven.apache.org</url>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
-    <repositories>
-        <repository>
-            <id>ext-release-local</id>
-            <url>http://splunk.artifactoryonline.com/splunk/ext-releases-local</url>
-        </repository>
-    </repositories>
 
     <dependencies>
         <dependency>
@@ -33,11 +22,6 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>commons-beanutils</groupId>
-            <artifactId>commons-beanutils</artifactId>
         </dependency>
 
         <dependency>

@@ -63,9 +63,10 @@ public class HECTransport<T> extends AbstractTransport<T>
 
 
             LOGGER.debug("Connecting to the Splunk server: %s:%s.", this.config.getHost(), this.config.getPort());
-            Socket socket = new Socket();
-            socket.connect(new InetSocketAddress(this.config.getHost(), this.config.getPort()), CONNECTION_TIMEOUT);
-            socket.close();
+            try (Socket socket = new Socket())
+            {
+                socket.connect(new InetSocketAddress(this.config.getHost(), this.config.getPort()), CONNECTION_TIMEOUT);
+            }
             LOGGER.debug("Successfully connected to the Splunk server.");
 
             if (this.host == null)
@@ -111,13 +112,16 @@ public class HECTransport<T> extends AbstractTransport<T>
             AsyncHttpClientConfig httpClientConfig = new AsyncHttpClientConfig.Builder()
                     .setAcceptAnyCertificate(this.config.getAcceptAnyCertificate())
                     .build();
-            AsyncHttpClient asyncHttpClient = new AsyncHttpClient(httpClientConfig);
-            Response response = asyncHttpClient.preparePost(url.toString())
+
+            Response response;
+            try (AsyncHttpClient asyncHttpClient = new AsyncHttpClient(httpClientConfig))
+            {
+                response = asyncHttpClient.preparePost(url.toString())
                     .addHeader("Authorization", "Splunk " + this.config.getToken())
                     .setBody(sb.toString())
                     .execute()
                     .get();
-            asyncHttpClient.close();
+            }
 
             if (response.getStatusCode() != HttpURLConnection.HTTP_OK)
             {

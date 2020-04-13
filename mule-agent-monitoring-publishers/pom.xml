@@ -2,7 +2,7 @@
     <parent>
         <artifactId>mule-agent-modules</artifactId>
         <groupId>com.mulesoft.agent</groupId>
-        <version>1.7.2-mule-3.x-SNAPSHOT</version>
+        <version>1.14.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -18,7 +18,6 @@
         <module>mule-agent-zabbix-publisher</module>
         <module>mule-agent-nagios-publisher</module>
         <module>mule-agent-ingest-publisher</module>
-        <module>mule-agent-cloudhub-publisher</module>
     </modules>
 
     <properties>

@@ -19,68 +19,75 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * <p>
- * The DB Internal handler will store all
- * the Event Notifications produced from the Mule ESB flows in a configurable database.
- * </p>
+ * The DB Internal handler will store all the Event Notifications produced from the Mule ESB flows in a configurable
+ * database.
  */
 @Named("mule.agent.tracking.handler.database")
 @Singleton
 public class EventTrackingDBInternalHandler extends AbstractDBInternalHandler<AgentTrackingNotification>
 {
 
+    /**
+     * Logger to log things on this class.
+     */
     private static final Logger LOGGER = LogManager.getLogger(EventTrackingDBInternalHandler.class);
 
     /**
-     * <p>
      * Table name in which the Mule agent will store the events.
      * Default: 'MULE_EVENTS'
-     * </p>
      */
     @Configurable("MULE_EVENTS")
     String eventsTable;
 
     /**
-     * <p>
      * Table name in which the Mule agent will store the annotations associated to the main event.
      * Default: 'MULE_EVENTS_ANNOTATIONS'
-     * </p>
      */
     @Configurable("MULE_EVENTS_ANNOTATIONS")
     String annotationsTable;
 
     /**
-     * <p>
      * Table name in which the Mule agent will store the custom business events associated to the main event.
      * Default: 'MULE_EVENTS_BUSINESS'
-     * </p>
      */
     @Configurable("MULE_EVENTS_BUSINESS")
     String businessTable;
 
     @Override
-    protected void insert(Connection connection, Collection<AgentTrackingNotification> notifications)
-            throws SQLException
+    protected void insert(Connection connection, Collection<AgentTrackingNotification> notifications) throws SQLException
     {
-        PreparedStatement eventInsert = connection.prepareStatement(String.format("INSERT INTO %s (id, action, application, mule_message, mule_message_id, notification_type, path, resource_identifier, timestamp, source) "
-                + "VALUES (?,?,?,?,?,?,?,?,?,?)", eventsTable));
-        PreparedStatement annotationsInsert = connection.prepareStatement(String.format("INSERT INTO %s (id, event_id, annotation_type, annotation_value) "
-                + "VALUES (?,?,?,?)", annotationsTable));
-        PreparedStatement businessInsert = connection.prepareStatement(String.format("INSERT INTO %s (id, event_id, business_key, business_value) "
-                + "VALUES (?,?,?,?)", businessTable));
+        String insertIntoEventsTableQuery = String.format(
+                "INSERT INTO %s (id, action, application, mule_message, mule_message_id, notification_type, path, resource_identifier, timestamp, source) "
+                + "VALUES (?,?,?,?,?,?,?,?,?,?)", eventsTable);
 
-        for (AgentTrackingNotification notification : notifications)
+        String insertIntoAnnotationsTableQuery = String.format(
+                "INSERT INTO %s (id, event_id, annotation_type, annotation_value) "
+                + "VALUES (?,?,?,?)", annotationsTable);
+
+        String insertIntoBusinessTableQuery = String.format(
+                "INSERT INTO %s (id, event_id, business_key, business_value) "
+                + "VALUES (?,?,?,?)", businessTable);
+
+        try
+        (
+            PreparedStatement eventInsert = connection.prepareStatement(insertIntoEventsTableQuery);
+            PreparedStatement annotationsInsert = connection.prepareStatement(insertIntoAnnotationsTableQuery);
+            PreparedStatement businessInsert = connection.prepareStatement(insertIntoBusinessTableQuery)
+        )
         {
-            LOGGER.trace("Inserting notification: " + notification);
+            for (AgentTrackingNotification notification : notifications)
+            {
+                LOGGER.trace("Inserting notification: " + notification);
 
-            UUID eventId = insertEvent(eventInsert, notification);
-            insertAnnotations(annotationsInsert, eventId, notification.getAnnotations());
-            insertBusinessEvents(businessInsert, eventId, notification.getCustomEventProperties());
+                UUID eventId = insertEvent(eventInsert, notification);
+                insertAnnotations(annotationsInsert, eventId, notification.getAnnotations());
+                insertBusinessEvents(businessInsert, eventId, notification.getCustomEventProperties());
+            }
+
+            eventInsert.executeBatch();
+            annotationsInsert.executeBatch();
+            businessInsert.executeBatch();
         }
-
-        eventInsert.executeBatch();
-        annotationsInsert.executeBatch();
-        businessInsert.executeBatch();
     }
 
     private UUID insertEvent(PreparedStatement statement, AgentTrackingNotification notification)

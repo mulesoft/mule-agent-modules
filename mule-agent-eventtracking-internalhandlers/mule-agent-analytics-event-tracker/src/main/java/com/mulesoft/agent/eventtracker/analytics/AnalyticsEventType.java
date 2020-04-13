@@ -10,9 +10,7 @@ package com.mulesoft.agent.eventtracker.analytics;
 import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
 
 /**
- * <p>
  * Representation of the event types supported by the Analytics service.
- * </p>
  */
 public enum AnalyticsEventType
 {
@@ -51,7 +49,9 @@ public enum AnalyticsEventType
 
     CUSTOM_EVENT_EVENT_ACTION("EventNotification", "custom event"),
 
-    EXCEPTION_ACTION("ExceptionNotification", "exception");
+    EXCEPTION_ACTION("ExceptionNotification", "exception"),
+
+    UNKNOWN("Unknown", "Unknown");
 
     /**
      * <p>
@@ -99,6 +99,7 @@ public enum AnalyticsEventType
                 return type;
             }
         }
-        return null;
+
+        return UNKNOWN;
     }
 }

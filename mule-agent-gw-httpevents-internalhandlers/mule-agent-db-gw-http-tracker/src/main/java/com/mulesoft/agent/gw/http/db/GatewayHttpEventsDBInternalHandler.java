@@ -25,10 +25,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * <p>
  * The DB Internal handler will store all the HTTP API Analytics produced from the
  * Mule API Gateway in a configurable database.
- * </p>
  */
 @Named("mule.agent.gw.http.handler.database")
 @Singleton
@@ -37,33 +35,32 @@ public class GatewayHttpEventsDBInternalHandler extends AbstractDBInternalHandle
     private static final Logger LOGGER = LogManager.getLogger(GatewayHttpEventsDBInternalHandler.class);
 
     /**
-     * <p>
      * Table name in which the Mule agent will store the events.
      * Default: 'MULE_API_ANALYTICS'
-     * </p>
      */
     @Configurable("MULE_API_ANALYTICS")
     String apiAnalyticsTable;
 
     @Override
-    protected void insert(Connection connection, Collection<HttpEvent> notifications)
-            throws SQLException
+    protected void insert(Connection connection, Collection<HttpEvent> notifications) throws SQLException
     {
-        PreparedStatement eventInsert = connection.prepareStatement(String.format(""
-                + "INSERT INTO %s (id, api_id, api_name, api_version, api_version_id, application_name, client_id, "
+        String insertIntoApiAnalyticsTableQuery = String.format(
+                "INSERT INTO %s (id, api_id, api_name, api_version, api_version_id, application_name, client_id, "
                 + "client_ip, event_id, host_id, org_id, path, policy_violation_policy_id, policy_violation_policy_name, "
                 + "policy_violation_outcome, received_ts, replied_ts, request_bytes, request_disposition, response_bytes, "
-                + "status_code, transaction_id, user_agent, verb) "
-                + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", apiAnalyticsTable));
+                + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", apiAnalyticsTable);
 
-        for (HttpEvent notification : notifications)
+        try (PreparedStatement eventInsert = connection.prepareStatement(insertIntoApiAnalyticsTableQuery))
         {
-            LOGGER.debug("Inserting notification: " + notification);
+            for (HttpEvent notification : notifications)
+            {
+                LOGGER.debug("Inserting notification: " + notification);
 
-            insertEvent(eventInsert, notification);
+                insertEvent(eventInsert, notification);
+            }
+
+            eventInsert.executeBatch();
         }
-
-        eventInsert.executeBatch();
     }
 
     private UUID insertEvent(PreparedStatement statement, HttpEvent event)

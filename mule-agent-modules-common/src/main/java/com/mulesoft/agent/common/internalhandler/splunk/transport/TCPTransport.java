@@ -47,9 +47,10 @@ public class TCPTransport<T> extends AbstractTransport<T>
         try
         {
             LOGGER.debug("Connecting to the Splunk server: %s:%s.", this.config.getHost(), this.config.getPort());
-            Socket socket = new Socket();
-            socket.connect(new InetSocketAddress(this.config.getHost(), this.config.getPort()), CONNECTION_TIMEOUT);
-            socket.close();
+            try (Socket socket = new Socket())
+            {
+                socket.connect(new InetSocketAddress(this.config.getHost(), this.config.getPort()), CONNECTION_TIMEOUT);
+            }
             LOGGER.debug("Successfully connected to the Splunk server.");
         }
         catch (Exception e)
