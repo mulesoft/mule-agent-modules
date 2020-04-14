@@ -1,101 +1,155 @@
+/**
+ * (c) 2003-2020 MuleSoft, Inc. This software is protected under international copyright
+ * law. All use of this software is subject to MuleSoft's Master Subscription Agreement
+ * (or other master license agreement) separately entered into in writing between you and
+ * MuleSoft. If such an agreement is not in place, you may not use the software.
+ */
+
 package com.mulesoft.agent.monitoring.publisher.ingest.model;
 
 import com.google.common.base.Preconditions;
 import com.mulesoft.agent.domain.monitoring.SupportedJMXBean;
 import org.apache.commons.lang.NotImplementedException;
 
+import java.util.EnumMap;
+import java.util.Map;
+
 /**
- * Mapping JMX Bean to Ingest API field name.
+ * Mapping from {@link SupportedJMXBean} to Ingest API field name.
  */
-public enum JMXMetricFieldMapping
+public final class JMXMetricFieldMapping
 {
 
-    HEAP_USAGE(SupportedJMXBean.HEAP_USAGE, "memory-usage"),
-    HEAP_COMMITTED(SupportedJMXBean.HEAP_COMMITTED, "memory-committed"),
-    HEAP_TOTAL(SupportedJMXBean.HEAP_TOTAL, "memory-total"),
+    private static final String TENURED_GEN_TOTAL = "tenured-gen-total";
+    private static final String TENURED_GEN_USAGE = "tenured-gen-usage";
+    private static final String TENURED_GEN_COMMITTED = "tenured-gen-committed";
 
-    AVAILABLE_PROCESSORS(SupportedJMXBean.AVAILABLE_PROCESSORS, "available-processors"),
-    LOAD_AVERAGE(SupportedJMXBean.LOAD_AVERAGE, "load-average"),
-    CPU_USAGE(SupportedJMXBean.CPU_USAGE, "cpu-usage"),
+    private static final String EDEN_TOTAL = "eden-total";
+    private static final String EDEN_USAGE = "eden-usage";
+    private static final String EDEN_COMMITTED = "eden-committed";
 
-    EDEN_USAGE(SupportedJMXBean.EDEN_USAGE, "eden-usage"),
-    EDEN_COMMITTED(SupportedJMXBean.EDEN_COMMITTED, "eden-committed"),
-    EDEN_TOTAL(SupportedJMXBean.EDEN_TOTAL, "eden-total"),
+    private static final String SURVIVOR_TOTAL = "survivor-total";
+    private static final String SURVIVOR_USAGE = "survivor-usage";
+    private static final String SURVIVOR_COMMITTED = "survivor-committed";
 
-    SURVIVOR_USAGE(SupportedJMXBean.SURVIVOR_USAGE, "survivor-usage"),
-    SURVIVOR_COMMITTED(SupportedJMXBean.SURVIVOR_COMMITTED, "survivor-committed"),
-    SURVIVOR_TOTAL(SupportedJMXBean.SURVIVOR_TOTAL, "survivor-total"),
+    private static final String GC_YOUNG_GEN_TIME = "gc-par-new-time";
+    private static final String GC_YOUNG_GEN_COUNT = "gc-par-new-count";
 
-    TENURED_GEN_USAGE(SupportedJMXBean.TENURED_GEN_USAGE, "tenured-gen-usage"),
-    TENURED_GEN_COMMITTED(SupportedJMXBean.TENURED_GEN_COMMITTED, "tenured-gen-committed"),
-    TENURED_GEN_TOTAL(SupportedJMXBean.TENURED_GEN_TOTAL, "tenured-gen-total"),
+    private static final String GC_OLD_GEN_TIME = "gc-mark-sweep-time";
+    private static final String GC_OLD_GEN_COUNT = "gc-mark-sweep-count";
 
-    CODE_CACHE_USAGE(SupportedJMXBean.CODE_CACHE_USAGE, "code-cache-usage"),
-    CODE_CACHE_COMMITTED(SupportedJMXBean.CODE_CACHE_COMMITTED, "code-cache-committed"),
-    CODE_CACHE_TOTAL(SupportedJMXBean.CODE_CACHE_TOTAL, "code-cache-total"),
+    private static final Map<SupportedJMXBean, String> mappings = new EnumMap<>(SupportedJMXBean.class);
 
-    COMPRESSED_CLASS_SPACE_USAGE(SupportedJMXBean.COMPRESSED_CLASS_SPACE_USAGE, "compressed-class-space-usage"),
-    COMPRESSED_CLASS_SPACE_COMMITTED(SupportedJMXBean.COMPRESSED_CLASS_SPACE_COMMITTED, "compressed-class-space-committed"),
-    COMPRESSED_CLASS_SPACE_TOTAL(SupportedJMXBean.COMPRESSED_CLASS_SPACE_TOTAL, "compressed-class-space-total"),
-
-    METASPACE_USAGE(SupportedJMXBean.METASPACE_USAGE, "metaspace-usage"),
-    METASPACE_COMMITTED(SupportedJMXBean.METASPACE_COMMITTED, "metaspace-committed"),
-    METASPACE_TOTAL(SupportedJMXBean.METASPACE_TOTAL, "metaspace-total"),
-
-    CLASS_LOADING_TOTAL(SupportedJMXBean.CLASS_LOADING_TOTAL, "class-loading-total"),
-    CLASS_LOADING_LOADED(SupportedJMXBean.CLASS_LOADING_LOADED, "class-loading-loaded"),
-    CLASS_LOADING_UNLOADED(SupportedJMXBean.CLASS_LOADING_UNLOADED, "class-loading-unloaded"),
-
-    THREADING_COUNT(SupportedJMXBean.THREADING_COUNT, "thread-count"),
-
-    GC_MARK_SWEEP_TIME(SupportedJMXBean.GC_MARK_SWEEP_TIME, "gc-mark-sweep-time"),
-    GC_MARK_SWEEP_COUNT(SupportedJMXBean.GC_MARK_SWEEP_COUNT, "gc-mark-sweep-count"),
-
-    GC_PAR_NEW_TIME(SupportedJMXBean.GC_PAR_NEW_TIME, "gc-par-new-time"),
-    GC_PAR_NEW_COUNT(SupportedJMXBean.GC_PAR_NEW_COUNT, "gc-par-new-count");
-
-    /**
-     * JMX Bean to be reported to ingest with the field name.
-     */
-    private final SupportedJMXBean jmxBean;
-
-    /**
-     * Ingest API exposed metric name.
-     */
-    private final String fieldName;
-
-    JMXMetricFieldMapping(SupportedJMXBean jmxBean, String fieldName)
+    static
     {
-        this.jmxBean = jmxBean;
-        this.fieldName = fieldName;
+        mappings.put(SupportedJMXBean.HEAP_USAGE, "memory-usage");
+        mappings.put(SupportedJMXBean.HEAP_COMMITTED, "memory-committed");
+        mappings.put(SupportedJMXBean.HEAP_TOTAL, "memory-total");
+
+        mappings.put(SupportedJMXBean.AVAILABLE_PROCESSORS, "available-processors");
+        mappings.put(SupportedJMXBean.LOAD_AVERAGE, "load-average");
+        mappings.put(SupportedJMXBean.CPU_USAGE, "cpu-usage");
+
+        mappings.put(SupportedJMXBean.EDEN_USAGE, EDEN_USAGE);
+        mappings.put(SupportedJMXBean.G1_EDEN_USAGE, EDEN_USAGE);
+        mappings.put(SupportedJMXBean.PS_EDEN_USAGE, EDEN_USAGE);
+        mappings.put(SupportedJMXBean.PAR_EDEN_USAGE, EDEN_USAGE);
+
+        mappings.put(SupportedJMXBean.EDEN_COMMITTED, EDEN_COMMITTED);
+        mappings.put(SupportedJMXBean.G1_EDEN_COMMITTED, EDEN_COMMITTED);
+        mappings.put(SupportedJMXBean.PS_EDEN_COMMITTED, EDEN_COMMITTED);
+        mappings.put(SupportedJMXBean.PAR_EDEN_COMMITTED, EDEN_COMMITTED);
+
+        mappings.put(SupportedJMXBean.EDEN_TOTAL, EDEN_TOTAL);
+        mappings.put(SupportedJMXBean.G1_EDEN_TOTAL, EDEN_TOTAL);
+        mappings.put(SupportedJMXBean.PS_EDEN_TOTAL, EDEN_TOTAL);
+        mappings.put(SupportedJMXBean.PAR_EDEN_TOTAL, EDEN_TOTAL);
+
+        mappings.put(SupportedJMXBean.SURVIVOR_USAGE, SURVIVOR_USAGE);
+        mappings.put(SupportedJMXBean.G1_SURVIVOR_USAGE, SURVIVOR_USAGE);
+        mappings.put(SupportedJMXBean.PS_SURVIVOR_USAGE, SURVIVOR_USAGE);
+        mappings.put(SupportedJMXBean.PAR_SURVIVOR_USAGE, SURVIVOR_USAGE);
+
+        mappings.put(SupportedJMXBean.SURVIVOR_COMMITTED, SURVIVOR_COMMITTED);
+        mappings.put(SupportedJMXBean.G1_SURVIVOR_COMMITTED, SURVIVOR_COMMITTED);
+        mappings.put(SupportedJMXBean.PS_SURVIVOR_COMMITTED, SURVIVOR_COMMITTED);
+        mappings.put(SupportedJMXBean.PAR_SURVIVOR_COMMITTED, SURVIVOR_COMMITTED);
+
+        mappings.put(SupportedJMXBean.SURVIVOR_TOTAL, SURVIVOR_TOTAL);
+        mappings.put(SupportedJMXBean.G1_SURVIVOR_TOTAL, SURVIVOR_TOTAL);
+        mappings.put(SupportedJMXBean.PS_SURVIVOR_TOTAL, SURVIVOR_TOTAL);
+        mappings.put(SupportedJMXBean.PAR_SURVIVOR_TOTAL, SURVIVOR_TOTAL);
+
+        mappings.put(SupportedJMXBean.TENURED_GEN_USAGE, TENURED_GEN_USAGE);
+        mappings.put(SupportedJMXBean.G1_OLD_GEN_USAGE, TENURED_GEN_USAGE);
+        mappings.put(SupportedJMXBean.PS_OLD_GEN_USAGE, TENURED_GEN_USAGE);
+        mappings.put(SupportedJMXBean.CMS_OLD_GEN_USAGE, TENURED_GEN_USAGE);
+
+        mappings.put(SupportedJMXBean.TENURED_GEN_COMMITTED, TENURED_GEN_COMMITTED);
+        mappings.put(SupportedJMXBean.G1_OLD_GEN_COMMITTED, TENURED_GEN_COMMITTED);
+        mappings.put(SupportedJMXBean.PS_OLD_GEN_COMMITTED, TENURED_GEN_COMMITTED);
+        mappings.put(SupportedJMXBean.CMS_OLD_GEN_COMMITTED, TENURED_GEN_COMMITTED);
+
+        mappings.put(SupportedJMXBean.TENURED_GEN_TOTAL, TENURED_GEN_TOTAL);
+        mappings.put(SupportedJMXBean.G1_OLD_GEN_TOTAL, TENURED_GEN_TOTAL);
+        mappings.put(SupportedJMXBean.PS_OLD_GEN_TOTAL, TENURED_GEN_TOTAL);
+        mappings.put(SupportedJMXBean.CMS_OLD_GEN_TOTAL, TENURED_GEN_TOTAL);
+
+        mappings.put(SupportedJMXBean.CODE_CACHE_USAGE, "code-cache-usage");
+        mappings.put(SupportedJMXBean.CODE_CACHE_COMMITTED, "code-cache-committed");
+        mappings.put(SupportedJMXBean.CODE_CACHE_TOTAL, "code-cache-total");
+
+        mappings.put(SupportedJMXBean.COMPRESSED_CLASS_SPACE_USAGE, "compressed-class-space-usage");
+        mappings.put(SupportedJMXBean.COMPRESSED_CLASS_SPACE_COMMITTED, "compressed-class-space-committed");
+        mappings.put(SupportedJMXBean.COMPRESSED_CLASS_SPACE_TOTAL, "compressed-class-space-total");
+
+        mappings.put(SupportedJMXBean.METASPACE_USAGE, "metaspace-usage");
+        mappings.put(SupportedJMXBean.METASPACE_COMMITTED, "metaspace-committed");
+        mappings.put(SupportedJMXBean.METASPACE_TOTAL, "metaspace-total");
+
+        mappings.put(SupportedJMXBean.CLASS_LOADING_TOTAL, "class-loading-total");
+        mappings.put(SupportedJMXBean.CLASS_LOADING_LOADED, "class-loading-loaded");
+        mappings.put(SupportedJMXBean.CLASS_LOADING_UNLOADED, "class-loading-unloaded");
+
+        mappings.put(SupportedJMXBean.THREADING_COUNT, "thread-count");
+
+        mappings.put(SupportedJMXBean.GC_COPY_TIME, GC_YOUNG_GEN_TIME);
+        mappings.put(SupportedJMXBean.GC_PAR_NEW_TIME, GC_YOUNG_GEN_TIME);
+        mappings.put(SupportedJMXBean.GC_PS_SCAVENGE_TIME, GC_YOUNG_GEN_TIME);
+        mappings.put(SupportedJMXBean.GC_G1_YOUNG_GENERATION_TIME, GC_YOUNG_GEN_TIME);
+
+        mappings.put(SupportedJMXBean.GC_COPY_COUNT, GC_YOUNG_GEN_COUNT);
+        mappings.put(SupportedJMXBean.GC_PAR_NEW_COUNT, GC_YOUNG_GEN_COUNT);
+        mappings.put(SupportedJMXBean.GC_PS_SCAVENGE_COUNT, GC_YOUNG_GEN_COUNT);
+        mappings.put(SupportedJMXBean.GC_G1_YOUNG_GENERATION_COUNT, GC_YOUNG_GEN_COUNT);
+
+        mappings.put(SupportedJMXBean.GC_MARK_SWEEP_TIME, GC_OLD_GEN_TIME);
+        mappings.put(SupportedJMXBean.GC_PS_MARK_SWEEP_TIME, GC_OLD_GEN_TIME);
+        mappings.put(SupportedJMXBean.GC_G1_OLD_GENERATION_TIME, GC_OLD_GEN_TIME);
+
+        mappings.put(SupportedJMXBean.GC_MARK_SWEEP_COUNT, GC_OLD_GEN_COUNT);
+        mappings.put(SupportedJMXBean.GC_PS_MARK_SWEEP_COUNT, GC_OLD_GEN_COUNT);
+        mappings.put(SupportedJMXBean.GC_G1_OLD_GENERATION_COUNT, GC_OLD_GEN_COUNT);
     }
 
-    public SupportedJMXBean getJmxBean()
+    private JMXMetricFieldMapping()
     {
-        return jmxBean;
-    }
-
-    public String getFieldName()
-    {
-        return fieldName;
     }
 
     /**
-     * Resolve the field mapping from a SupportedJMXBean.
+     * Resolve the API field name from a SupportedJMXBean.
+     *
      * @param bean jmx bean to resolve from.
-     * @return Corresponding field mapping.
+     * @return Corresponding API field name.
      */
-    public static JMXMetricFieldMapping forSupportedJMXBean(SupportedJMXBean bean)
+    public static String from(SupportedJMXBean bean)
     {
         Preconditions.checkArgument(bean != null);
-        for (JMXMetricFieldMapping value : values())
+        String fieldName = mappings.get(bean);
+        if (fieldName == null)
         {
-            if (value.getJmxBean() == bean)
-            {
-                return value;
-            }
+            throw new NotImplementedException("Bean " + bean.name() + " does not have a mapping implemented.");
         }
-        throw new NotImplementedException("Bean " + bean.name() + " does not have a mapping implemented.");
+        return fieldName;
     }
-
 }

@@ -1,3 +1,10 @@
+/**
+ * (c) 2003-2020 MuleSoft, Inc. This software is protected under international copyright
+ * law. All use of this software is subject to MuleSoft's Master Subscription Agreement
+ * (or other master license agreement) separately entered into in writing between you and
+ * MuleSoft. If such an agreement is not in place, you may not use the software.
+ */
+
 package com.mulesoft.agent.common.internalhandler;
 
 import java.util.Collection;
@@ -13,6 +20,8 @@ import com.mulesoft.agent.common.internalhandler.splunk.transport.DefaultTranspo
 import com.mulesoft.agent.common.internalhandler.splunk.transport.Transport;
 import com.mulesoft.agent.common.internalhandler.splunk.transport.TransportFactory;
 import com.mulesoft.agent.configuration.Configurable;
+import java.io.Serializable;
+
 import com.mulesoft.agent.configuration.Password;
 import com.mulesoft.agent.configuration.Type;
 import com.mulesoft.agent.handlers.exception.InitializationException;
@@ -24,7 +33,7 @@ import org.apache.logging.log4j.Logger;
  * Abstract splunk internal handler.
  * @param <T> Message type.
  */
-public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T>
+public abstract class AbstractSplunkInternalHandler<T extends Serializable> extends BufferedHandler<T>
 {
     private static final Logger LOGGER = LogManager.getLogger();
 

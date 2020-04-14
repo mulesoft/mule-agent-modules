@@ -2,7 +2,7 @@
     <parent>
         <artifactId>mule-agent-modules</artifactId>
         <groupId>com.mulesoft.agent</groupId>
-        <version>1.7.0-mule-4.x-SNAPSHOT</version>
+        <version>2.4.6</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -15,7 +15,7 @@
         <module>mule-agent-db-event-tracker</module>
         <module>mule-agent-splunk-event-tracker</module>
         <module>mule-agent-log-event-tracker</module>
-        <module>mule-agent-tryit-event-tracker</module>
+        <module>mule-agent-messagehistory-event-tracker</module>
         <module>mule-agent-analytics-event-tracker</module>
         <module>mule-agent-http-event-tracker</module>
     </modules>

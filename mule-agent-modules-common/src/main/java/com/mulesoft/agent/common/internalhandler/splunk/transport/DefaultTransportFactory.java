@@ -1,5 +1,5 @@
-/*
- * (c) 2003-2015 MuleSoft, Inc. This software is protected under international copyright
+/**
+ * (c) 2003-2020 MuleSoft, Inc. This software is protected under international copyright
  * law. All use of this software is subject to MuleSoft's Master Subscription Agreement
  * (or other master license agreement) separately entered into in writing between you and
  * MuleSoft. If such an agreement is not in place, you may not use the software.
@@ -15,6 +15,8 @@ import com.mulesoft.agent.common.internalhandler.splunk.transport.config.TCPTran
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import java.io.Serializable;
+
 
 /**
  * <p>
@@ -27,7 +29,7 @@ import org.apache.logging.log4j.Logger;
  *         created on 10/28/15
  * @since 1.3.0
  */
-public class DefaultTransportFactory<T> implements TransportFactory<T>
+public class DefaultTransportFactory<T extends Serializable> implements TransportFactory<T>
 {
     private static final Logger LOGGER = LogManager.getLogger(DefaultTransportFactory.class);
 

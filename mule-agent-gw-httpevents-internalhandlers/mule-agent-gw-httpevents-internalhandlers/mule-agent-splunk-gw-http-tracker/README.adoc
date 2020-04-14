@@ -1,0 +1,164 @@
+= Splunk Internal Handler
+
+The Splunk Internal handler will store all the HTTP Events Notifications produced from the Mule API Gateway in a Splunk instance.
+
+== Splunk Available Transports
+
+You can configure to send the events using three different transports: REST API, HTTP Event Collector or TCP.
+
+=== REST API Transport
+This transport uses the REST Management API that Splunk provides. Is the one that we used on the previous versions.
+
+To enable this transport you have to configure the _user_ and _pass_ fields.
+
+=== HTTP Event Collector Transport
+This transport uses the new HTTP Event Collector Data Input *available on Splunk 6.3.0 and above*.
+
+In order to enable this transport you must enable and configure a new HTTP Event Collector Data Input and get an authorization token.
+You can find a tutorial on the Splunk site: http://dev.splunk.com/view/event-collector/SP-CAAAE6M
+
+*This transport has a limitation on the max event size that is accepted.
+This configuration can be changed by appending (or creating) a $SPLUNK_HOME/etc/system/local/limits.conf file with the following configuration
+(increase the value depending on the usage pattern of your Mule Runtime and applications)*
+
+....
+[http_input]
+max_content_length = 20000000
+#as an example we set 20000000 (~ 20MB)
+#default value of 1000000 (~ 1MB)
+....
+
+To enable this transport you don't need to provide the _user_ and _pass_ fields, and instead provide the _token_ and _port_ that you set on Splunk.
+
+=== TCP Transport
+This transport is the recommended for high throughput scenarios since it's the one that has less overhead.
+
+For we recommend the TCP transport since it's the one which has less overhead.
+
+To enable this transport you have to configure the _scheme_ field with the _tcp_ value.
+
+== Splunk Instance Configuration
+
+In order to achieve this you must configure a new source type on your Splunk instance that will have the correct configuration
+to parse the Http Events sent from the Mule API Gateway.
+To do this you have to append to $SPLUNK_HOME/opt/splunk/etc/system/local/props.conf
+file the following source type (create the file if it doesn't exists), and restart the Splunk instance:
+
+....
+[mule]
+TRUNCATE = 0
+LINE_BREAKER = ([\r\n]+)
+SHOULD_LINEMERGE = false
+INDEXED_EXTRACTIONS = JSON
+KV_MODE = JSON
+category = Mule Splunk Integration
+description = Mule Agent event information
+....
+
+=== Configurable Fields
+
+|===
+|Field|Data Type|Description|Type|Default Value
+
+|user
+|String
+|Username to connect to Splunk.
+|Required (REST API)
+|
+
+|pass
+|String
+|The password of the user to connect to Splunk.
+|Required (REST API)
+|
+
+|token
+|String
+|The HTTP Event Collector token to connect to Splunk.
+|Required (HTTP Event Collector)
+|
+
+|host
+|String
+|IP or hostname of the server where Splunk is running.
+|Required
+|
+
+|port
+|int
+|Splunk management port or HTTP Event Collector port or TCP port
+|Optional
+|8089
+
+|scheme
+|String
+|Scheme of connection to the Splunk management port. Possible values: http, https, tcp.
+|Optional
+|https
+
+|sslSecurityProtocol
+|String
+|SSL Security Protocol to use in the https connection. Possible values: TLSv1_2, TLSv1_1, TLSv1, SSLv3.
+|Optional (REST API)
+|TLSv1_2
+
+|splunkIndexName
+|String
+|Splunk index name where all the events will be sent. If the user has the rights,
+and the index doesn't exists, then the internal handler will create it.
+|Optional
+|main
+
+|splunkSource
+|String
+|The source used on the events sent to Splunk.
+|Optional
+|mule
+
+|splunkSourceType
+|String
+|The sourcetype used on the events sent to Splunk.
+|Optional
+|mule
+
+|dateFormatPattern
+|String
+|Date format used to format the timestamp.
+|Optional
+|yyyy-MM-dd'T'HH:mm:ssSZ
+
+|===
+
+=== Configuration Example
+
+
+.Splunk Internal Handler minimum Configuration using the REST API transport
+[source,yaml]
+....
+---
+  mule.agent.tracking.handler.splunk:
+    host: 192.168.61.131
+    user: admin
+    pass: test
+....
+
+.Splunk Internal Handler minimum Configuration using the HTTP Event Collector transport
+[source,yaml]
+....
+---
+  mule.agent.tracking.handler.splunk:
+    host: 192.168.61.131
+    port: 8088
+    token: 97502CC4-E3BC-4R2E-AFE6-DB0A4BA00063
+....
+
+.Splunk Internal Handler minimum Configuration using the TCP transport
+[source,yaml]
+....
+---
+  mule.agent.tracking.handler.splunk:
+    host: 192.168.61.131
+    port: 5500
+    scheme: tcp
+....
+

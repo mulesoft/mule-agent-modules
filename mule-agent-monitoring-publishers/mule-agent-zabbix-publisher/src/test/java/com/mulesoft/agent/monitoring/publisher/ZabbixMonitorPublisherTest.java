@@ -1,9 +1,8 @@
 /**
- * Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
- *
- * The software in this package is published under the terms of the CPAL v1.0
- * license, a copy of which has been included with this distribution in the
- * LICENSE.txt file.
+ * (c) 2003-2020 MuleSoft, Inc. This software is protected under international copyright
+ * law. All use of this software is subject to MuleSoft's Master Subscription Agreement
+ * (or other master license agreement) separately entered into in writing between you and
+ * MuleSoft. If such an agreement is not in place, you may not use the software.
  */
 
 package com.mulesoft.agent.monitoring.publisher;
@@ -19,6 +18,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -51,7 +51,7 @@ public class ZabbixMonitorPublisherTest
     public void ifDisabledDoNothing() throws AgentEnableOperationException
     {
         when(enabledSwitch.isEnabled()).thenReturn(false);
-        List<Metric> testMetrics = new LinkedList<Metric>();
+        ArrayList<Metric> testMetrics = new ArrayList<Metric>();
         Metric mockedMetric = mock(Metric.class);
         testMetrics.add(mockedMetric);
         Assert.assertFalse(publisher.handle(testMetrics));
@@ -63,7 +63,7 @@ public class ZabbixMonitorPublisherTest
     @Test
     public void failWhenAddressIsWrong()
     {
-        List<Metric> testMetrics = new LinkedList<Metric>();
+        ArrayList<Metric> testMetrics = new ArrayList<Metric>();
         Metric mockedMetric = mock(Metric.class);
         testMetrics.add(mockedMetric);
         Assert.assertFalse(publisher.flush(Collections.singletonList(testMetrics)));
@@ -74,7 +74,7 @@ public class ZabbixMonitorPublisherTest
     @Test
     public void doHandle() throws IOException, InterruptedException
     {
-        List<Metric> testMetrics = new LinkedList<Metric>();
+        ArrayList<Metric> testMetrics = new ArrayList<Metric>();
         Metric mockedMetric = mock(Metric.class);
         when(mockedMetric.getName()).thenReturn("aName");
         when(mockedMetric.getValue()).thenReturn(0);

@@ -1,0 +1,66 @@
+= Log Internal Handler
+
+The Log Internal handler will store all the HTTP Events Notifications produced from the
+Mule API Gateway in JSON format on a configurable log file with a rolling file policy.
+
+=== Configurable Fields
+
+
+|===
+|Field|Data Type|Description|Type|Default Value
+
+|fileName
+|String
+|The name of the file to write to.
+|Optional
+|$MULE_HOME/logs/gw-http-events.log
+
+|filePattern
+|String
+|The pattern of the file name of the archived log file.
+It will accept both a date/time pattern compatible with SimpleDateFormat and/or
+a %i which represents an integer counter.
+|Optional
+|$MULE_HOME/logs/gw-http-events-%d{yyyy-dd-MM}-%i.log
+
+|bufferSize
+|int
+|The buffer size in bytes.
+|Optional
+|262144
+
+|immediateFlush
+|boolean
+|When set to true - the default, each write will be followed by a flush.
+This will guarantee the data is written to disk but could impact performance.
+|Optional
+|true
+
+|daysTrigger
+|int
+|Days to maintain on the current active log file before being rolled over to backup files.
+|Optional
+|1
+
+|mbTrigger
+|int
+|Maximum size that the output file is allowed to reach before being rolled over to backup files.
+|Optional
+|100
+
+|dateFormatPattern
+|String
+|Date format used to format the timestamp.
+|Optional
+|yyyy-MM-dd'T'HH:mm:ss.SZ
+
+|===
+
+=== Configuration Example
+
+[source,yaml]
+.Log Internal Handler Configuration
+....
+---
+  mule.agent.gw.http.handler.log:
+....

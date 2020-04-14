@@ -1,5 +1,5 @@
 /*
- * (c) 2003-2014 MuleSoft, Inc. This software is protected under international copyright
+ * (c) 2003-2020 MuleSoft, Inc. This software is protected under international copyright
  * law. All use of this software is subject to MuleSoft's Master Subscription Agreement
  * (or other master license agreement) separately entered into in writing between you and
  * MuleSoft. If such an agreement is not in place, you may not use the software.
@@ -10,9 +10,7 @@ package com.mulesoft.agent.eventtracker.analytics;
 import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
 
 /**
- * <p>
  * Representation of the event types supported by the Analytics service.
- * </p>
  */
 public enum AnalyticsEventType
 {
@@ -35,8 +33,8 @@ public enum AnalyticsEventType
     MESSAGE_REQUEST_BEGIN("EndpointMessageNotification", "begin request"),
     MESSAGE_REQUEST_END("EndpointMessageNotification", "end request"),
 
-    EXCEPTION_PROCESS_START("ExceptionStrategyNotification", "exception strategy process start"),
-    EXCEPTION_PROCESS_END("ExceptionStrategyNotification", "exception strategy process end"),
+    EXCEPTION_PROCESS_START("ErrorHandlerNotification", "exception strategy process start"),
+    EXCEPTION_PROCESS_END("ErrorHandlerNotification", "exception strategy process end"),
 
     MESSAGE_PROCESSOR_PRE_INVOKE("MessageProcessorNotification", "message processor pre invoke"),
     MESSAGE_PROCESSOR_POST_INVOKE("MessageProcessorNotification", "message processor post invoke"),
@@ -51,26 +49,23 @@ public enum AnalyticsEventType
 
     CUSTOM_EVENT_EVENT_ACTION("EventNotification", "custom event"),
 
-    EXCEPTION_ACTION("ExceptionNotification", "exception");
+    EXCEPTION_ACTION("ExceptionNotification", "exception"),
+
+    UNKNOWN("Unknown", "Unknown");
 
     /**
-     * <p>
      * The type of notification represented by an event.
-     * </p>
      */
     private String notificationType;
 
     /**
-     * <p>
      * The action represented by an event.
-     * </p>
      */
     private String action;
 
     /**
-     * <p>
      * Creates an analytics event type from a notification type and an associated action.
-     * </p>
+     *
      * @param notificationType The type of notification represented by an event.
      * @param action The action represented by an event.
      */
@@ -81,9 +76,8 @@ public enum AnalyticsEventType
     }
 
     /**
-     * <p>
      * Returns the event type corresponding to the provided {@link AgentTrackingNotification}.
-     * </p>
+     *
      * @param notification The notfication to retrieve the type for.
      * @return The Analytics event type for the provided notification.
      */
@@ -99,6 +93,7 @@ public enum AnalyticsEventType
                 return type;
             }
         }
-        return null;
+
+        return UNKNOWN;
     }
 }

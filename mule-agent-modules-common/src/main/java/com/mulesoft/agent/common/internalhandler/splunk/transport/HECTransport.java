@@ -1,5 +1,5 @@
-/*
- * (c) 2003-2015 MuleSoft, Inc. This software is protected under international copyright
+/**
+ * (c) 2003-2020 MuleSoft, Inc. This software is protected under international copyright
  * law. All use of this software is subject to MuleSoft's Master Subscription Agreement
  * (or other master license agreement) separately entered into in writing between you and
  * MuleSoft. If such an agreement is not in place, you may not use the software.
@@ -7,6 +7,20 @@
 
 package com.mulesoft.agent.common.internalhandler.splunk.transport;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mulesoft.agent.common.internalhandler.splunk.transport.config.HECTransportConfig;
+import com.mulesoft.agent.handlers.exception.InitializationException;
+import org.apache.commons.lang.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.asynchttpclient.AsyncHttpClient;
+import org.asynchttpclient.AsyncHttpClientConfig;
+import org.asynchttpclient.DefaultAsyncHttpClient;
+import org.asynchttpclient.DefaultAsyncHttpClientConfig;
+import org.asynchttpclient.Response;
+
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -15,18 +29,6 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.concurrent.ExecutionException;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mulesoft.agent.common.internalhandler.splunk.transport.config.HECTransportConfig;
-import com.mulesoft.agent.handlers.exception.InitializationException;
-import com.ning.http.client.AsyncHttpClient;
-import com.ning.http.client.AsyncHttpClientConfig;
-import com.ning.http.client.Response;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  * <p>
@@ -64,9 +66,10 @@ public class HECTransport<T> extends AbstractTransport<T>
 
 
             LOGGER.debug("Connecting to the Splunk server: %s:%s.", this.config.getHost(), this.config.getPort());
-            Socket socket = new Socket();
-            socket.connect(new InetSocketAddress(this.config.getHost(), this.config.getPort()), CONNECTION_TIMEOUT);
-            socket.close();
+            try (Socket socket = new Socket())
+            {
+                socket.connect(new InetSocketAddress(this.config.getHost(), this.config.getPort()), CONNECTION_TIMEOUT);
+            }
             LOGGER.debug("Successfully connected to the Splunk server.");
 
             if (this.host == null)
@@ -109,16 +112,20 @@ public class HECTransport<T> extends AbstractTransport<T>
 
             // Use the Async library because it's already a dependency and manages the SSL Certificate validation
 
-            AsyncHttpClientConfig httpClientConfig = new AsyncHttpClientConfig.Builder()
-                    .setAcceptAnyCertificate(this.config.getAcceptAnyCertificate())
+            AsyncHttpClientConfig httpClientConfig = new DefaultAsyncHttpClientConfig.Builder()
+                    .setUseInsecureTrustManager(this.config.getAcceptAnyCertificate())
                     .build();
-            AsyncHttpClient asyncHttpClient = new AsyncHttpClient(httpClientConfig);
-            Response response = asyncHttpClient.preparePost(url.toString())
+
+            Response response;
+
+            try (AsyncHttpClient asyncHttpClient = new DefaultAsyncHttpClient(httpClientConfig))
+            {
+                response = asyncHttpClient.preparePost(url.toString())
                     .addHeader("Authorization", "Splunk " + this.config.getToken())
                     .setBody(sb.toString())
                     .execute()
                     .get();
-            asyncHttpClient.close();
+            }
 
             if (response.getStatusCode() != HttpURLConnection.HTTP_OK)
             {
@@ -135,6 +142,11 @@ public class HECTransport<T> extends AbstractTransport<T>
             return false;
         }
         catch (ExecutionException e)
+        {
+            LOGGER.error("There was an error executing the request.", e);
+            return false;
+        }
+        catch (IOException e)
         {
             LOGGER.error("There was an error executing the request.", e);
             return false;

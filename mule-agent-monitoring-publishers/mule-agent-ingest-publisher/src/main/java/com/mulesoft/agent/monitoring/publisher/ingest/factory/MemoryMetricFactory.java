@@ -1,3 +1,10 @@
+/**
+ * (c) 2003-2020 MuleSoft, Inc. This software is protected under international copyright
+ * law. All use of this software is subject to MuleSoft's Master Subscription Agreement
+ * (or other master license agreement) separately entered into in writing between you and
+ * MuleSoft. If such an agreement is not in place, you may not use the software.
+ */
+
 package com.mulesoft.agent.monitoring.publisher.ingest.factory;
 
 import com.mulesoft.agent.domain.monitoring.Metric;
@@ -19,13 +26,22 @@ public class MemoryMetricFactory extends TargetMetricFactory
 {
 
     private static final List<SupportedJMXBean> SUPPORTED_METRICS = Lists.newArrayList(
-        SupportedJMXBean.CODE_CACHE_COMMITTED, SupportedJMXBean.CODE_CACHE_TOTAL, SupportedJMXBean.CODE_CACHE_USAGE,
-        SupportedJMXBean.COMPRESSED_CLASS_SPACE_COMMITTED, SupportedJMXBean.COMPRESSED_CLASS_SPACE_TOTAL,
-        SupportedJMXBean.COMPRESSED_CLASS_SPACE_USAGE, SupportedJMXBean.EDEN_COMMITTED, SupportedJMXBean.EDEN_TOTAL,
-        SupportedJMXBean.EDEN_USAGE, SupportedJMXBean.HEAP_COMMITTED, SupportedJMXBean.HEAP_TOTAL, SupportedJMXBean.HEAP_USAGE,
-        SupportedJMXBean.METASPACE_COMMITTED, SupportedJMXBean.METASPACE_USAGE, SupportedJMXBean.TENURED_GEN_COMMITTED,
-        SupportedJMXBean.TENURED_GEN_TOTAL, SupportedJMXBean.TENURED_GEN_USAGE, SupportedJMXBean.SURVIVOR_COMMITTED,
-        SupportedJMXBean.SURVIVOR_TOTAL, SupportedJMXBean.SURVIVOR_USAGE, SupportedJMXBean.METASPACE_TOTAL
+            SupportedJMXBean.CODE_CACHE_COMMITTED, SupportedJMXBean.CODE_CACHE_TOTAL, SupportedJMXBean.CODE_CACHE_USAGE,
+            SupportedJMXBean.COMPRESSED_CLASS_SPACE_COMMITTED, SupportedJMXBean.COMPRESSED_CLASS_SPACE_TOTAL,
+            SupportedJMXBean.COMPRESSED_CLASS_SPACE_USAGE, SupportedJMXBean.EDEN_COMMITTED, SupportedJMXBean.EDEN_TOTAL,
+            SupportedJMXBean.EDEN_USAGE, SupportedJMXBean.G1_EDEN_COMMITTED, SupportedJMXBean.G1_EDEN_TOTAL,
+            SupportedJMXBean.G1_EDEN_USAGE, SupportedJMXBean.PS_EDEN_COMMITTED, SupportedJMXBean.PS_EDEN_TOTAL,
+            SupportedJMXBean.PS_EDEN_USAGE, SupportedJMXBean.PAR_EDEN_COMMITTED, SupportedJMXBean.PAR_EDEN_TOTAL,
+            SupportedJMXBean.PAR_EDEN_USAGE, SupportedJMXBean.HEAP_COMMITTED, SupportedJMXBean.HEAP_TOTAL, SupportedJMXBean.HEAP_USAGE,
+            SupportedJMXBean.METASPACE_COMMITTED, SupportedJMXBean.METASPACE_USAGE, SupportedJMXBean.TENURED_GEN_COMMITTED,
+            SupportedJMXBean.TENURED_GEN_TOTAL, SupportedJMXBean.TENURED_GEN_USAGE, SupportedJMXBean.G1_OLD_GEN_COMMITTED,
+            SupportedJMXBean.G1_OLD_GEN_TOTAL, SupportedJMXBean.G1_OLD_GEN_USAGE, SupportedJMXBean.PS_OLD_GEN_COMMITTED,
+            SupportedJMXBean.PS_OLD_GEN_TOTAL, SupportedJMXBean.PS_OLD_GEN_USAGE, SupportedJMXBean.CMS_OLD_GEN_COMMITTED,
+            SupportedJMXBean.CMS_OLD_GEN_TOTAL, SupportedJMXBean.CMS_OLD_GEN_USAGE, SupportedJMXBean.SURVIVOR_COMMITTED,
+            SupportedJMXBean.SURVIVOR_TOTAL, SupportedJMXBean.SURVIVOR_USAGE, SupportedJMXBean.G1_SURVIVOR_COMMITTED,
+            SupportedJMXBean.G1_SURVIVOR_TOTAL, SupportedJMXBean.G1_SURVIVOR_USAGE, SupportedJMXBean.PS_SURVIVOR_COMMITTED,
+            SupportedJMXBean.PS_SURVIVOR_TOTAL, SupportedJMXBean.PS_SURVIVOR_USAGE, SupportedJMXBean.PAR_SURVIVOR_COMMITTED,
+            SupportedJMXBean.PAR_SURVIVOR_TOTAL, SupportedJMXBean.PAR_SURVIVOR_USAGE, SupportedJMXBean.METASPACE_TOTAL
     );
 
     /**
@@ -57,6 +73,7 @@ public class MemoryMetricFactory extends TargetMetricFactory
 
     /**
      * Fallback to be used when meta space total is reported as -1, to set meta space total to the total physical memory of the host.
+     *
      * @param classification MetricClassification from which to extract the total physical memory metrics.
      * @return MetricSample resolved from total physical memory.
      */

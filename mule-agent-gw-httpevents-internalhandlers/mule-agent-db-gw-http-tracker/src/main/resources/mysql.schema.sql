@@ -1,3 +1,10 @@
+--
+-- (c) 2003-2020 MuleSoft, Inc. This software is protected under international copyright
+-- law. All use of this software is subject to MuleSoft's Master Subscription Agreement
+-- (or other master license agreement) separately entered into in writing between you and
+-- MuleSoft. If such an agreement is not in place, you may not use the software.
+--
+
 CREATE TABLE MULE_API_ANALYTICS (
   id                           CHAR(36)     NOT NULL,
   api_id                       INT          NOT NULL,
@@ -11,7 +18,7 @@ CREATE TABLE MULE_API_ANALYTICS (
   host_id                      VARCHAR(255) NULL,
   org_id                       VARCHAR(36)  NULL,
   path                         VARCHAR(500) NOT NULL,
-  policy_violation_policy_id   INT          NULL,
+  policy_violation_policy_id   VARCHAR(50)  NULL,
   policy_violation_policy_name VARCHAR(150) NULL,
   policy_violation_outcome     VARCHAR(10)  NULL,
   received_ts                  VARCHAR(30)  NOT NULL,

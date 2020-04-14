@@ -2,7 +2,7 @@
   <parent>
     <artifactId>mule-agent-monitoring-publishers</artifactId>
     <groupId>com.mulesoft.agent</groupId>
-      <version>1.7.0-mule-4.x-SNAPSHOT</version>
+      <version>2.4.6</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -34,10 +34,6 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-        </dependency>
 
         <!-- Test Dependencies -->
         <dependency>
@@ -53,11 +49,6 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>cobertura-maven-plugin</artifactId>
-                <version>2.1.1</version>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>

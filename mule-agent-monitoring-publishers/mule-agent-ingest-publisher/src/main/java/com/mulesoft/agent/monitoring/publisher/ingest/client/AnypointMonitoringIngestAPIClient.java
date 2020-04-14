@@ -1,6 +1,14 @@
+/**
+ * (c) 2003-2020 MuleSoft, Inc. This software is protected under international copyright
+ * law. All use of this software is subject to MuleSoft's Master Subscription Agreement
+ * (or other master license agreement) separately entered into in writing between you and
+ * MuleSoft. If such an agreement is not in place, you may not use the software.
+ */
+
 
 package com.mulesoft.agent.monitoring.publisher.ingest.client;
 
+import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +19,7 @@ import com.google.common.collect.Maps;
 import com.mulesoft.agent.clients.AuthenticationProxyClient;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.api.IngestApplicationMetricPostBody;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.api.IngestMetric;
-import com.ning.http.client.Response;
+import org.asynchttpclient.Response;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
@@ -88,7 +96,7 @@ public final class AnypointMonitoringIngestAPIClient
             {
                 try
                 {
-                    LOGGER.debug("Post of target metrics failed with status " + httpResponse.getStatusCode() + ", response body: " + httpResponse.getResponseBody("UTF-8"));
+                    LOGGER.debug("Post of target metrics failed with status " + httpResponse.getStatusCode() + ", response body: " + httpResponse.getResponseBody(Charset.forName("UTF-8")));
                 }
                 catch (Throwable e)
                 {
@@ -110,7 +118,7 @@ public final class AnypointMonitoringIngestAPIClient
      */
     public Response postApplicationMetrics(final String applicationName, final IngestApplicationMetricPostBody body)
     {
-        HashMap<String, Collection<String>> headers = Maps.newHashMap();
+        HashMap<CharSequence, Collection<String>> headers = Maps.newHashMap();
         headers.put(APPLICATION_NAME_HEADER, Lists.newArrayList(applicationName));
         Response httpResponse = this.authProxyClient.post(this.applicationMetricsPath, body, headers);
 
@@ -121,7 +129,7 @@ public final class AnypointMonitoringIngestAPIClient
             {
                 try
                 {
-                    LOGGER.debug(String.format("Post of application metrics for %s failed with status %d, response body: %s", applicationName, httpResponse.getStatusCode(), httpResponse.getResponseBody("UTF-8")));
+                    LOGGER.debug(String.format("Post of application metrics for %s failed with status %d, response body: %s", applicationName, httpResponse.getStatusCode(), httpResponse.getResponseBody(Charset.forName("UTF-8"))));
                 }
                 catch (Throwable e)
                 {

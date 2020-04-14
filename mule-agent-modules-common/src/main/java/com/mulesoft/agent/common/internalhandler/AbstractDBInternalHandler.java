@@ -1,3 +1,10 @@
+/**
+ * (c) 2003-2020 MuleSoft, Inc. This software is protected under international copyright
+ * law. All use of this software is subject to MuleSoft's Master Subscription Agreement
+ * (or other master license agreement) separately entered into in writing between you and
+ * MuleSoft. If such an agreement is not in place, you may not use the software.
+ */
+
 package com.mulesoft.agent.common.internalhandler;
 
 import java.sql.Connection;
@@ -17,13 +24,14 @@ import com.mulesoft.agent.handlers.exception.InitializationException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import java.io.Serializable;
 
 /**
  * Database internal handler.
  *
  * @param <T> Message type.
  */
-public abstract class AbstractDBInternalHandler<T> extends BufferedHandler<T>
+public abstract class AbstractDBInternalHandler<T extends Serializable> extends BufferedHandler<T>
 {
     private static final Logger LOGGER = LogManager.getLogger(AbstractDBInternalHandler.class);
     private static final int DEFAULT_BUFFER_RETRY_COUNT = 3;
