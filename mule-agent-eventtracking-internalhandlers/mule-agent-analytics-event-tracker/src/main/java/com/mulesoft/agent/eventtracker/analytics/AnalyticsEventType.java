@@ -1,5 +1,5 @@
 /*
- * (c) 2003-2014 MuleSoft, Inc. This software is protected under international copyright
+ * (c) 2003-2020 MuleSoft, Inc. This software is protected under international copyright
  * law. All use of this software is subject to MuleSoft's Master Subscription Agreement
  * (or other master license agreement) separately entered into in writing between you and
  * MuleSoft. If such an agreement is not in place, you may not use the software.
@@ -10,9 +10,7 @@ package com.mulesoft.agent.eventtracker.analytics;
 import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
 
 /**
- * <p>
  * Representation of the event types supported by the Analytics service.
- * </p>
  */
 public enum AnalyticsEventType
 {
@@ -51,7 +49,9 @@ public enum AnalyticsEventType
 
     CUSTOM_EVENT_EVENT_ACTION("EventNotification", "custom event"),
 
-    EXCEPTION_ACTION("ExceptionNotification", "exception");
+    EXCEPTION_ACTION("ExceptionNotification", "exception"),
+
+    UNKNOWN("Unknown", "Unknown");
 
     /**
      * <p>
@@ -99,6 +99,7 @@ public enum AnalyticsEventType
                 return type;
             }
         }
-        return null;
+
+        return UNKNOWN;
     }
 }

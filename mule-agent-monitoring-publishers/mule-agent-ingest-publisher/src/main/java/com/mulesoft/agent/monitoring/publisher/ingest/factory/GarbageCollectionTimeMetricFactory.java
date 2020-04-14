@@ -48,7 +48,7 @@ public class GarbageCollectionTimeMetricFactory extends TargetMetricFactory
     @Override
     List<SupportedJMXBean> getSupportedMetrics()
     {
-        return Lists.newArrayList(SupportedJMXBean.GC_MARK_SWEEP_TIME, SupportedJMXBean.GC_PAR_NEW_TIME);
+        return Lists.newArrayList(SupportedJMXBean.GC_COPY_TIME, SupportedJMXBean.GC_PAR_NEW_TIME, SupportedJMXBean.GC_PS_SCAVENGE_TIME, SupportedJMXBean.GC_G1_YOUNG_GENERATION_TIME, SupportedJMXBean.GC_MARK_SWEEP_TIME, SupportedJMXBean.GC_PS_MARK_SWEEP_TIME, SupportedJMXBean.GC_G1_OLD_GENERATION_TIME);
     }
 
     /**
@@ -92,14 +92,14 @@ public class GarbageCollectionTimeMetricFactory extends TargetMetricFactory
     private MetricSample build(Date date, Double min, Double max, Double sum, Double avg, Double count)
     {
         return new PercentageMetricSampleDecorator(
-            new DefaultMetricSample(
-                date,
-                min > 0 ? min : 0,
-                max > 0 ? max : 0,
-                sum > 0 ? sum : 0,
-                avg > 0 ? avg : 0,
-                count
-            )
+                new DefaultMetricSample(
+                        date,
+                        min > 0 ? min : 0,
+                        max > 0 ? max : 0,
+                        sum > 0 ? sum : 0,
+                        avg > 0 ? avg : 0,
+                        count
+                )
         );
     }
 

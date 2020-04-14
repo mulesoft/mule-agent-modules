@@ -8,14 +8,6 @@
 
 package com.mulesoft.agent.monitoring.publisher.ingest;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.inject.Named;
-import javax.inject.Singleton;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -29,18 +21,23 @@ import com.mulesoft.agent.monitoring.publisher.ingest.model.JMXMetricFieldMappin
 import com.mulesoft.agent.monitoring.publisher.ingest.model.MetricClassification;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.api.IngestMetric;
 import com.ning.http.client.Response;
-
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import javax.inject.Named;
+import javax.inject.Singleton;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static com.mulesoft.agent.domain.RuntimeEnvironment.ON_PREM;
 import static com.mulesoft.agent.domain.RuntimeEnvironment.STANDALONE;
 
 /**
- * <p>
  * Handler that publishes JMX information obtained from the Monitoring Service to a running Ingest API instance.
- * </p>
  */
 @Singleton
 @Named("mule.agent.ingest.target.metrics.internal.handler")
@@ -58,6 +55,7 @@ public class IngestTargetMonitorPublisher extends IngestMonitorPublisher<ArrayLi
 
     /**
      * Initialization code to be run after configuration.
+     *
      * @throws InitializationException when target metric factories we not injected or when configuration is invalid.
      */
     @Override
@@ -79,7 +77,7 @@ public class IngestTargetMonitorPublisher extends IngestMonitorPublisher<ArrayLi
     private Map<String, Set<IngestMetric>> processTargetMetrics(Collection<ArrayList<Metric>> collection)
     {
 
-        Map<String, Set<IngestMetric>> result = Maps.newHashMap();
+        Map<String, Set<IngestMetric>> metricsResult = Maps.newHashMap();
 
         for (List<Metric> sample : collection)
         {
@@ -93,7 +91,6 @@ public class IngestTargetMonitorPublisher extends IngestMonitorPublisher<ArrayLi
 
             for (SupportedJMXBean bean : SupportedJMXBean.values())
             {
-
                 TargetMetricFactory applicableFactory = null;
                 for (TargetMetricFactory factory : targetMetricFactories)
                 {
@@ -111,22 +108,22 @@ public class IngestTargetMonitorPublisher extends IngestMonitorPublisher<ArrayLi
                 IngestMetric metric = applicableFactory.apply(classification, bean);
                 if (metric != null && metric.getCount() > 0)
                 {
-                    JMXMetricFieldMapping mapping = JMXMetricFieldMapping.forSupportedJMXBean(bean);
-                    Set<IngestMetric> existentMetrics = result.get(mapping.getFieldName());
+                    String fieldName = JMXMetricFieldMapping.from(bean);
+
+                    Set<IngestMetric> existentMetrics = metricsResult.get(fieldName);
                     if (existentMetrics != null)
                     {
                         existentMetrics.add(metric);
                     }
                     else
                     {
-                        result.put(mapping.getFieldName(), Sets.newHashSet(metric));
+                        metricsResult.put(fieldName, Sets.newHashSet(metric));
                     }
                 }
             }
-
         }
 
-        return result;
+        return metricsResult;
     }
 
     /**

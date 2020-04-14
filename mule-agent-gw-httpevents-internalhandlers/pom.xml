@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.mulesoft.agent</groupId>
         <artifactId>mule-agent-modules</artifactId>
-        <version>1.7.2-mule-3.x-SNAPSHOT</version>
+        <version>1.14.3</version>
     </parent>
 
     <packaging>pom</packaging>
@@ -33,14 +33,11 @@
         <dependency>
             <groupId>com.mulesoft.agent</groupId>
             <artifactId>mule-agent-modules-common</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.mulesoft.agent</groupId>
             <artifactId>mule-agent-api</artifactId>
-            <version>${mule.agent.api.version}</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -48,23 +45,10 @@
             <artifactId>spring-core</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>commons-beanutils</groupId>
-            <artifactId>commons-beanutils</artifactId>
-        </dependency>
-
         <!-- GW Dependencies -->
         <dependency>
             <groupId>com.mulesoft.anypoint</groupId>
             <artifactId>api-gateway-client</artifactId>
-            <version>${gw.version}</version>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <!-- Test Dependencies -->

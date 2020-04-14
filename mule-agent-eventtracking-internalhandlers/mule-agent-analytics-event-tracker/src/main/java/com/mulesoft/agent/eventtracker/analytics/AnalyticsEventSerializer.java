@@ -1,5 +1,5 @@
 /*
- * (c) 2003-2014 MuleSoft, Inc. This software is protected under international copyright
+ * (c) 2003-2020 MuleSoft, Inc. This software is protected under international copyright
  * law. All use of this software is subject to MuleSoft's Master Subscription Agreement
  * (or other master license agreement) separately entered into in writing between you and
  * MuleSoft. If such an agreement is not in place, you may not use the software.
@@ -16,15 +16,17 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
- * <p>
  * Serializer that converts an {@link AgentTrackingNotification} to the JSON format supported by
  * the Analytics service.
- * </p>
  */
 public class AnalyticsEventSerializer extends JsonSerializer<AgentTrackingNotification>
 {
+
+    private static final Logger LOGGER = LogManager.getLogger(AnalyticsEventSerializer.class);
 
     @Override
     public Class<AgentTrackingNotification> handledType()
@@ -38,11 +40,17 @@ public class AnalyticsEventSerializer extends JsonSerializer<AgentTrackingNotifi
         try
         {
             AnalyticsEventType analyticsEventType = AnalyticsEventType.getAnalyticsEventType(value);
+            if (analyticsEventType.equals(AnalyticsEventType.UNKNOWN))
+            {
+                LOGGER.debug("Serializing notification of UNKNOWN type from application {}.", value.getApplication());
+                return;
+            }
+
             jgen.writeStartObject();
-            jgen.writeStringField("id", UUID.randomUUID().toString());
+            jgen.writeStringField("id", getId());
             jgen.writeStringField("messageId", value.getRootMuleMessageId());
-            jgen.writeStringField("name", value.getNotificationType());
-            jgen.writeStringField("type", analyticsEventType == null ? "" : analyticsEventType.name());
+            jgen.writeStringField("name", value.getCustomEventName() == null ? "" : value.getCustomEventName());
+            jgen.writeStringField("type", analyticsEventType.name());
             jgen.writeNumberField("timestamp", value.getTimestamp());
             jgen.writeStringField("flowName", value.getResourceIdentifier());
             jgen.writeStringField("path", value.getPath());
@@ -80,5 +88,10 @@ public class AnalyticsEventSerializer extends JsonSerializer<AgentTrackingNotifi
         catch (IOException e)
         {
         }
+    }
+
+    protected String getId()
+    {
+        return UUID.randomUUID().toString();
     }
 }
